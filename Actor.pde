@@ -15,7 +15,11 @@ class Actor {
         this.scale = scale;
         this.rot = rot;
 
-        this.collisions = new ArrayList();
+        next_pos = new PVector();
+        next_vel = new PVector();
+        bext_accel = new PVector();
+
+        collisions = new ArrayList();
     }
     Actor(float hitbox_radius, PVector pos, PVector scale, float rot) {
         this(hitbox_radius, pos, new PVector(), new PVector(), scale, rot);
