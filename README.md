@@ -1,2 +1,2 @@
 # SplitBullet
-A small bullet-hell videogame created for the final of the elements of graphics
+A small videogame created for the final of the UT Elements of Graphics class
