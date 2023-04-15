@@ -4,12 +4,12 @@
 // By Randy Hodges, Long Vu, Sean Thomas, Daniel Ross
 
 
-// Game GAME;
+Game GAME;
 
 void setup() {
     size(1000, 1000, P2D);
 
-    // GAME = new Game();
+    GAME = new Game();
 }
 
 void draw() {

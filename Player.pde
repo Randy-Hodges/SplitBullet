@@ -7,8 +7,9 @@ class Player extends Actor{
     Game GAME;
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
-        h = new Hat( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
-        b = new Body( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
+        // DO NOT UNCOMMENT UNTIL HAT AND BODY HAVE CONSTRUCTORS
+        // h = new Hat( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
+        // b = new Body( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         this.health = health;
     }
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot){

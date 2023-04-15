@@ -5,16 +5,16 @@ class Game {
     Timer TIME;
 
     // Arrays of buttons pressed on current frame only
-    static ArrayList<Integer> keys_pressed, mouse_pressed;
+    ArrayList<Integer> keys_pressed, mouse_pressed;
 
     // Arrays of buttons released on current frame only
-    static ArrayList<Integer> keys_released, mouse_released;
+    ArrayList<Integer> keys_released, mouse_released;
 
     // Arrays of buttons currently held
-    static ArrayList<Integer> key_inputs, mouse_inputs;
+    ArrayList<Integer> key_inputs, mouse_inputs;
 
-    static ArrayList<Actor> actors;
-    static boolean muted;
+    ArrayList<Actor> actors;
+    boolean muted, paused;
 
     Game() {
         window_properties = (GLWindow)surface.getNative();
