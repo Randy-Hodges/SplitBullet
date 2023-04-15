@@ -25,7 +25,7 @@ class Projectile extends Actor{
         if(!hasCollided){
             pushMatrix();
             translate(draw_pos.x, draw_pos.y);
-            image(displayImage, 0, 0, 2 * hitbox_radius, 2 * hitbox_radius)
+            image(displayImage, 0, 0, 2 * hitbox_radius, 2 * hitbox_radius);
             popMatrix();
         }
     }
