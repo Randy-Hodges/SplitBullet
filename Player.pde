@@ -3,11 +3,16 @@ class Player extends Actor{
     Body b;
 
     PVector aim_vector;
-    
-    Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot){
+    int health;
+
+    Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         h = new Hat( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         b = new Body( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
+        this.health = health;
+    }
+    Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot){
+        this(hitbox_radius,  pos,  vel,  accel,  scale,  rot, 10);
     }
 
     void checkInputs() {
@@ -35,12 +40,27 @@ class Player extends Actor{
     {
         if(GAME.key_inputs.contains(int(' ')));
         {
-            
+            //add new projectile at player's location moving in the direction that the player is facing
         }
     }
 
     void collisionReaction() {
         // overwrite this method with your object's reaction to collisions
+        for (Actor other : GAME.actors) {
+            boolean isColliding = pos.dist(other.pos) <= hitbox_radius + other.hitbox_radius;
+            if (other instanceof Enemy && isColliding) {
+
+                collisions.add(other);
+                health--;
+
+            }
+
+            else if(other instanceof Powerup && isColliding)
+            {
+                //apply powerup effects
+                collisions.add(other);
+            }
+        }
     }
 
     void simulate() {

@@ -10,10 +10,11 @@ class Projectile extends Actor{
 
     Actor collisionReaction(){//update later
         for (Actor other : GAME.actors) {
-            if (other != this && !hasCollided) {
-                if (pos.dist(other.pos) <= radius + other.radius) {
+            if (other instanceof Enemy && !hasCollided) {
+                if (pos.dist(other.pos) <= hitbox_radius + other.hitbox_radius) {
                     collisions.add(other);
                     hasCollided = true;
+                    return other;
                 }
             }
         }

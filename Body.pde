@@ -1,6 +1,8 @@
-class Body extends Actor{
+class Body extends Actor
+{
 
-    Body(){
+    Body()
+    {
         
     }
 }
