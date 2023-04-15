@@ -4,7 +4,7 @@ class Player extends Actor{
 
     PVector aim_vector;
     int health;
-
+    Game GAME;
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         h = new Hat( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
@@ -48,7 +48,7 @@ class Player extends Actor{
         // overwrite this method with your object's reaction to collisions
         for (Actor other : GAME.actors) {
             boolean isColliding = pos.dist(other.pos) <= hitbox_radius + other.hitbox_radius;
-            if (other instanceof Enemy && isColliding) {
+            if (other instanceof Projectile && isColliding/* change to Enemy once class is created*/) {
 
                 collisions.add(other);
                 health--;

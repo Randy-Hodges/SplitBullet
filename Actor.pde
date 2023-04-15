@@ -17,7 +17,7 @@ class Actor {
 
         next_pos = new PVector();
         next_vel = new PVector();
-        bext_accel = new PVector();
+        next_accel = new PVector();
 
         collisions = new ArrayList();
     }

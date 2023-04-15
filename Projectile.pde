@@ -1,31 +1,31 @@
 class Projectile extends Actor{
     boolean hasCollided;
     PImage displayImage;
-
+    Game GAME;
     Projectile(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot)
     {
-        super(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot);
+        super( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         displayImage = loadImage("projectile.png");
     }
 
-    Actor collisionReaction(){//update later
+    void collisionReaction(){//update later
         for (Actor other : GAME.actors) {
-            if (other instanceof Enemy && !hasCollided) {
+            if (true/*other instanceof Enemy && !hasCollided*/) {
                 if (pos.dist(other.pos) <= hitbox_radius + other.hitbox_radius) {
                     collisions.add(other);
                     hasCollided = true;
-                    return other;
+                    //return other;
                 }
             }
         }
-        return null;
+        //return null;
     }
 
     void render(){
         if(!hasCollided){
             pushMatrix();
-            translate(draw_pos.x, draw_pos.y);
-            image(displayImage, 0, 0, 2 * hitbox_radius, 2 * hitbox_radius)
+            translate(pos.x, pos.y);
+            image(displayImage, 0, 0, 2 * hitbox_radius, 2 * hitbox_radius);
             popMatrix();
         }
     }
