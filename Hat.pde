@@ -3,8 +3,9 @@ class Hat extends Actor{
     PImage frame;
     int frameNum;
 
-    Hat()
+    Hat(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot)
     {
+        super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
 
     }
 
@@ -12,11 +13,11 @@ class Hat extends Actor{
     {
         frameNum++;
         framefilename = "frame_" + nf(frameNum % 30, 2) + "_delay-0.03s.gif";
-        frame = loadImage(framefilename)
+        frame = loadImage(framefilename);
     }
 
     void display()
     {
-        displayImage(framefilename, pos.x, pos.y, 30, 30);
+        image(frame, pos.x, pos.y, 30, 30);
     }
 }

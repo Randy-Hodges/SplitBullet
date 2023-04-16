@@ -17,7 +17,7 @@ class Actor {
 
         next_pos = new PVector();
         next_vel = new PVector();
-        bext_accel = new PVector();
+        next_accel = new PVector();
 
         collisions = new ArrayList();
     }
@@ -39,13 +39,13 @@ class Actor {
 
     // METHODS
     void calcCollision() {
-        // collisions.clear();
+        collisions.clear();
 
-        // for (Actor other : Game.actors) {
-        //     if ((other != this) && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
-        //         collisions.add(other);
-        //     }
-        // }
+        for (Actor other : GAME.actors) {
+            if ((other != this) && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
+                collisions.add(other);
+            }
+        }
     }
 
     void collisionReaction() {
