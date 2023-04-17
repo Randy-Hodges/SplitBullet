@@ -2,11 +2,13 @@
 //       I have put all enemies in one file to reduce overall clutter in the main directory
 
 class Orc extends Enemy{
+    // static variables that are applied with super()
     final static float orc_hitbox_radius = 10;
     final static float orc_scalex = 2;
     final static float orc_scaley = 2;
     final static int orc_total_frames =  4;
     final static int orc_frame_rate = 8; // frames shown / sec
+    // Other variables specific to this class
     float decision_rate = 1.5; // how long (in sec) it takes between changing directions
     int decision_frames = int(target_frame_rate*decision_rate);
     float speed = 2;
