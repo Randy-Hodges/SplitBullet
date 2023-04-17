@@ -101,20 +101,17 @@ class Game {
         render();
         simulate();
         move();
-        
         // Check if wave is over, then begin the next spawn_wave(current_wave)
-        
         break;
       case PAUSE_SCREEN:
         // Handle pause logic
         break;
-
+    }
       // Refresh the screen with the GUI object
       game_gui.refresh_screen();
       
       // Clear input buffers
       clearInputBuffers();
-    }
   }
 
   void spawn_wave(int wave_num) {
