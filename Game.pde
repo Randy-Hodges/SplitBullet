@@ -1,7 +1,7 @@
 import com.jogamp.newt.opengl.GLWindow;
 import java.util.ArrayList;
 
-class Game {
+class MyGame {
 
   // Screen state variables
   final int MENU_SCREEN = 0;
@@ -34,7 +34,7 @@ class Game {
   // Muted and paused flags
   boolean muted, paused;
 
-  Game() {
+  MyGame() {
     // Set gameplay variables
     this.lives_count = 3;
     this.current_wave = 1;

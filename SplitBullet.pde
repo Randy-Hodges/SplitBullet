@@ -4,16 +4,20 @@
 // By Randy Hodges, Long Vu, Sean Thomas, Daniel Ross
 
 
-Game GAME;
+MyGame GAME;
 
 void setup() {
     size(1000, 1000, P2D);
 
-    GAME = new Game();
+    GAME = new MyGame();
+    
+    // Comment this out
+    // GAME.screen_state = 2;
 }
 
 void draw() {
-    // GAME.run();
+    // GAME.run()
+    GAME.update();
 }
 
 // INPUT HANDLING
