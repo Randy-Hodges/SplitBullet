@@ -39,8 +39,9 @@ class Orc extends Enemy{
         if (frameCount % decision_frames == 0){
             // get direction of player
             PVector player_dir = player_pos.copy().sub(pos);
-            // Move in cardinal dir towards player
-            if (abs(player_dir.x) > abs(player_dir.y)){
+            // Move in cardinal direction towards player
+            if (abs(player_dir.x) > abs(player_dir.y)){ 
+                // x direction
                 if (player_dir.x < 0){
                     vel.set(-1, 0).mult(speed);
                     scale.x = -orc_scalex;
@@ -50,7 +51,8 @@ class Orc extends Enemy{
                     scale.x = orc_scalex;
                 }
             }
-            else {
+            else { 
+                // y direction
                 if (player_dir.y < 0){
                     vel.set(0, -1).mult(speed);
                 }
@@ -60,6 +62,7 @@ class Orc extends Enemy{
             }
         }
     }
+
 }
 
 class Ogre extends Enemy{

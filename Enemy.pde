@@ -1,6 +1,8 @@
 class Enemy extends Actor{
     int health;
-    int frame_num, max_frames, frame_rate, sprite_time; // frame_rate is num frames/sec, sprite_time is time one frame is shown.
+    int frame_num, max_frames;
+    int frame_rate; // num frames/sec
+    int sprite_time; // time one frame is shown.
     PImage[] frames;
 
     Enemy(float hitbox_radius, PVector pos, PVector scale, int health, int max_frames, int frame_rate){
