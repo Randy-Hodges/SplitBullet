@@ -5,6 +5,11 @@
 
 
 MyGame GAME;
+Game GAME;
+int target_frame_rate = 20;
+// The variables below are for testing purposes and will be removed in final product
+Orc orc1;
+PVector player_pos;
 
 void setup() {
     size(1000, 1000, P2D);
@@ -13,11 +18,23 @@ void setup() {
     
     // Comment this out
     // GAME.screen_state = 2;
+    frameRate(target_frame_rate);
+    GAME = new Game();
+    // Testing
+    orc1 = new Orc(3*width/4, height/4);
+    player_pos = new PVector(width/2, height/2);
 }
 
 void draw() {
     // GAME.run()
     GAME.update();
+    background(#45c8fb);
+    // GAME.run();
+    // Testing
+    fill(0);
+    ellipse(player_pos.x, player_pos.y, 20, 20);
+    orc1.move();
+    orc1.render();
 }
 
 // INPUT HANDLING
