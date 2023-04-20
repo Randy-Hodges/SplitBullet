@@ -1,3 +1,4 @@
+import java.io.*;
 
 class GUI {
 
@@ -83,14 +84,14 @@ class GUI {
     // Draw the black background screen
     pushMatrix();
     background(26);
-    
-    // Draw game objects (player, enemies, projectiles) here
-    
+        
     // Draw game UI (score, lives) here
     textSize(24);
-    
     text("Lives:", 50, 25);
-    text("Rounds Survived:", 300, 25);
+    text("Current Wave:", 300, 25);
+    
+    // Draw playable area
+    
     popMatrix();
   }
   
@@ -115,9 +116,35 @@ class GUI {
      image(victory_image, 0, 0, width, height); 
   }
   
-  void draw_high_score_screen() {
-     background(26); 
-  }
+void draw_high_score_screen() {
+    background(26);
+    
+    // Load high score data from the CSV file
+    String[] lines = loadStrings("highscore.csv");
+    
+    textAlign(LEFT, CENTER);
+    textSize(24);
+    
+    // Display column headers
+    text("Name", width/4, height/4);
+    text("Rounds Survived:", width/2, height/4);
+    
+    // Loop through the CSV lines and display the names and scores
+    for (int i = 0; i < lines.length; i++) {
+      String[] columns = split(lines[i], ',');
+      String name = columns[0].trim();
+      String roundsSurvived = columns[1].trim();
+    
+      // Cap the name at 5 letters
+      if (name.length() > 5) {
+        name = name.substring(0, 5);
+      }
+    
+      float y = height/4 + 30 * (i + 1); // Calculate the y position for the current line
+      text(name, width/4, y);
+      text(roundsSurvived, width/2, y);
+    }
+}
 
   int handle_main_menu_click() {
     // Check if the click is within the "Play" button's area
