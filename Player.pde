@@ -4,7 +4,7 @@ class Player extends Actor{
 
     PVector aim_vector;
     int health;
-    Game GAME;
+    MyGame GAME;
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         // DO NOT UNCOMMENT UNTIL HAT AND BODY HAVE CONSTRUCTORS

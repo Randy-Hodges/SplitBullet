@@ -15,9 +15,9 @@ class Actor {
         this.scale = scale;
         this.rot = rot;
 
-        next_pos = new PVector();
-        next_vel = new PVector();
-        next_accel = new PVector();
+        next_pos = pos.copy();
+        next_vel = vel.copy();
+        next_accel = accel.copy();
 
         collisions = new ArrayList();
     }
@@ -38,19 +38,41 @@ class Actor {
     }
 
     // METHODS
+
+    // Overwrite this method with how your object REACTS to collisions.
+    // ACTING upon a colliding object may be less flexible.
+    void collisionReaction() {    
+        // Your method will likely will look something like this:
+
+        /*
+        for (collision : collisions) {
+            // Reaction
+        } 
+        */
+    }
+
+    // OVERWRITE THIS METHOD with the function that draws your object.
+    void display() {
+        // image(PImage, 0, 0, 1, 1) or
+        // ellipse(0, 0, 1, 1) or
+        // rect(0, 0, 1, 1) or
+        // etc.
+    }
+
+    // Fills "collisions" ArrayList. Adds any GAME.Actor by default. Overwrite 
+    // if you only want certain class types to be considered/added to the array.
+    // RECOMMEND COPYING THIS METHOD and only replacing the block comment in the "if" statement.
     void calcCollision() {
         collisions.clear();
 
         for (Actor other : GAME.actors) {
-            if ((other != this) && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
+            if ((other != this) /* && (other instanceof ClassType) */ && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
                 collisions.add(other);
             }
         }
     }
 
-    void collisionReaction() {
-        // overwrite this method with your object's reaction to collisions
-    }
+    // The following methods should only be overwritten in special circumstances.
 
     void updateVectors() {
         next_vel.add(next_accel);
@@ -85,12 +107,5 @@ class Actor {
         display();
 
         popMatrix();
-    }
-
-    void display() {
-        // image(PImage, 0, 0, 1, 1) or
-        // ellipse(0, 0, 1, 1) or
-        // rect(0, 0, 1, 1) or
-        // etc.
     }
 }
