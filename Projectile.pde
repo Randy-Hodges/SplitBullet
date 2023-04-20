@@ -31,7 +31,7 @@ class Projectile extends Actor {
 
         for (Actor other : GAME.actors) {
             // Projectiles only care about reacting to Enemies (despawning)
-            if (other instanceof Enemy) && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
+            if ((other instanceof Enemy) && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
                 collisions.add(other);
             }
         }
