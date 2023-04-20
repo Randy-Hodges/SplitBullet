@@ -39,10 +39,11 @@ class Player extends Actor{
 
     void fire()
     {
-        if(GAME.key_inputs.contains(int(' ')));
-        {
-            //add new projectile at player's location moving in the direction that the player is facing
-        }
+        
+            //add new projectile at player's location moving in the direction of aim_vector
+
+            GAME.actors.add(new Projectile(20, pos, aim_vector.mult(5), new PVector(0, 0), new PVector(1, 1), 0));
+        
     }
 
     void collisionReaction() {
@@ -60,6 +61,10 @@ class Player extends Actor{
             {
                 //apply powerup effects
                 collisions.add(other);
+                if(other instance of HealthPowerup)
+                    health += 5;
+                
+                
             }
         }
     }
