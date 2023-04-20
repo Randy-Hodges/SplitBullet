@@ -35,6 +35,19 @@ class Timer {
         elapsed_time = millis() - init_time;
     }
 
+    // Use these methods to manipulate the timer
+    void toggle() {
+        active = !active;
+    }
+
+    void resume() {
+        active = true;
+    }
+
+    void pause() {
+        active = false;
+    }
+
     void reset() {
         active_time = paused_time = 0;
         reset_time = millis();
@@ -44,7 +57,7 @@ class Timer {
         }
     }
 
-    // Use this methods to access the Timer's times
+    // Use these methods to access the Timer's time values
     int getActiveTime() {
         update();
         return active_time;
