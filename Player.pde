@@ -1,16 +1,23 @@
 class Player extends Actor{
     Hat h;
     Body b;
+    boolean invincible;
 
     PVector aim_vector;
     int health;
     MyGame GAME;
+
+    Timer fireTimer;
+    Timer invincibilityTimer;
+
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         // DO NOT UNCOMMENT UNTIL HAT AND BODY HAVE CONSTRUCTORS
         // h = new Hat( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         // b = new Body( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         this.health = health;
+        fireTimer = new Timer();
+        invincibilityTimer = new Timer(false);
     }
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot){
         this(hitbox_radius,  pos,  vel,  accel,  scale,  rot, 10);
@@ -42,18 +49,23 @@ class Player extends Actor{
         
             //add new projectile at player's location moving in the direction of aim_vector
 
-            GAME.actors.add(new Projectile(20, pos, aim_vector.mult(5), new PVector(0, 0), new PVector(1, 1), 0));
-        
+            if(fireTimer.getActiveTime() >=  500)
+            {
+                GAME.actors.add(new Projectile(20, pos, aim_vector.mult(5), new PVector(0, 0), new PVector(1, 1), 0));
+                fireTimer.reset();
+            }
     }
 
     void collisionReaction() {
         // overwrite this method with your object's reaction to collisions
         for (Actor other : GAME.actors) {
             boolean isColliding = pos.dist(other.pos) <= hitbox_radius + other.hitbox_radius;
-            if (other instanceof Projectile && isColliding/* change to Enemy once class is created*/) {
+            if (other instanceof Enemy && isColliding/* change to Enemy once class is created*/) {
 
                 collisions.add(other);
-                health--;
+
+                if(!invincible)
+                    health--;
 
             }
 
@@ -62,9 +74,12 @@ class Player extends Actor{
                 //apply powerup effects
                 collisions.add(other);
                 if(other instance of HealthPowerup)
-                    health += 5;
-                
-                
+                    health++;
+                else if(other instance of Superstar)
+                {
+                    invincible = true;
+                    invincibilityTimer.
+                }
             }
         }
     }
@@ -72,6 +87,17 @@ class Player extends Actor{
     void simulate() {
         checkInputs();
         super.simulate();
+        fireTimer.update();
+        invincibilityTimer.update();
     }
 
+    void toggleInvincibility()
+    {
+        if(invincible && invincibilityTimer.getActiveTime() >= 8000)
+        {
+            invincible = false;
+            invincibilityTimer.pause();
+            invincibilityTimer.reset();
+        }
+    }
 }
