@@ -7,6 +7,9 @@ class MyGame {
   final int MENU_SCREEN = 0;
   final int GAME_SCREEN = 1;
   final int PAUSE_SCREEN = 2;
+  final int LOSE_SCREEN = 3;
+  final int VICTORY_SCREEN = 4;
+  final int HIGH_SCORE_SCREEN = 5;
   int screen_state;
 
   // Game variables
@@ -43,11 +46,115 @@ class MyGame {
     this.screen_state = MENU_SCREEN;
 
     // Initialize GUI object
-    this.game_gui = new GUI(lives_count, current_wave, screen_state);
+    this.game_gui = new GUI(lives_count, current_wave);
+    
+    // Initialize the user inputted key and mouse array lists
+    this.keys_pressed = new ArrayList<Integer>();
+    this.keys_released = new ArrayList<Integer>();
+    this.key_inputs = new ArrayList<Integer>();
+    
+    this.mouse_pressed = new ArrayList<Integer>();
+    this.mouse_released = new ArrayList<Integer>();
+    this.mouse_inputs = new ArrayList<Integer>();
+    
+    this.actors = new ArrayList<Actor>();
 
     window_properties = (GLWindow) surface.getNative();
+    print("Finished Game initialization... \n");
   }
 
+
+  void update() {
+    //print(key_inputs);
+    //print("\n");
+    // Update game state
+    switch (screen_state) {
+      case MENU_SCREEN:
+        // Handle menu logic
+        //print("got to MENU_SCREEN \n");
+        game_gui.draw_main_menu();
+        
+        if (mouse_inputs.contains(Integer.valueOf(LEFT))) {
+          change_screen_state(game_gui.handle_main_menu_click()); 
+        }
+        break;
+        
+      case GAME_SCREEN:
+        // Handle game logic
+        // Render, simulate, and move Actors
+        //print("got to GAME_SCREEN \n");
+        game_gui.draw_game_screen();
+        //render();
+        //simulate();
+        //move();
+        // Check if wave is over, then begin the next spawn_wave(current_wave)
+        
+        // Comment this out 
+        if (key_inputs.contains((int) '1')) {
+          change_screen_state(LOSE_SCREEN);
+        } else if (key_inputs.contains((int) '2')) {
+          change_screen_state(VICTORY_SCREEN);
+        } else if (key_inputs.contains((int) 'p')) {
+          change_screen_state(PAUSE_SCREEN);    
+        }
+          
+
+
+        break;
+        
+      case PAUSE_SCREEN:
+        // Handle pause logic
+        print("got to PAUSE_SCREEN \n");
+        game_gui.draw_pause_screen();
+        
+        // Comment this out 
+        if (key_inputs.contains((int) '1')) {
+          change_screen_state(LOSE_SCREEN);
+        } else if (key_inputs.contains((int) '2')) {
+          change_screen_state(VICTORY_SCREEN);
+        } else if (key_inputs.contains((int) '3')) {
+          change_screen_state(PAUSE_SCREEN);    
+        }
+
+        break;
+        
+      case LOSE_SCREEN:
+        game_gui.draw_lose_screen();
+        
+        // Comment this out 
+        if (key_inputs.contains((int) '1')) {
+          change_screen_state(LOSE_SCREEN);
+        } else if (key_inputs.contains((int) '2')) {
+          change_screen_state(VICTORY_SCREEN);
+        } else if (key_inputs.contains((int) '3')) {
+          change_screen_state(PAUSE_SCREEN);    
+        }
+
+        break;
+        
+      case VICTORY_SCREEN:
+        game_gui.draw_victory_screen();
+        
+        // Comment this out 
+        if (key_inputs.contains((int) '1')) {
+          change_screen_state(LOSE_SCREEN);
+        } else if (key_inputs.contains((int) '2')) {
+          change_screen_state(VICTORY_SCREEN);
+        } else if (key_inputs.contains((int) '3')) {
+          change_screen_state(PAUSE_SCREEN);    
+        }
+
+        break; 
+     
+      case HIGH_SCORE_SCREEN:
+        print("got to HIGH_SCORE_SCREEN \n");
+        game_gui.draw_high_score_screen();
+    }
+      // Clear input buffers
+      clearInputBuffers();
+      //print("end of update()");
+  }
+  
   void clearInputBuffers() {
     keys_pressed.clear();
     keys_released.clear();
@@ -73,46 +180,6 @@ class MyGame {
     }
   }
 
-/* See update() method
-  void run() {
-    render();
-
-    if (!paused) {
-      simulate();
-      move();
-    } else {
-      // draw pause UI
-    }
-
-    clearInputBuffers();
-  }
-*/
-
-  void update() {
-    // Update game state
-    switch (screen_state) {
-      case MENU_SCREEN:
-        // Handle menu logic
-        break;
-        
-      case GAME_SCREEN:
-        // Handle game logic
-        // Render, simulate, and move Actors
-        render();
-        simulate();
-        move();
-        // Check if wave is over, then begin the next spawn_wave(current_wave)
-        break;
-      case PAUSE_SCREEN:
-        // Handle pause logic
-        break;
-    }
-      // Refresh the screen with the GUI object
-      game_gui.refresh_screen();
-      
-      // Clear input buffers
-      clearInputBuffers();
-  }
 
   void spawn_wave(int wave_num) {
     // Spawn enemies based on the current wave
