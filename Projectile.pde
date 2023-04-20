@@ -1,7 +1,7 @@
 class Projectile extends Actor{
     boolean hasCollided;
     PImage displayImage;
-
+    Game GAME;
     Projectile(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot)
     {
         super( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
