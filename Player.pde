@@ -28,33 +28,32 @@ class Player extends Actor{
 
         if (GAME.mouse_inputs.contains(LEFT)) {
             fire();
-            println("fire");
+            // println("fire");
         }
 
-        if (GAME.key_inputs.contains(int('W'))) {
-            next_accel.add(0, -1);
+        if (GAME.key_inputs.contains( (int)'W') ) {
+            next_accel.add(0, -3);
         }
-        if (GAME.key_inputs.contains(int('A'))) {
-            next_accel.add(-1, 0);
+        if (GAME.key_inputs.contains( (int)'A') ) {
+            next_accel.add(-3, 0);
         }
-        if (GAME.key_inputs.contains(int('S'))) {
-            next_accel.add(0, 1);
+        if (GAME.key_inputs.contains( (int)'S') ) {
+            next_accel.add(0, 3);
         }
-        if (GAME.key_inputs.contains(int('D'))) {
-            next_accel.add(1, 0);
+        if (GAME.key_inputs.contains( (int)'D') ) {
+            next_accel.add(3, 0);
         }
     }
 
     void fire()
     {
-        
-            //add new projectile at player's location moving in the direction of aim_vector
-            GAME.actors.add(new Projectile(pos.copy(), aim_vector.copy().setMag(5)));
-            if(fireTimer.getActiveTime() >=  500)
-            {
-                GAME.actors.add(new Projectile(pos.copy(), aim_vector.copy().setMag(5)));
-                fireTimer.reset();
-            }
+        //add new projectile at player's location moving in the direction of aim_vector
+        GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
+        if(fireTimer.getActiveTime() >=  500)
+        {
+            GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
+            fireTimer.reset();
+        }
     }
 
     void collisionReaction() {
@@ -86,13 +85,17 @@ class Player extends Actor{
     }
 
     void simulate() {
+        next_vel.setMag(vel.mag() * 0.75);
         checkInputs();
         super.simulate();
         fireTimer.update();
         invincibilityTimer.update();
     }
     
-    
+    void move() {
+        super.move();
+        vel.limit(10);
+    }
     
     void toggleInvincibility()
     {
