@@ -67,13 +67,15 @@ class MyGame {
 
 
   void update() {
-    //print(key_inputs);
-    //print("\n");
     // Update game state
     switch (screen_state) {
       case MENU_SCREEN:
         // Handle menu logic
         //print("got to MENU_SCREEN \n");
+
+        window_properties.confinePointer(false);
+        window_properties.setPointerVisible(true);
+
         game_gui.draw_main_menu();
         
         if (mouse_inputs.contains(LEFT)) {
@@ -85,6 +87,10 @@ class MyGame {
         // Handle game logic
         // Render, simulate, and move Actors
         //print("got to GAME_SCREEN \n");
+        window_properties.confinePointer(true);
+        window_properties.setPointerVisible(false);
+        window_properties.warpPointer(width / 2, height / 2);
+
         game_gui.draw_game_screen();
         render();
         simulate();
@@ -106,7 +112,11 @@ class MyGame {
         
       case PAUSE_SCREEN:
         // Handle pause logic
-        print("got to PAUSE_SCREEN \n");
+        // print("got to PAUSE_SCREEN \n");
+
+        window_properties.confinePointer(false);
+        window_properties.setPointerVisible(true);
+
         game_gui.draw_pause_screen();
         
         // Comment this out 
@@ -121,6 +131,9 @@ class MyGame {
         break;
         
       case LOSE_SCREEN:
+        window_properties.confinePointer(false);
+        window_properties.setPointerVisible(true);
+
         game_gui.draw_lose_screen();
         
         // Comment this out 
@@ -135,6 +148,9 @@ class MyGame {
         break;
         
       case VICTORY_SCREEN:
+        window_properties.confinePointer(false);
+        window_properties.setPointerVisible(true);
+
         game_gui.draw_victory_screen();
         
         // Comment this out 
