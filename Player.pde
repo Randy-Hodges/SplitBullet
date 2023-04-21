@@ -5,7 +5,6 @@ class Player extends Actor{
 
     PVector aim_vector;
     int health;
-    MyGame GAME;
 
     Timer fireTimer;
     Timer invincibilityTimer;
@@ -51,7 +50,7 @@ class Player extends Actor{
 
             if(fireTimer.getActiveTime() >=  500)
             {
-                GAME.actors.add(new Projectile(20, pos, aim_vector.mult(5), new PVector(0, 0), new PVector(1, 1), 0));
+                GAME.actors.add(new Projectile(pos.copy(), aim_vector.copy().setMag(5)));
                 fireTimer.reset();
             }
     }
@@ -73,9 +72,9 @@ class Player extends Actor{
             {
                 //apply powerup effects
                 collisions.add(other);
-                if(other instance of HealthPowerup)
+                if(other instanceof HealthPowerup)
                     health++;
-                else if(other instance of Superstar)
+                else if(other instanceof Superstar)
                 {
                     invincible = true;
                     invincibilityTimer.resume();
