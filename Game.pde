@@ -76,7 +76,7 @@ class MyGame {
         //print("got to MENU_SCREEN \n");
         game_gui.draw_main_menu();
         
-        if (mouse_inputs.contains(Integer.valueOf(LEFT))) {
+        if (mouse_inputs.contains(LEFT)) {
           change_screen_state(game_gui.handle_main_menu_click()); 
         }
         break;
@@ -86,9 +86,9 @@ class MyGame {
         // Render, simulate, and move Actors
         //print("got to GAME_SCREEN \n");
         game_gui.draw_game_screen();
-        //render();
-        //simulate();
-        //move();
+        render();
+        simulate();
+        move();
         // Check if wave is over, then begin the next spawn_wave(current_wave)
         
         // Comment this out 
@@ -96,7 +96,7 @@ class MyGame {
           change_screen_state(LOSE_SCREEN);
         } else if (key_inputs.contains((int) '2')) {
           change_screen_state(VICTORY_SCREEN);
-        } else if (key_inputs.contains((int) 'p')) {
+        } else if (key_inputs.contains((int) 'P')) {
           change_screen_state(PAUSE_SCREEN);    
         }
           
