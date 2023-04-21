@@ -147,8 +147,13 @@ class MyGame {
         break; 
      
       case HIGH_SCORE_SCREEN:
-        print("got to HIGH_SCORE_SCREEN \n");
+        //print("got to HIGH_SCORE_SCREEN \n");
         game_gui.draw_high_score_screen();
+        
+        // Comment this out
+        if (key_inputs.contains((int) '1')) {
+          change_screen_state(MENU_SCREEN); 
+        }
     }
       // Clear input buffers
       clearInputBuffers();

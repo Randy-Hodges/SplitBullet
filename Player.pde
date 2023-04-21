@@ -60,7 +60,7 @@ class Player extends Actor{
         // overwrite this method with your object's reaction to collisions
         for (Actor other : GAME.actors) {
             boolean isColliding = pos.dist(other.pos) <= hitbox_radius + other.hitbox_radius;
-            if (other instanceof Enemy && isColliding/* change to Enemy once class is created*/) {
+            if (other instanceof Enemy && isColliding) {
 
                 collisions.add(other);
 
@@ -78,7 +78,7 @@ class Player extends Actor{
                 else if(other instance of Superstar)
                 {
                     invincible = true;
-                    invincibilityTimer.
+                    invincibilityTimer.resume();
                 }
             }
         }
