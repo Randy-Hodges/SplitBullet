@@ -9,17 +9,22 @@ class Timer {
     int paused_time; // time since last reset when Timer was paused
 
     boolean active; // true if not paused
-    boolean reset_forces_active; // resetting forces timer to be active if true
+
+    // Timer's state when initialized OR when reset IF reset_to_default is true.
+    boolean default_state;
+
+    // true if Timer's active state should be set to default_active_state when the Timer is reset.
+    boolean reset_uses_default;
 
     // CONSTRUCTORS
-    Timer(boolean active, boolean reset_forces_active) {
+    Timer(boolean default_state, boolean reset_uses_default) {
         this.init_time = millis();
         this.reset_time = init_time;
-        this.active = active; 
-        this.reset_forces_active = reset_forces_active;
+        this.active = this.default_state = default_state; 
+        this.reset_uses_default = reset_uses_default;
     }
-    Timer(boolean active) {
-        this(active, false);
+    Timer(boolean default_state) {
+        this(default_state, false);
     }
     Timer() {
         this(true, false);
@@ -36,6 +41,19 @@ class Timer {
     }
 
     // Use these methods to manipulate the timer
+    void setDefaultState(boolean default_state) {
+        this.default_state = default_state;
+    }
+
+    void setResetBehavior(boolean reset_uses_default) {
+        this.reset_uses_default = reset_uses_default;
+    }
+
+    void setResetDefaults(boolean default_state, boolean reset_uses_default) {
+        setDefaultState(default_state);
+        setResetBehavior(reset_uses_default);
+    }
+
     void toggle() {
         active = !active;
     }
@@ -52,9 +70,18 @@ class Timer {
         active_time = paused_time = 0;
         reset_time = millis();
 
-        if (reset_forces_active) {
-            active = true;
+        if (reset_uses_default) {
+            active = default_state;
         }
+    }
+
+    // Alternate reset method if you want to manually specify the Timer's
+    // active state; bypasses default_state and reset_uses_default
+    void reset(boolean new_active_state) {
+        active_time = paused_time = 0;
+        reset_time = millis();
+
+        active = new_active_state;
     }
 
     // Use these methods to access the Timer's time values
