@@ -12,11 +12,12 @@ class Player extends Actor{
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         // DO NOT UNCOMMENT UNTIL HAT AND BODY HAVE CONSTRUCTORS
-        // h = new Hat( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
-        // b = new Body( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
+        h = new Hat( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
+        b = new Body( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
         this.health = health;
         fireTimer = new Timer();
         invincibilityTimer = new Timer(false);
+        aim_vector = new PVector(0, 0);
     }
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot){
         this(hitbox_radius,  pos,  vel,  accel,  scale,  rot, 10);
@@ -27,6 +28,7 @@ class Player extends Actor{
 
         if (GAME.mouse_inputs.contains(LEFT)) {
             fire();
+            println("fire");
         }
 
         if (GAME.key_inputs.contains(int('W'))) {
@@ -47,7 +49,7 @@ class Player extends Actor{
     {
         
             //add new projectile at player's location moving in the direction of aim_vector
-
+            GAME.actors.add(new Projectile(pos.copy(), aim_vector.copy().setMag(5)));
             if(fireTimer.getActiveTime() >=  500)
             {
                 GAME.actors.add(new Projectile(pos.copy(), aim_vector.copy().setMag(5)));
@@ -89,7 +91,9 @@ class Player extends Actor{
         fireTimer.update();
         invincibilityTimer.update();
     }
-
+    
+    
+    
     void toggleInvincibility()
     {
         if(invincible && invincibilityTimer.getActiveTime() >= 8000)
@@ -98,5 +102,13 @@ class Player extends Actor{
             invincibilityTimer.pause();
             invincibilityTimer.reset();
         }
+    }
+    
+    void display(){
+      b.display();
+      pushMatrix();
+      translate(-0.17 * hitbox_radius, -0.50 * hitbox_radius);
+      h.display();
+      popMatrix();
     }
 }

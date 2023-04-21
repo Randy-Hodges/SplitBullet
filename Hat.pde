@@ -12,12 +12,14 @@ class Hat extends Actor{
     void animate()
     {
         frameNum++;
-        framefilename = "frame_" + nf(frameNum % 30, 2) + "_delay-0.03s.gif";
+        framefilename = "media/sprites/player/hat_frames/frame_" + nf(frameNum % 30, 2) + "_delay-0.03s.gif";
         frame = loadImage(framefilename);
     }
 
     void display()
     {
-        image(frame, pos.x, pos.y, 30, 30);
+        animate();
+        imageMode(CENTER);
+        image(frame, 0, 0,  hitbox_radius, 0.5* hitbox_radius);
     }
 }

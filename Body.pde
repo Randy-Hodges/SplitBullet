@@ -14,15 +14,17 @@ class Body extends Actor
     {
         frameNum++;
         if(vel.mag() == 0)
-            framefilename = "idle_" + nf(frameNum % 17, 2) + "_delay-0.03s.gif";
+            framefilename = "media/sprites/player/body_idle/idle_" + nf(frameNum % 17, 2) + "_delay-0.03s.gif";
         else
-            framefilename = "run_" + nf(frameNum % 17, 2) + "_delay-0.03s.gif";
+            framefilename = "media/sprites/player/body_running/run_" + nf(frameNum % 17, 2) + "_delay-0.03s.gif";
 
         frame = loadImage(framefilename);
     }
 
     void display()
     {
-        image(frame, pos.x, pos.y, 30, 30);
+        animate();
+        imageMode(CENTER);
+        image(frame, 0, 0, 2 * hitbox_radius, 1.656* hitbox_radius);
     }
 }
