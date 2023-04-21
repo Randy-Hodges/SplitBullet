@@ -32,7 +32,7 @@ class MyGame {
   ArrayList<Integer> key_inputs, mouse_inputs;
 
   // List of actors
-  ArrayList<Actor> actors;
+  ArrayList<Actor> actors, actor_spawns, actor_despawns;
 
   // Muted and paused flags
   boolean muted, paused;
@@ -58,6 +58,8 @@ class MyGame {
     this.mouse_inputs = new ArrayList<Integer>();
     
     this.actors = new ArrayList<Actor>();
+    this.actor_spawns = new ArrayList<Actor>();
+    this.actor_despawns = new ArrayList<Actor>();
 
     window_properties = (GLWindow) surface.getNative();
     print("Finished Game initialization... \n");
@@ -167,10 +169,27 @@ class MyGame {
     mouse_released.clear();
   }
 
+  void spawn_actors() {
+    actors.addAll(actor_spawns);
+    actor_spawns.clear();
+  }
+
+  void despawn_actors() {
+    actors.removeAll(actor_despawns);
+    actor_despawns.clear();
+  }
+
+  void update_actors() {
+    spawn_actors();
+    despawn_actors();
+  }
+
   void simulate() {
     for (Actor actor : actors) {
       actor.simulate();
     }
+    
+    update_actors();
   }
 
   void move() {
