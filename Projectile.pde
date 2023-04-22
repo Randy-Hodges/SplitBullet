@@ -2,7 +2,7 @@
 
 class Projectile extends Actor {
     // FIELDS
-    PImage displayImage; // sprite
+    Sprite displayImage; // sprite
     int caliber; // damage that will be dealt
 
     // CONSTRUCTORS
@@ -10,7 +10,7 @@ class Projectile extends Actor {
     Projectile(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int caliber) {
         super(hitbox_radius, pos, vel, accel, scale, rot);
         this.caliber = caliber;
-        displayImage = loadImage("media/sprites/projectile.png");
+        displayImage = new Sprite("media/sprites/projectile", 0, false);
     }
     // Use one of below constructors
     // For class Player: Use this call to fire projectiles:
@@ -50,6 +50,6 @@ class Projectile extends Actor {
     }
 
     void display() {
-        image(displayImage, 0, 0, (2 * hitbox_radius), (2 * hitbox_radius));
+        image(displayImage.getFrame(), 0, 0, (2 * hitbox_radius), (2 * hitbox_radius));
     }
 }
