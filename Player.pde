@@ -3,25 +3,29 @@ class Player extends Actor {
         Sprite sprite;
         PVector pos, scale;
         float rot;
-
-        Hat(Sprite sprite, PVector pos, PVector scale, float rot) {
+        float hitbox_radius;
+        Timer t;
+        Hat(Sprite sprite, PVector pos, PVector scale, float rot, float hitbox_radius) {
             this.sprite = sprite;
             this.pos = pos;
             this.scale = scale;
             this.rot = rot;
+            this.hitbox_radius = hitbox_radius;
+            t = new Timer(true, true, true, true, 5000);
         }
-        Hat(PVector pos, PVector scale) {
-            this(GAME.assets.getSprite("media/sprites/player/hat_frames"), pos, scale, 0);
+        Hat(PVector pos, PVector scale, float hitbox_radius) {
+            this(GAME.assets.getSprite("media/sprites/player/hat_frames"), pos, scale, 0,  hitbox_radius);
         }
 
         void render() {
             pushMatrix();
-
+            rot = cos(t.getActiveTime() / (t.loop_time/ TWO_PI));
             translate(pos.x, pos.y);
-            scale(scale.x, scale.y);
-            rotate(rot);
+            //scale(scale.x, scale.y);
+            scale(hitbox_radius);
+            rotate(PI/16 * rot);
 
-            image(sprite.getFrame(), 0, 0);
+            image(sprite.getFrame(), 0, 0, 1, 0.5);
 
             popMatrix();
         }
@@ -29,15 +33,16 @@ class Player extends Actor {
     class Body {
         Sprite idle, run, draw_sprite;
         PVector vel, scale;
-
-        Body(Sprite idle, Sprite run, PVector vel) {
+        float hitbox_radius;
+        Body(Sprite idle, Sprite run, PVector vel, float hitbox_radius) {
            this.idle = idle;
            this.run = run;
            this.vel = vel;
            this.scale = new PVector(1, 1);
+           this.hitbox_radius = hitbox_radius;
         }
-        Body(PVector vel) {
-            this(GAME.assets.getSprite("media/sprites/player/body_idle"), GAME.assets.getSprite("media/sprites/player/body_running"), vel);
+        Body(PVector vel, float hitbox_radius) {
+            this(GAME.assets.getSprite("media/sprites/player/body_idle"), GAME.assets.getSprite("media/sprites/player/body_running"), vel, hitbox_radius);
         }
 
         void updateSprite() {
@@ -47,23 +52,30 @@ class Player extends Actor {
                 draw_sprite = idle;
             }
 
-            if (vel.x >= 0) {
-                scale.x = 1;
-            } else {
-                scale.x = -1;
-            }
+            //if (vel.x >= 0) {
+            //    scale.x = 1;
+            //} else {
+            //    scale.x = -1;
+            //}
+            
+            
         }
 
         void render() {
             updateSprite();
 
-            // pushMatrix();
+            pushMatrix();
+            
+            if(vel.x >= 0)
+              scale(2 * hitbox_radius);
+            else 
+              scale(-2 * hitbox_radius, 2 * hitbox_radius);
+              
+            
+            
+            image(draw_sprite.getFrame() , 0, 0, 1, 0.828);
 
-            scale(scale.x, scale.y);
-
-            image(draw_sprite.getFrame(), 0, 0);
-
-            // popMatrix();
+            popMatrix();
         }
     }
 
@@ -80,15 +92,15 @@ class Player extends Actor {
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
 
-        h = new Hat(new PVector(), scale);
-        b = new Body(vel);
+        h = new Hat(new PVector(0, -0.60 * hitbox_radius), scale, hitbox_radius);
+        b = new Body(vel, hitbox_radius);
 
         this.health = health;
 
         fireTimer = new Timer();
         invincibilityTimer = new Timer(false);
 
-        aim_vector = new PVector(0, 0);
+        aim_vector = new PVector(1, 0);
     }
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot){
         this(hitbox_radius,  pos,  vel,  accel,  scale,  rot, 10);
@@ -118,8 +130,8 @@ class Player extends Actor {
     void fire()
     {
         //add new projectile at player's location moving in the direction of aim_vector
-        GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
-        if(fireTimer.getActiveTime() >=  500)
+        //GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
+        if(fireTimer.getActiveTime() >= 300)
         {
             GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
             fireTimer.reset();
@@ -145,6 +157,7 @@ class Player extends Actor {
                 //apply powerup effects
                 if (collision instanceof HealthPowerup)
                     health++;
+                    
                 else if (collision instanceof Superstar)
                 {
                     invincible = true;
@@ -178,12 +191,14 @@ class Player extends Actor {
     }
     
     void display(){
-        ellipse(0, 0, 10, 10);
+        stroke(#FF0000);
+        line(0, 0, 50*aim_vector.x, 50*aim_vector.y);
         imageMode(CENTER);
         b.render();
         // pushMatrix();
         // translate(-0.17 * hitbox_radius, -0.50 * hitbox_radius);
-        // h.render();
+        h.render();
         // popMatrix();
+        
     }
 }
