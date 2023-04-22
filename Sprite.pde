@@ -1,5 +1,8 @@
 // Author: Daniel Ross
 
+import java.util.Scanner;
+import java.util.Collections;
+
 class Sprite {
     // FIELDS
     String src_dir, filename, filetype;
@@ -44,8 +47,64 @@ class Sprite {
     Sprite(String src_dir, String filename, int filename_framenum_leadingzeroes, String filetype, int anim_length_in_ms) {
         this(src_dir, filename, filename_framenum_leadingzeroes, filetype, anim_length_in_ms, true, 0);
     }
+    Sprite(String src_dir, int anim_length_in_ms, boolean loops) {
+        src_dir.trim();
+
+        if (!src_dir.endsWith("/")) {
+            src_dir += "/";
+        }
+
+        this.src_dir = src_dir;
+        this.anim_length = anim_length_in_ms;
+        this.loop = loops;
+
+        fillFields();
+        createArray();
+
+        this.timer = new Timer(true, true, true, loops, anim_length_in_ms);
+    }
 
     // METHODS
+    void fillFields() {
+        File[] files = new File(sketchPath("") + src_dir).listFiles();
+
+        ArrayList<String> file_names = new ArrayList<String>();
+        for (File file : files) {
+            if (file.isFile()) {
+                file_names.add(file.getName());
+            }
+        }
+        
+        ArrayList<String> trimmed_file_names = new ArrayList<String>();
+        ArrayList<String> file_types = new ArrayList<String>();
+        ArrayList<String> file_nums = new ArrayList<String>();
+
+        for (String file_name : file_names) {
+            String trimmed_name = file_name.substring(0, file_name.lastIndexOf('.')).split("\\d(.*)")[0];
+            String file_type = file_name.substring(file_name.lastIndexOf('.'), file_name.length());
+            String file_num = "";
+            for (int i = 0; i < file_name.length(); i++) {
+                if (Character.isDigit(file_name.charAt(i))) {
+                    file_num += file_name.charAt(i);
+                } else if (file_num.length() > 0) {
+                    break;
+                }
+            }
+
+            trimmed_file_names.add(trimmed_name);
+            file_types.add(file_type);
+            file_nums.add(file_num);
+        }
+
+        Collections.sort(file_nums);
+        this.first_frame = Integer.parseInt(file_nums.get(0));
+        this.num_frames = file_nums.size();
+        this.filenum_pad = file_nums.get(0).length();
+
+        this.filename = trimmed_file_names.get(0);
+        this.filetype = file_types.get(0);
+    }
+
     int calcNumFrames() {
         num_frames = 0;
 
@@ -62,8 +121,6 @@ class Sprite {
     }
 
     PImage[] createArray() {
-        calcNumFrames();
-
         image_buffer = new PImage[num_frames];
 
         for (int i = 0; i < num_frames; i++) {
