@@ -10,7 +10,7 @@ class Projectile extends Actor {
     Projectile(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int caliber) {
         super(hitbox_radius, pos, vel, accel, scale, rot);
         this.caliber = caliber;
-        displayImage = new Sprite("media/sprites/projectile", 0, false);
+        displayImage = GAME.assets.getSprite("media/sprites/projectile");
     }
     // Use one of below constructors
     // For class Player: Use this call to fire projectiles:
