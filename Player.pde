@@ -1,4 +1,72 @@
-class Player extends Actor{
+class Player extends Actor {
+    class Hat {
+        Sprite sprite;
+        PVector pos, scale;
+        float rot;
+
+        Hat(Sprite sprite, PVector pos, PVector scale, float rot) {
+            this.sprite = sprite;
+            this.pos = pos;
+            this.scale = scale;
+            this.rot = rot;
+        }
+        Hat(PVector pos, PVector scale) {
+            this(GAME.assets.getSprite("media/sprites/player/hat_frames"), pos, scale, 0);
+        }
+
+        void render() {
+            pushMatrix();
+
+            translate(pos.x, pos.y);
+            scale(scale.x, scale.y);
+            rotate(rot);
+
+            image(sprite.getFrame(), 0, 0);
+
+            popMatrix();
+        }
+    }
+    class Body {
+        Sprite idle, run, draw_sprite;
+        PVector vel, scale;
+
+        Body(Sprite idle, Sprite run, PVector vel) {
+           this.idle = idle;
+           this.run = run;
+           this.vel = vel;
+           this.scale = new PVector(1, 1);
+        }
+        Body(PVector vel) {
+            this(GAME.assets.getSprite("media/sprites/player/body_idle"), GAME.assets.getSprite("media/sprites/player/body_running"), vel);
+        }
+
+        void updateSprite() {
+            if (vel.mag() > 0.5) {
+                draw_sprite = run;
+            } else {
+                draw_sprite = idle;
+            }
+
+            if (vel.x >= 0) {
+                scale.x = 1;
+            } else {
+                scale.x = -1;
+            }
+        }
+
+        void render() {
+            updateSprite();
+
+            // pushMatrix();
+
+            scale(scale.x, scale.y);
+
+            image(draw_sprite.getFrame(), 0, 0);
+
+            // popMatrix();
+        }
+    }
+
     Hat h;
     Body b;
     boolean invincible;
@@ -11,12 +79,15 @@ class Player extends Actor{
 
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
-        // DO NOT UNCOMMENT UNTIL HAT AND BODY HAVE CONSTRUCTORS
-        h = new Hat( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
-        b = new Body( hitbox_radius,  pos,  vel,  accel,  scale,  rot);
+
+        h = new Hat(new PVector(), scale);
+        b = new Body(vel);
+
         this.health = health;
+
         fireTimer = new Timer();
         invincibilityTimer = new Timer(false);
+
         aim_vector = new PVector(0, 0);
     }
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot){
@@ -28,7 +99,6 @@ class Player extends Actor{
 
         if (GAME.mouse_inputs.contains(LEFT)) {
             fire();
-            // println("fire");
         }
 
         if (GAME.key_inputs.contains( (int)'W') ) {
@@ -55,32 +125,27 @@ class Player extends Actor{
             fireTimer.reset();
         }
     }
+
     void calcCollision() {
         collisions.clear();
 
         for (Actor other : GAME.actors) {
-            if ((other instanceof ClassType) && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
+            if (((other instanceof Enemy) || (other instanceof Powerup)) && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
                 collisions.add(other);
             }
         }
     }
+
     void collisionReaction() {
-        // overwrite this method with your object's reaction to collisions
-       
-        for (collision : collisions) {
+        for (Actor collision : collisions) {
             if (collision instanceof Enemy) {
                 if(!invincible)
                     health--;
-
-            }
-        } 
-            
-            else if(collision instanceof Powerup)
-            {
+            } else if (collision instanceof Powerup) {
                 //apply powerup effects
-                if(collision instanceof HealthPowerup)
+                if (collision instanceof HealthPowerup)
                     health++;
-                else if(collision instanceof Superstar)
+                else if (collision instanceof Superstar)
                 {
                     invincible = true;
                     invincibilityTimer.resume();
@@ -113,10 +178,12 @@ class Player extends Actor{
     }
     
     void display(){
-      b.display();
-      pushMatrix();
-      translate(-0.17 * hitbox_radius, -0.50 * hitbox_radius);
-      h.display();
-      popMatrix();
+        ellipse(0, 0, 10, 10);
+        imageMode(CENTER);
+        b.render();
+        // pushMatrix();
+        // translate(-0.17 * hitbox_radius, -0.50 * hitbox_radius);
+        // h.render();
+        // popMatrix();
     }
 }
