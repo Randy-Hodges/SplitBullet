@@ -5,7 +5,7 @@ class Sprite {
     String src_dir, filename, filetype;
     int filenum_pad, first_frame, num_frames, anim_length;
 
-    Timer time;
+    Timer timer;
 
     PImage[] image_buffer;
     boolean loop;
@@ -33,8 +33,9 @@ class Sprite {
         this.anim_length = anim_length_in_ms;
         this.loop = loops;
 
-        this.time = new Timer();
+        this.timer = new Timer(true, true, true, loops, anim_length_in_ms);
 
+        calcNumFrames();
         createArray();
     }
     Sprite(String src_dir, String filename, int filename_framenum_leadingzeroes, String filetype, int anim_length_in_ms, boolean loops) {
@@ -70,5 +71,9 @@ class Sprite {
         }
 
         return image_buffer;
+    }
+
+    PImage getFrame() {
+        return image_buffer[constrain(timer.getActiveTime() / int(ceil(float(anim_length) / num_frames)), 0, num_frames-1)];
     }
 }
