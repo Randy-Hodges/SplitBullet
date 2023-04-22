@@ -55,27 +55,32 @@ class Player extends Actor{
             fireTimer.reset();
         }
     }
+    void calcCollision() {
+        collisions.clear();
 
+        for (Actor other : GAME.actors) {
+            if ((other instanceof ClassType) && (pos.dist(other.pos) < hitbox_radius + other.hitbox_radius)) {
+                collisions.add(other);
+            }
+        }
+    }
     void collisionReaction() {
         // overwrite this method with your object's reaction to collisions
-        for (Actor other : GAME.actors) {
-            boolean isColliding = pos.dist(other.pos) <= hitbox_radius + other.hitbox_radius;
-            if (other instanceof Enemy && isColliding) {
-
-                collisions.add(other);
-
+       
+        for (collision : collisions) {
+            if (collision instanceof Enemy) {
                 if(!invincible)
                     health--;
 
             }
-
-            else if(other instanceof Powerup && isColliding)
+        } 
+            
+            else if(collision instanceof Powerup)
             {
                 //apply powerup effects
-                collisions.add(other);
-                if(other instanceof HealthPowerup)
+                if(collision instanceof HealthPowerup)
                     health++;
-                else if(other instanceof Superstar)
+                else if(collision instanceof Superstar)
                 {
                     invincible = true;
                     invincibilityTimer.resume();
