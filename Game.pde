@@ -34,6 +34,9 @@ class MyGame {
   // List of actors
   ArrayList<Actor> actors, actor_spawns, actor_despawns;
 
+  // Game assets
+  AssetPool assets;
+
   // Muted and paused flags
   boolean muted, paused;
 
@@ -60,6 +63,8 @@ class MyGame {
     this.actors = new ArrayList<Actor>();
     this.actor_spawns = new ArrayList<Actor>();
     this.actor_despawns = new ArrayList<Actor>();
+
+    this.assets = new AssetPool(true, "media/sprites");
 
     window_properties = (GLWindow) surface.getNative();
     print("Finished Game initialization... \n");
