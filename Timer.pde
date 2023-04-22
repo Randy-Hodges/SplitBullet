@@ -7,27 +7,38 @@ class Timer {
     int elapsed_time; // time since object was initialized
     int active_time; // time since last reset when Timer was not paused
     int paused_time; // time since last reset when Timer was paused
+    int loop_time; // time when Timer should loop (reset) if >=
 
     boolean active; // true if not paused
 
-    // Timer's state when initialized OR when reset IF reset_to_default is true.
+    // Timer's state when initialized OR when reset IF reset_uses_default is true.
     boolean default_state;
 
-    // true if Timer's active state should be set to default_active_state when the Timer is reset.
+    // true if Timer's active state should be set to default_state when the Timer is reset.
     boolean reset_uses_default;
 
+    boolean loop;
+
     // CONSTRUCTORS
-    Timer(boolean default_state, boolean reset_uses_default) {
+    Timer(boolean init_state, boolean default_state, boolean reset_uses_default, boolean loops, int loop_time) {
+        this.active = init_state;
+        this.default_state = default_state;
+        this.reset_uses_default = reset_uses_default;
+
+        this.loop = loops;
+        this.loop_time = loop_time;
+
         this.init_time = millis();
         this.reset_time = init_time;
-        this.active = this.default_state = default_state; 
-        this.reset_uses_default = reset_uses_default;
+    }
+    Timer(boolean init_state, boolean default_state, boolean reset_uses_default) {
+        this(init_state, default_state, reset_uses_default, false, 0);
     }
     Timer(boolean default_state) {
-        this(default_state, false);
+        this(default_state, default_state, false, false, 0);
     }
     Timer() {
-        this(true, false);
+        this(true, true, false, false, 0);
     }
 
     // METHODS
@@ -38,6 +49,10 @@ class Timer {
             paused_time = millis() - reset_time - active_time;
         }
         elapsed_time = millis() - init_time;
+
+        if (loop) {
+            loop();
+        }
     }
 
     // Use these methods to manipulate the timer
@@ -72,6 +87,14 @@ class Timer {
 
         if (reset_uses_default) {
             active = default_state;
+        }
+    }
+
+    void loop() {
+        if (active_time >= loop_time) {
+            int loop_spill = active_time - loop_time;
+            reset();
+            active_time = loop_spill;
         }
     }
 
