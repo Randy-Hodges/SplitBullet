@@ -2,78 +2,77 @@ class Player extends Actor {
     class Hat {
         Sprite sprite;
         PVector pos, scale;
-        float rot;
-        float hitbox_radius;
+        float rot, anim_rot;
         Timer t;
-        Hat(Sprite sprite, PVector pos, PVector scale, float rot, float hitbox_radius) {
+
+        Hat(Sprite sprite, PVector pos, float rot, PVector scale) {
             this.sprite = sprite;
             this.pos = pos;
-            this.scale = scale;
             this.rot = rot;
-            this.hitbox_radius = hitbox_radius;
+            this.scale = scale;
+
+            this.anim_rot = 0;
             t = new Timer(true, true, true, true, 5000);
         }
-        Hat(PVector pos, PVector scale, float hitbox_radius) {
-            this(GAME.assets.getSprite("media/sprites/player/hat_frames"), pos, scale, 0,  hitbox_radius);
+        Hat(PVector pos, float rot, PVector scale) {
+            this(GAME.assets.getSprite("media/sprites/player/hat_frames"), pos, rot, scale);
         }
-
-        void render() {
-            pushMatrix();
-            rot = cos(t.getActiveTime() / (t.loop_time/ TWO_PI));
-            translate(pos.x, pos.y);
-            //scale(scale.x, scale.y);
-            scale(hitbox_radius);
-            rotate(PI/16 * rot);
-
-            image(sprite.getFrame(), 0, 0, 1, 0.5);
-
-            popMatrix();
+        Hat(PVector pos, float rot) {
+            this(pos, rot, new PVector(1, 1));
         }
-    }
-    class Body {
-        Sprite idle, run, draw_sprite;
-        PVector vel, scale;
-        float hitbox_radius;
-        Body(Sprite idle, Sprite run, PVector vel, float hitbox_radius) {
-           this.idle = idle;
-           this.run = run;
-           this.vel = vel;
-           this.scale = new PVector(1, 1);
-           this.hitbox_radius = hitbox_radius;
+        Hat(PVector pos, PVector scale) {
+            this(pos, 0, scale);
         }
-        Body(PVector vel, float hitbox_radius) {
-            this(GAME.assets.getSprite("media/sprites/player/body_idle"), GAME.assets.getSprite("media/sprites/player/body_running"), vel, hitbox_radius);
+        Hat(PVector pos) {
+            this(pos, 0, new PVector(1, 1));
         }
 
         void updateSprite() {
-            if (vel.mag() > 0.5) {
-                draw_sprite = run;
-            } else {
-                draw_sprite = idle;
-            }
-
-            //if (vel.x >= 0) {
-            //    scale.x = 1;
-            //} else {
-            //    scale.x = -1;
-            //}
-            
-            
+            anim_rot = cos(t.getActiveTime() / (t.loop_time / TWO_PI));
         }
 
         void render() {
             updateSprite();
 
             pushMatrix();
-            
-            if(vel.x >= 0)
-              scale(2 * hitbox_radius);
-            else 
-              scale(-2 * hitbox_radius, 2 * hitbox_radius);
-              
-            
-            
-            image(draw_sprite.getFrame() , 0, 0, 1, 0.828);
+
+            translate(pos.x, pos.y);
+            scale(scale.x, scale.y);
+            rotate(rot);
+
+            rotate((QUARTER_PI / 2) * anim_rot);
+
+            image(sprite.getFrame(), 0, 0, (2 * Player.this.hitbox_radius), (2 * Player.this.hitbox_radius));
+
+            popMatrix();
+        }
+    }
+    class Body {
+        Sprite idle, run, draw_sprite;
+
+        Body(Sprite idle, Sprite run) {
+            this.idle = idle;
+            this.run = run;
+            this.draw_sprite = idle;
+        }
+        Body() {
+            this(GAME.assets.getSprite("media/sprites/player/body_idle"), GAME.assets.getSprite("media/sprites/player/body_running"));
+        }
+
+        void updateSprite() {
+            if (Player.this.vel.mag() > 2) {
+                draw_sprite = run;
+            } else {
+                draw_sprite = idle;
+            }
+        }
+
+        void render() {
+            updateSprite();
+
+            pushMatrix();
+
+            image(draw_sprite.getFrame() , 0, 0, (2 * Player.this.hitbox_radius), (2 * Player.this.hitbox_radius));
 
             popMatrix();
         }
@@ -89,11 +88,11 @@ class Player extends Actor {
     Timer fireTimer;
     Timer invincibilityTimer;
 
-    Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health){
+    Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health) {
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
 
-        h = new Hat(new PVector(0, -0.60 * hitbox_radius), scale, hitbox_radius);
-        b = new Body(vel, hitbox_radius);
+        h = new Hat(new PVector(0, -0.8 * hitbox_radius), new PVector(0.5, 0.5));
+        b = new Body();
 
         this.health = health;
 
@@ -102,27 +101,27 @@ class Player extends Actor {
 
         aim_vector = new PVector(1, 0);
     }
-    Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot){
+    Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot) {
         this(hitbox_radius,  pos,  vel,  accel,  scale,  rot, 10);
     }
 
     void checkInputs() {
-        aim_vector.add((mouseX - (width / 2)) / 100.0, (mouseY - (height / 2)) / 100.0).limit(1);
+        aim_vector.add((mouseX - (width / 2)) / 100.0,(mouseY - (height / 2)) / 100.0).limit(1);
 
         if (GAME.mouse_inputs.contains(LEFT)) {
             fire();
         }
 
-        if (GAME.key_inputs.contains( (int)'W') ) {
+        if (GAME.key_inputs.contains((int)'W')) {
             next_accel.add(0, -3);
         }
-        if (GAME.key_inputs.contains( (int)'A') ) {
-            next_accel.add(-3, 0);
+        if (GAME.key_inputs.contains((int)'A')) {
+            next_accel.add( - 3, 0);
         }
-        if (GAME.key_inputs.contains( (int)'S') ) {
+        if (GAME.key_inputs.contains((int)'S')) {
             next_accel.add(0, 3);
         }
-        if (GAME.key_inputs.contains( (int)'D') ) {
+        if (GAME.key_inputs.contains((int)'D')) {
             next_accel.add(3, 0);
         }
     }
@@ -131,7 +130,7 @@ class Player extends Actor {
     {
         //add new projectile at player's location moving in the direction of aim_vector
         //GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
-        if(fireTimer.getActiveTime() >= 300)
+        if (fireTimer.getActiveTime() >= 300)
         {
             GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
             fireTimer.reset();
@@ -151,13 +150,13 @@ class Player extends Actor {
     void collisionReaction() {
         for (Actor collision : collisions) {
             if (collision instanceof Enemy) {
-                if(!invincible)
+                if (!invincible)
                     health--;
             } else if (collision instanceof Powerup) {
                 //apply powerup effects
                 if (collision instanceof HealthPowerup)
                     health++;
-                    
+            
                 else if (collision instanceof Superstar)
                 {
                     invincible = true;
@@ -182,23 +181,44 @@ class Player extends Actor {
     
     void toggleInvincibility()
     {
-        if(invincible && invincibilityTimer.getActiveTime() >= 8000)
+        if (invincible && invincibilityTimer.getActiveTime() >= 8000)
         {
             invincible = false;
             invincibilityTimer.pause();
             invincibilityTimer.reset();
         }
     }
-    
-    void display(){
+
+    void drawAimVector() {
         stroke(#FF0000);
-        line(0, 0, 50*aim_vector.x, 50*aim_vector.y);
+
+        pushMatrix();
+        rotate(aim_vector.heading());
+        line(0, 0, (2 * hitbox_radius), 0);
+        popMatrix();
+    }
+
+    void render() {
         imageMode(CENTER);
-        b.render();
-        // pushMatrix();
-        // translate(-0.17 * hitbox_radius, -0.50 * hitbox_radius);
-        h.render();
-        // popMatrix();
+
+        pushMatrix();
+
+        translate(pos.x, pos.y);
+        scale(scale.x, scale.y);
         
+        drawAimVector();
+
+        if (vel.x < 0) {
+            scale(-1, 1);
+        } else {
+            scale(1, 1);
+        }
+
+        rotate(rot);
+
+        b.render();
+        h.render();
+
+        popMatrix();
     }
 }
