@@ -24,7 +24,7 @@ class GUI {
   // Initialize font
   PFont customFont;
 
-  GUI (int lives_count, int current_wave) {
+  GUI (int lives_count, int current_wave) {    
     // Init GUI variables
     this.lives_count = lives_count;
     this.current_wave = current_wave;
@@ -62,6 +62,13 @@ class GUI {
     }
   }
   
+  void drawBush(float x, float y, float size) {
+    color bushColor = color(0, 128, 0); // Define a green color for the bush
+    fill(bushColor);
+    noStroke();
+    ellipse(x, y, size, size);
+  }
+
   void draw_main_menu() {
     // Draw the main menu
     pushMatrix();
@@ -86,15 +93,47 @@ class GUI {
     background(26);
         
     // Draw game UI (score, lives) here
+    fill(255);
     textSize(24);
     text("Lives:", 50, 25);
     text("Current Wave:", 300, 25);
     
     // Draw playable area
-    
+    color sandColor = color(194, 178, 128); // Define a sandy color
+    fill(sandColor);
+    float playableAreaX = 50;
+    float playableAreaY = 100;
+    float playableAreaWidth = 900;
+    float playableAreaHeight = 800;
+    rect(playableAreaX, playableAreaY, playableAreaWidth, playableAreaHeight);
+
+    // Draw bushes on the edges of the playable area
+    float bushSize = 49;
+    int numOfBushes = 20;
+  
+    // Draw bushes along the top edge
+    for (int i = 0; i < numOfBushes; i++) {
+      drawBush(playableAreaX + i * (playableAreaWidth / numOfBushes), playableAreaY, bushSize);
+    }
+  
+    // Draw bushes along the bottom edge
+    for (int i = 0; i < numOfBushes + 1; i++) {
+      drawBush(playableAreaX + i * (playableAreaWidth / numOfBushes), playableAreaY + playableAreaHeight, bushSize);
+    }
+  
+    // Draw bushes along the left edge
+    for (int i = 0; i < numOfBushes; i++) {
+      drawBush(playableAreaX, playableAreaY + i * (playableAreaHeight / numOfBushes), bushSize);
+    }
+  
+    // Draw bushes along the right edge
+    for (int i = 0; i < numOfBushes; i++) {
+      drawBush(playableAreaX + playableAreaWidth, playableAreaY + i * (playableAreaHeight / numOfBushes), bushSize);
+    }
+  
     popMatrix();
   }
-  
+
   void draw_lose_screen() {
     image(lose_image, 0, 0, width, height);
   }
@@ -125,6 +164,10 @@ void draw_high_score_screen() {
     textAlign(LEFT, CENTER);
     textSize(24);
     
+    
+    // Display Back button
+    text("Go Back", 50, 50);
+    
     // Display column headers
     text("Name", width/4, height/4);
     text("Rounds Survived:", width/2, height/4);
@@ -144,7 +187,7 @@ void draw_high_score_screen() {
       text(name, width/4, y);
       text(roundsSurvived, width/2, y);
     }
-}
+  }
 
   int handle_main_menu_click() {
     // Check if the click is within the "Play" button's area
@@ -164,5 +207,14 @@ void draw_high_score_screen() {
     return screen_state;
   }
   
-  
+  int handle_high_score_click() {
+    // Check if the click is within the "Go Back" button's area
+    if (mouseX > 50 && mouseX < 50 + textWidth("Go Back") && mouseY > 50 - textAscent() && mouseY < 50 + textDescent()) {
+      // Switch to the main menu screen
+      screen_state = MENU_SCREEN;
+      return MENU_SCREEN;
+    }
+    
+    return screen_state;
+  }
 }
