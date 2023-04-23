@@ -23,13 +23,10 @@ void setup() {
 
     // Testing
     player_pos = new PVector(width/2, height/2);
-    p1 = new Player(30, player_pos, new PVector(), new PVector(), new PVector(2, 2), 0);
-
-    GAME.actor_spawns.add(p1);
 }
 
 void draw() {
-    background(#45c8fb);
+    // background(#45c8fb);
     GAME.update();
 }
 
