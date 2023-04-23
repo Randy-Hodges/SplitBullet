@@ -70,7 +70,7 @@ class Sprite {
 
         ArrayList<String> file_names = new ArrayList<String>();
         for (File file : files) {
-            if (file.isFile()) {
+            if (file.isFile() && !file.isHidden()) {
                 file_names.add(file.getName());
             }
         }
