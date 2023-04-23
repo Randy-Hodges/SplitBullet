@@ -80,16 +80,16 @@ class Sprite {
         ArrayList<String> file_nums = new ArrayList<String>();
 
         for (String file_name : file_names) {
-            String trimmed_name = file_name.substring(0, file_name.lastIndexOf('.')).split("\\d(.*)")[0];
-            String file_type = file_name.substring(file_name.lastIndexOf('.'), file_name.length());
             String file_num = "";
-            for (int i = 0; i < file_name.length(); i++) {
+            for (int i = file_name.length() - 1; i > 0; i--) {
                 if (Character.isDigit(file_name.charAt(i))) {
-                    file_num += file_name.charAt(i);
+                    file_num = file_name.charAt(i) + file_num;
                 } else if (file_num.length() > 0) {
                     break;
                 }
             }
+            String file_type = file_name.substring(file_name.lastIndexOf('.'), file_name.length());
+            String trimmed_name = file_name.replace(file_type, "").replace(file_num, "");
 
             trimmed_file_names.add(trimmed_name);
             file_types.add(file_type);
