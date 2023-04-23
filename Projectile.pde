@@ -38,13 +38,9 @@ class Projectile extends Actor {
     }
 
     void collisionReaction() {
-        // Move Proj offscreen IN THE NEXT SIM CYCLE if it has collided.
-        if (collisions.size() > 0) {
-            next_pos.set(-100, -100);
-        }
-
-        // delete the projectile if it is CURRENTLY offscreen
-        if ((pos.x < GAME.PLAYABLE_AREA_X) || (pos.x > GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH) || 
+        // Delete Proj if it has collided or left play area.
+        if ((collisions.size() > 0) ||
+            (pos.x < GAME.PLAYABLE_AREA_X) || (pos.x > GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH) || 
             (pos.y < GAME.PLAYABLE_AREA_Y) || (pos.y > GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT)) {
                 GAME.actor_despawns.add(this);
         }
