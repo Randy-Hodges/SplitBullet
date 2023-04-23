@@ -124,7 +124,7 @@ class Sprite {
         image_buffer = new PImage[num_frames];
 
         for (int i = 0; i < num_frames; i++) {
-            image_buffer[i] = loadImage(src_dir + filename + nf(i, filenum_pad) + filetype);
+            image_buffer[i] = requestImage(src_dir + filename + nf(i, filenum_pad) + filetype);
         }
 
         return image_buffer;
