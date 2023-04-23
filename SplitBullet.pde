@@ -3,31 +3,28 @@
 
 // By Randy Hodges, Long Vu, Sean Thomas, Daniel Ross
 
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
+import java.awt.DisplayMode;
 
 MyGame GAME;
-int target_frame_rate = 20;
 // The variables below are for testing purposes and will be removed in final product
-Orc orc1;
 PVector player_pos;
 Player p1;
 
 void setup() {
-    size(1000, 1000, P2D);
+    int FR = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].getDisplayMode().getRefreshRate();
 
-    GAME = new MyGame();
-    
-    // Comment this out
-    // GAME.screen_state = 2;
-    frameRate(target_frame_rate);
+    size(1000, 1000, P2D);
+    frameRate(FR);
+
+    GAME = new MyGame(100);
 
     // Testing
-    orc1 = new Orc(3*width/4, height/4);
     player_pos = new PVector(width/2, height/2);
-
-    p1 = new Player(10, player_pos, new PVector(), new PVector(), new PVector(2, 2), 0);
+    p1 = new Player(30, player_pos, new PVector(), new PVector(), new PVector(2, 2), 0);
 
     GAME.actor_spawns.add(p1);
-    GAME.actor_spawns.add(orc1);
 }
 
 void draw() {
