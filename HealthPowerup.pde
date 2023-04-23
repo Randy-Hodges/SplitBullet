@@ -1,13 +1,10 @@
 class HealthPowerup extends Powerup{
 
-    HealthPowerup(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot)
+    HealthPowerup(float hitbox_radius, PVector pos)
     {
-        super(hitbox_radius, pos, vel, accel, scale, rot);
-        displayImage = loadImage("media/sprites/powerups/health.png");
+        super(hitbox_radius, pos);
+        displayImage = GAME.assets.getSprite("media/sprites/powerups/health");
     }
     
-    void display()
-    {
-        image(displayImage, 0, 0, hitbox_radius, hitbox_radius);
-    }
+
 }

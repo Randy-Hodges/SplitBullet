@@ -1,3 +1,4 @@
+import ddf.minim.*;
 import com.jogamp.newt.opengl.GLWindow;
 import java.util.ArrayList;
 
@@ -28,6 +29,10 @@ class MyGame {
   // Window properties
   GLWindow window_properties;
 
+  // Game simulation variables
+  Timer game_time;
+  int tickrate;
+
   // Arrays of buttons pressed on current frame only
   ArrayList<Integer> keys_pressed, mouse_pressed;
 
@@ -49,7 +54,7 @@ class MyGame {
   // Player object
   Player player;
 
-  MyGame() {    
+  MyGame(int tickrate) {
     // Set gameplay variables
     this.lives_count = 3;
     this.current_wave = 1;
@@ -80,10 +85,15 @@ class MyGame {
     //this.player = new Player(20, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
 
 
+    this.game_time = new Timer();
+    this.tickrate = tickrate;
+
     window_properties = (GLWindow) surface.getNative();
     print("Finished Game initialization... \n");
   }
-
+  MyGame() {
+    this(60);
+  }
 
   void update() {
     // Update game state
@@ -108,7 +118,6 @@ class MyGame {
         //print("got to GAME_SCREEN \n");
         window_properties.confinePointer(true);
         window_properties.setPointerVisible(false);
-        window_properties.warpPointer(width / 2, height / 2);
 
         game_gui.draw_game_screen();
         
@@ -118,10 +127,17 @@ class MyGame {
           spawn_wave(current_wave);
         }
   
-        
+        if (game_time.getActiveTime() >= (1000.0 / tickrate)) {
+          window_properties.warpPointer(width / 2, height / 2);
+          for (int sim = 1; sim < (game_time.getActiveTime() / (1000.0 / tickrate)); sim++) {
+            move();
+            simulate();
+          }
+          game_time.reset();
+        }
+
         render();
-        simulate();
-        move();
+
         // Check if wave is over, then begin the next spawn_wave(current_wave)
         
         // Handle Pause 

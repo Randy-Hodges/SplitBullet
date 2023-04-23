@@ -35,13 +35,15 @@ class AssetPool {
 
     private void search_files(File root, String src_dir_path) {
         for (File file : root.listFiles()) {
-            if (file.isDirectory()) {
-                search_files(file, src_dir_path);
-            } else if (file.isFile()) {
-                for (String file_type : allowed_sprite_types) {
-                    if (file.getName().contains(file_type)) {
-                        String label = file.getParent().replace(src_dir_path, "").replaceAll("\\\\", "/").trim();
-                        addSprite(label, new Sprite(label, 1000, true));
+            if (!file.isHidden()) {
+                if (file.isDirectory()) {
+                    search_files(file, src_dir_path);
+                } else if (file.isFile()) {
+                    for (String file_type : allowed_sprite_types) {
+                        if (file.getName().contains(file_type)) {
+                            String label = file.getParent().replace(src_dir_path, "").replaceAll("\\\\", "/").trim();
+                            addSprite(label, new Sprite(label, 1000, true));
+                        }
                     }
                 }
             }
