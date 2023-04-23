@@ -11,6 +11,7 @@ MyGame GAME;
 // The variables below are for testing purposes and will be removed in final product
 PVector player_pos;
 Player p1;
+float target_frame_rate = 20;
 
 void setup() {
     int FR = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].getDisplayMode().getRefreshRate();
