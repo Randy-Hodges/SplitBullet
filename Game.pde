@@ -79,10 +79,10 @@ class MyGame {
     this.actor_despawns = new ArrayList<Actor>();
 
     // Initialize AssetPool
-    this.assets = new AssetPool(true, "media/sprites");
+    this.assets = new AssetPool(true, "media/sprites", "media/sounds");
     
     // Initialize Player
-    //this.player = new Player(20, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
+    // this.player = new Player(20, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
 
 
     this.game_time = new Timer();
@@ -233,8 +233,8 @@ class MyGame {
   }
 
   void update_actors() {
-    spawn_actors();
     despawn_actors();
+    spawn_actors();
   }
 
   void simulate() {
@@ -321,7 +321,9 @@ class MyGame {
   }
   
   void initialize_player() {
-    this.player = new Player(20, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
+    actor_despawns.add(player);
+    this.player = new Player(30, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
+    actor_spawns.add(player);
   }
 
 }
