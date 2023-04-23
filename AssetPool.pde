@@ -63,16 +63,16 @@ class AssetPool {
                 if (file.isDirectory()) {
                     search_files(file, src_dir_path);
                 } else if (file.isFile()) {
-                    String file_name = file.getName();
-                    String file_ext = file_name.substring(file_name.lastIndexOf('.'), file_name.length()).trim().toLowerCase();
-                    String label = file.getParent().replace(src_dir_path, "").replaceAll("\\\\", "/").trim();
+                    final String file_name = file.getName();
+                    final String file_ext = file_name.substring(file_name.lastIndexOf('.'), file_name.length()).trim().toLowerCase();
+                    final String label = file.getParent().replace(src_dir_path, "").replaceAll("\\\\", "/").trim();
 
                     if (allowed_sprite_types.contains(file_ext)) {
                         addSprite(label, new Sprite(label, 1000, true));
                     } else if (allowed_audio_types.contains(file_ext)) {
                         new Thread() {
                             @Override
-                            void run() {
+                            public void run() {
                                 addSound(label, audio_loader.loadFile(label + "/" + file_name));
                             }
                         }.start();
