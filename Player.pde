@@ -175,6 +175,10 @@ class Player extends Actor {
     }
     
     void move() {
+        next_pos.set(
+            constrain(next_pos.x, GAME.PLAYABLE_AREA_X, GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH), 
+            constrain(next_pos.y, GAME.PLAYABLE_AREA_Y, GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT)
+        );
         super.move();
         vel.limit(1000);
     }

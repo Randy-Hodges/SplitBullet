@@ -44,8 +44,9 @@ class Projectile extends Actor {
         }
 
         // delete the projectile if it is CURRENTLY offscreen
-        if ((pos.x < 0) || (pos.x > 1000) || (pos.y < 0) || (pos.y > 1000)) {
-            GAME.actor_despawns.add(this);
+        if ((pos.x < GAME.PLAYABLE_AREA_X) || (pos.x > GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH) || 
+            (pos.y < GAME.PLAYABLE_AREA_Y) || (pos.y > GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT)) {
+                GAME.actor_despawns.add(this);
         }
     }
 
