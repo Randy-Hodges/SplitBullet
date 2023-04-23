@@ -72,7 +72,7 @@ class Player extends Actor {
 
             pushMatrix();
 
-            image(draw_sprite.getFrame() , 0, 0, (2 * Player.this.hitbox_radius), (2 * Player.this.hitbox_radius));
+            image(draw_sprite.getFrame(), 0, 0, (2 * Player.this.hitbox_radius), (2 * Player.this.hitbox_radius));
 
             popMatrix();
         }
@@ -112,27 +112,28 @@ class Player extends Actor {
             fire();
         }
 
+        next_accel.add(-vel.x * 0.5, -vel.y * 0.5);
+
         if (GAME.key_inputs.contains((int)'W')) {
-            next_accel.add(0, -3);
+            next_accel.add(0, -100);
         }
         if (GAME.key_inputs.contains((int)'A')) {
-            next_accel.add( - 3, 0);
+            next_accel.add(-100, 0);
         }
         if (GAME.key_inputs.contains((int)'S')) {
-            next_accel.add(0, 3);
+            next_accel.add(0, 100);
         }
         if (GAME.key_inputs.contains((int)'D')) {
-            next_accel.add(3, 0);
+            next_accel.add(100, 0);
         }
     }
 
     void fire()
     {
         //add new projectile at player's location moving in the direction of aim_vector
-        //GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
         if (fireTimer.getActiveTime() >= 300)
         {
-            GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(50)));
+            GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(1000)));
             fireTimer.reset();
         }
     }
@@ -167,7 +168,6 @@ class Player extends Actor {
     }
 
     void simulate() {
-        next_vel.setMag(vel.mag() * 0.75);
         checkInputs();
         super.simulate();
         fireTimer.update();
@@ -176,7 +176,7 @@ class Player extends Actor {
     
     void move() {
         super.move();
-        vel.limit(10);
+        vel.limit(1000);
     }
     
     void toggleInvincibility()
@@ -201,14 +201,16 @@ class Player extends Actor {
     void render() {
         imageMode(CENTER);
 
+        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))));
+
         pushMatrix();
 
-        translate(pos.x, pos.y);
+        translate(draw_pos.x, draw_pos.y);
         scale(scale.x, scale.y);
         
         drawAimVector();
 
-        if (vel.x < 0) {
+        if (aim_vector.x < 0) {
             scale(-1, 1);
         } else {
             scale(1, 1);

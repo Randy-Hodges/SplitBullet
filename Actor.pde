@@ -2,7 +2,7 @@
 
 class Actor {
     // FIELDS
-    PVector pos, vel, accel, scale, next_pos, next_vel, next_accel;
+    PVector pos, vel, accel, scale, next_pos, next_vel, next_accel, draw_pos;
     float rot, hitbox_radius;
     ArrayList<Actor> collisions;
 
@@ -18,6 +18,8 @@ class Actor {
         next_pos = pos.copy();
         next_vel = vel.copy();
         next_accel = accel.copy();
+
+        draw_pos = pos.copy();
 
         collisions = new ArrayList();
     }
@@ -76,7 +78,7 @@ class Actor {
 
     void updateVectors() {
         next_vel.add(next_accel);
-        next_pos.add(next_vel);
+        next_pos.add(next_vel.x / GAME.tickrate, next_vel.y / GAME.tickrate);
     }
 
     void simulate() {
@@ -98,9 +100,11 @@ class Actor {
     }
 
     void render() {
+        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))));
+        
         pushMatrix();
 
-        translate(pos.x, pos.y);
+        translate(draw_pos.x, draw_pos.y);
         scale(scale.x, scale.y);
         rotate(rot);
 
