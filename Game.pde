@@ -141,7 +141,7 @@ class MyGame {
         // Check if wave is over, then begin the next spawn_wave(current_wave)
         
         // Handle Pause 
-        if (key_inputs.contains(int("P"))) {
+        if (keys_pressed.contains( (int)'P' )) {
           change_screen_state(PAUSE_SCREEN);    
         }
           
@@ -160,7 +160,7 @@ class MyGame {
         
         
         // Handle Pause 
-        if (key_inputs.contains(int("P"))) {
+        if (keys_pressed.contains( (int)'P' )) {
           change_screen_state(GAME_SCREEN);    
         }
 
