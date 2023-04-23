@@ -244,7 +244,7 @@ class MyGame {
 
   void spawn_wave(int wave_num) {
     // Spawn player
-    actor_spawns.add(player);
+    //actor_spawns.add(player);
   
     // Spawn enemies based on the current wave
     populate_wave(wave_num);
