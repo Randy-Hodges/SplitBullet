@@ -20,8 +20,12 @@ class MyGame {
   final int PLAYABLE_AREA_HEIGHT = 800;
 
   // Game variables
+  Timer spawn_delay_timer;
   int lives_count;
   int current_wave;
+  int num_orcs;
+  int num_ogres;
+  int spawned_enemies;
 
   // GUI object
   GUI game_gui;
@@ -32,7 +36,7 @@ class MyGame {
   // Game simulation variables
   Timer game_time;
   int tickrate;
-
+  
   // Arrays of buttons pressed on current frame only
   ArrayList<Integer> keys_pressed, mouse_pressed;
 
@@ -63,7 +67,7 @@ class MyGame {
     this.screen_state = MENU_SCREEN;
 
     // Initialize GUI object
-    this.game_gui = new GUI(lives_count, current_wave);
+    this.game_gui = new GUI();
     
     // Initialize the user inputted key and mouse array lists
     this.keys_pressed = new ArrayList<Integer>();
@@ -81,13 +85,16 @@ class MyGame {
     // Initialize AssetPool
     this.assets = new AssetPool(true, "media/sprites");
     
-    // Initialize Player
-    //this.player = new Player(20, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
-
-
+    // Initialize timers
     this.game_time = new Timer();
+    this.spawn_delay_timer = new Timer();
     this.tickrate = tickrate;
+    
+    // muted and pause flags
+    this.muted = false;
+    this.paused = false;
 
+    // Window properties
     window_properties = (GLWindow) surface.getNative();
     print("Finished Game initialization... \n");
   }
@@ -121,11 +128,20 @@ class MyGame {
 
         game_gui.draw_game_screen();
         
-        // Call initialize_player() and spawn_wave() only if the player object is null
+        // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
         if (player == null) {
           initialize_player();
-          spawn_wave(current_wave);
+          actor_spawns.add(player);
+          populate_wave(current_wave);
         }
+        
+        if (spawn_delay_timer.getActiveTime() >= 500) {
+          spawn_wave();
+          spawn_delay_timer.reset();
+        } else {
+          spawn_delay_timer.update(); 
+        }
+
   
         if (game_time.getActiveTime() >= (1000.0 / tickrate)) {
           window_properties.warpPointer(width / 2, height / 2);
@@ -141,7 +157,9 @@ class MyGame {
         // Check if wave is over, then begin the next spawn_wave(current_wave)
         
         // Handle Pause 
-        if (key_inputs.contains(int("P"))) {
+        if (keys_pressed.contains( (int)'P' )) {
+          // Pause logic
+          
           change_screen_state(PAUSE_SCREEN);    
         }
           
@@ -160,7 +178,8 @@ class MyGame {
         
         
         // Handle Pause 
-        if (key_inputs.contains(int("P"))) {
+        if (keys_pressed.contains( (int)'P' )) {
+          // Pause logic, add timer
           change_screen_state(GAME_SCREEN);    
         }
 
@@ -258,39 +277,41 @@ class MyGame {
   }
 
 
-  void spawn_wave(int wave_num) {
-    // Spawn player
-    //actor_spawns.add(player);
-  
-    // Spawn enemies based on the current wave
-    populate_wave(wave_num);
+  void spawn_wave() {
+    // Keep spawning until there are no enemies left to spawn
+    if (spawned_enemies < num_orcs + num_ogres) {
+      PVector random_pos = get_random_spawn_point();
+      Orc new_orc;
+      Ogre new_ogre;
+      
+      if (spawned_enemies < num_orcs) {
+        new_orc = new Orc(random_pos);
+        new_orc.loadSprites();
+        actor_spawns.add(new_orc);
+        print("spawned orc\n");
+      } else {  // Spawn ogres after all orcs has spawned
+        new_ogre =  new Ogre(random_pos);
+        new_ogre.loadSprites();
+        actor_spawns.add(new_ogre);
+        print("spawned ogre\n");
+      }
+      
+      spawned_enemies++;
+    }
   }
 
   void populate_wave(int current_wave) {
     // Handles the latest wave event after a wave is cleared.
     // Difficulty scaled based on the value of current_wave
     // Add your enemy spawning logic here
+      
+    // Update MyGame() field
+    spawned_enemies = 0;
     
-    int num_orcs = 5 + current_wave;
-    int num_ogres = int(current_wave / 3);
-  
-    // Spawn Orcs
-    for (int i = 0; i < num_orcs; i++) {
-      PVector random_pos = get_random_spawn_point();
-      Orc new_orc = new Orc(random_pos);
-      new_orc.loadSprites();
-      actor_spawns.add(new_orc);
-    }
-  
-    // Spawn Ogres
-    for (int i = 0; i < num_ogres; i++) {
-      PVector random_pos = get_random_spawn_point();
-      Ogre new_ogre = new Ogre(random_pos);
-      new_ogre.loadSprites();
-      actor_spawns.add(new_ogre);
-    }
-
-
+    num_orcs = 5 + current_wave;
+    num_ogres = int(current_wave / 3);
+    spawned_enemies = 0;
+    spawn_delay_timer.reset();
   }
 
   void change_screen_state(int new_state) {
@@ -317,11 +338,12 @@ class MyGame {
         break;
     }
   
-    return spawn_point;
+    return spawn_point;  
   }
   
   void initialize_player() {
-    this.player = new Player(20, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
+    player_pos = new PVector(width/2, height/2);
+    this.player = new Player(30, player_pos, new PVector(), new PVector(), new PVector(2, 2), 0);
   }
 
 }

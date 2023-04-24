@@ -11,8 +11,6 @@ class GUI {
   final int HIGH_SCORE_SCREEN = 5;
 
   // Initialize game variables
-  int lives_count;
-  int current_wave;
   int screen_state;
   
   // Initilize state elements
@@ -24,10 +22,10 @@ class GUI {
   // Initialize font
   PFont customFont;
 
-  GUI (int lives_count, int current_wave) {    
+  GUI () {    
     // Init GUI variables
-    this.lives_count = lives_count;
-    this.current_wave = current_wave;
+    //this.lives_count = lives_count;
+    //this.current_wave = current_wave;
     
     // Set state elements
     this.menu_image = loadImage("media/gui/Menu_Screen.png");
@@ -40,27 +38,27 @@ class GUI {
     textFont(customFont);
   }
   
-  void refresh_screen() {
-  /* Draws the GUI to the screen */
+  //void refresh_screen() {
+  ///* Draws the GUI to the screen */
     
-    switch (screen_state) {
-      case MENU_SCREEN:
-        // draw main menu
-        draw_main_menu();
-        break;
+  //  switch (screen_state) {
+  //    case MENU_SCREEN:
+  //      // draw main menu
+  //      draw_main_menu();
+  //      break;
         
-      case GAME_SCREEN:
-        // draw game
-        draw_game_screen();
-        break;
+  //    case GAME_SCREEN:
+  //      // draw game
+  //      draw_game_screen();
+  //      break;
        
-      case PAUSE_SCREEN:
-        // pause screen
-        draw_pause_screen();
-        break;
+  //    case PAUSE_SCREEN:
+  //      // pause screen
+  //      draw_pause_screen();
+  //      break;
         
-    }
-  }
+  //  }
+  //}
   
   void drawBush(float x, float y, float size) {
     color bushColor = color(0, 128, 0); // Define a green color for the bush
@@ -95,8 +93,8 @@ class GUI {
     // Draw game UI (score, lives) here
     fill(255);
     textSize(24);
-    text("Lives:", 50, 25);
-    text("Current Wave:", 300, 25);
+    text("Lives: " + str(GAME.lives_count), 50, 25);
+    text("Current Wave: " + str(GAME.current_wave), 300, 25);
     
     // Draw playable area
     color sandColor = color(194, 178, 128); // Define a sandy color
