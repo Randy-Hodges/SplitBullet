@@ -31,7 +31,7 @@ class Enemy extends Actor{
             }
         }
         
-        collisionReaction();
+        // collisionReaction(); <-- this gets called by Actor.simulate()
     }
 
     void collisionReaction() {
@@ -39,11 +39,11 @@ class Enemy extends Actor{
         // Change hurt to true and take damage
         for (Actor projectile : collisions) {
             hurt = true;
-            this.health -= 1;
+            this.health -= ((Projectile)projectile).caliber; // <-- We can cast the Actor as a Projectile to access its caliber field
             // move in opposite direction of projectile hit
             // next_vel = (projectile.pos.copy().sub(pos).normalize().mult(-1).mult(hit_speed));
             hurt_timer.reset();
-            GAME.actor_despawns.add(projectile);
+            // GAME.actor_despawns.add(projectile); <-- The projectile despawns itself
         }
     }
     
