@@ -39,9 +39,12 @@ class Projectile extends Actor {
 
     void collisionReaction() {
         // Delete Proj if it has collided or left play area.
-        if ((collisions.size() > 0) ||
-            (pos.x < GAME.PLAYABLE_AREA_X) || (pos.x > GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH) || 
-            (pos.y < GAME.PLAYABLE_AREA_Y) || (pos.y > GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT)) {
+        if (
+            (collisions.size() > 0) ||
+            (pos.x < GAME.PLAYABLE_AREA_X) || 
+            (pos.x > GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH) || 
+            (pos.y < GAME.PLAYABLE_AREA_Y) || 
+            (pos.y > GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT) ) {
                 GAME.actor_despawns.add(this);
         }
     }
