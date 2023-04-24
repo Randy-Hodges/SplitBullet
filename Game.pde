@@ -26,6 +26,8 @@ class MyGame {
   int num_orcs;
   int num_ogres;
   int spawned_enemies;
+  int alive_enemies = 0;
+  int wave_time;
 
   // GUI object
   GUI game_gui;
@@ -48,7 +50,6 @@ class MyGame {
 
   // List of actors
   ArrayList<Actor> actors, actor_spawns, actor_despawns;
-  ArrayList<Enemy> cur_enemies;
 
   // Game assets
   AssetPool assets;
@@ -82,10 +83,6 @@ class MyGame {
     this.actors = new ArrayList<Actor>();
     this.actor_spawns = new ArrayList<Actor>();
     this.actor_despawns = new ArrayList<Actor>();
-
-    this.cur_enemies = new ArrayList<Enemy>();
-
-    this.cur_enemies = new ArrayList<Enemy>();
 
     // Initialize AssetPool
     this.assets = new AssetPool(true, "media/sprites", "media/sounds");
@@ -137,7 +134,7 @@ class MyGame {
         // Render, simulate, and move Actors
         //print("got to GAME_SCREEN \n");
         window_properties.confinePointer(true);
-        window_properties.setPointerVisible(false);
+        // window_properties.setPointerVisible(false);
 
         game_gui.draw_game_screen();
         
@@ -146,17 +143,15 @@ class MyGame {
           initialize_player();
           populate_wave(current_wave);
         }
-        
-        if (spawn_delay_timer.getActiveTime() >= 500) {
-          spawn_wave();
-          spawn_delay_timer.reset();
-        } else {
-          spawn_delay_timer.update(); 
-        }
 
-  
+        // Go to new wave if needed
+        if (alive_enemies == 0){
+          current_wave += 1; 
+          populate_wave(current_wave);
+        }
+        
         if (game_time.getActiveTime() >= (1000.0 / tickrate)) {
-          window_properties.warpPointer(width / 2, height / 2);
+          // window_properties.warpPointer(width / 2, height / 2);
           for (int sim = 1; sim < (game_time.getActiveTime() / (1000.0 / tickrate)); sim++) {
             move();
             simulate();
@@ -289,26 +284,7 @@ class MyGame {
 
 
   void spawn_wave() {
-    // Keep spawning until there are no enemies left to spawn
-    if (spawned_enemies < num_orcs + num_ogres) {
-      PVector random_pos = get_random_spawn_point();
-      Orc new_orc;
-      Ogre new_ogre;
-      
-      if (spawned_enemies < num_orcs) {
-        new_orc = new Orc(random_pos);
-        new_orc.loadSprites();
-        actor_spawns.add(new_orc);
-        print("spawned orc\n");
-      } else {  // Spawn ogres after all orcs has spawned
-        new_ogre =  new Ogre(random_pos);
-        new_ogre.loadSprites();
-        actor_spawns.add(new_ogre);
-        print("spawned ogre\n");
-      }
-      
-      spawned_enemies++;
-    }
+    
   }
 
   void populate_wave(int current_wave) {
@@ -318,9 +294,29 @@ class MyGame {
       
     // Update MyGame() field
     spawned_enemies = 0;
-    
-    num_orcs = 5 + current_wave;
-    num_ogres = int(current_wave / 3);
+    final int STANDARD = 0;
+    final int FAST = 1;
+    final int HEAVY = 2;
+    // int standard_rate = 60;
+    int wave_mode = 0; // int(random(3))
+    switch (wave_mode){
+      case STANDARD:
+        // 5 seconds of extra wave time every 3 waves, max 20 sec
+        wave_time = (int(current_wave/3) + 1)*5000;
+        wave_time = constrain(wave_time, 5000, 20000);
+        num_orcs = 4 + current_wave;
+        // Spawn orcs
+        for(int i = 0; i < num_orcs; i++){
+          Orc new_orc = new Orc(get_random_spawn_point(), wave_time);
+          actor_spawns.add(new_orc);
+          alive_enemies += 1;
+        }
+        num_ogres = int(current_wave / 3);
+        break;
+      default:
+        println("Wave mode incorrect");
+        break;
+    }
     spawned_enemies = 0;
     spawn_delay_timer.reset();
   }
@@ -332,25 +328,8 @@ class MyGame {
   
   PVector get_random_spawn_point() {
     float radius = (PLAYABLE_AREA_WIDTH/2);
+    // float radius = 200;
     PVector spawn_point = new PVector(width/2, height/2).add(PVector.random2D().mult(radius*sqrt(2)));
-    // int edge = int(random(4));
-    // PVector spawn_point;
-    
-    // switch (edge) {
-    //   case 0: // Top edge
-    //     spawn_point = new PVector(( PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH) / 2, PLAYABLE_AREA_Y );
-    //     break;
-    //   case 1: // Right edge
-    //     spawn_point = new PVector(PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH, (PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT) / 2 );
-    //     break;
-    //   case 2: // Bottom edge
-    //     spawn_point = new PVector(( PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH) / 2, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT);
-    //     break;
-    //   default: // Left edge
-    //     spawn_point = new PVector(PLAYABLE_AREA_X, (PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT) / 2);
-    //     break;
-    // }
-  
     return spawn_point;  
   }
   

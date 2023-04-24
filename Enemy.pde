@@ -51,6 +51,7 @@ class Enemy extends Actor{
     void checkAlive(){
         if (health <= 0){
             GAME.actor_despawns.add(this);
+            GAME.alive_enemies -= 1;
         }
     }
 

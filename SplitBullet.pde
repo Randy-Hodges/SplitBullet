@@ -23,7 +23,7 @@ void setup() {
 
     // Testing
     player_pos = new PVector(width/2, height/2);
-    GAME.actor_spawns.add(new Orc(new PVector(width/4, 3*height/4)));
+    // GAME.actor_spawns.add(new Orc(new PVector(width/4, 3*height/4), 5000));
 }
 
 void draw() {

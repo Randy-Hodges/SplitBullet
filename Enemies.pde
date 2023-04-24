@@ -12,7 +12,7 @@ class Orc extends Enemy{
     Timer decision_timer = new Timer();
     // Idle state occurs at begining of wave, spaces out enemies 
     Timer idle_timer = new Timer();
-    float max_idle_time;
+    float time_idle;
     boolean idle = true;
 
     
@@ -21,16 +21,16 @@ class Orc extends Enemy{
     //     // this.hitbox_radius = hitbox_radius;
     // }
 
-    Orc(PVector initial_pos){
+    Orc(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
         super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), 2*2, GAME.assets.getSprite("media/sprites/enemies/orc"));
         sprite.anim_length = 750; //ms
-        max_idle_time = random(7000);
+        time_idle = int(random(wave_time));
     }
 
     void simulate(){
         if (idle){
-            if (idle_timer.getActiveTime() > max_idle_time){
+            if (idle_timer.getActiveTime() > time_idle){
                 idle = false;
                 // println("changing from idle");
             }
