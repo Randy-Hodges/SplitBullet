@@ -9,7 +9,6 @@ import java.awt.DisplayMode;
 
 MyGame GAME;
 // The variables below are for testing purposes and will be removed in final product
-PVector player_pos;
 Player p1;
 float target_frame_rate = 20;
 
@@ -22,8 +21,7 @@ void setup() {
     GAME = new MyGame(100);
 
     // Testing
-    player_pos = new PVector(width/2, height/2);
-    // GAME.actor_spawns.add(new Orc(new PVector(width/4, 3*height/4), 5000));
+    // GAME.actor_spawns.add(new OrcShaman(new PVector(width/4, 3*height/4), 5000));
 }
 
 void draw() {

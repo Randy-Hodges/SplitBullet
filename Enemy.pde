@@ -11,7 +11,6 @@ class Enemy extends Actor{
         super(hitbox_radius, pos, scale, 0);
         this.health = health;
         this.sprite = sprite;
-        // println("added enemy");
     }
     
     void display() {
@@ -39,7 +38,7 @@ class Enemy extends Actor{
         if (!checkInBounds()){return;}
         // Change hurt to true and take damage
         for (Actor projectile : collisions) {
-            this.hurt = true;
+            hurt = true;
             this.health -= 1;
             // move in opposite direction of projectile hit
             // next_vel = (projectile.pos.copy().sub(pos).normalize().mult(-1).mult(hit_speed));
@@ -50,14 +49,13 @@ class Enemy extends Actor{
     
     void checkAlive(){
         if (health <= 0){
-            GAME.actor_despawns.add(this);
-            GAME.alive_enemies -= 1;
+            die();
         }
     }
 
-    boolean checkInBounds(){
-        return (pos.x > GAME.PLAYABLE_AREA_X && pos.x < GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH && 
-            pos.y > GAME.PLAYABLE_AREA_Y && pos.y < GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT);
+    void die(){
+        GAME.actor_despawns.add(this);
+        GAME.alive_enemies -= 1;
     }
 
     void hurtEffect(){
@@ -66,9 +64,14 @@ class Enemy extends Actor{
                 // might not be the right place for this, works fine though
                 if (hurt_timer.getActiveTime() > hurt_time){
                     checkAlive();
-                    hurt = false;
+                    this.hurt = false;
                 }
             }
+    }
+
+    boolean checkInBounds(){
+        return (pos.x > GAME.PLAYABLE_AREA_X && pos.x < GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH && 
+            pos.y > GAME.PLAYABLE_AREA_Y && pos.y < GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT);
     }
 }
 

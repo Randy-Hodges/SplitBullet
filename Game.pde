@@ -23,8 +23,6 @@ class MyGame {
   Timer spawn_delay_timer;
   int lives_count;
   int current_wave;
-  int num_orcs;
-  int num_ogres;
   int spawned_enemies;
   int alive_enemies = 0;
   int wave_time;
@@ -304,14 +302,27 @@ class MyGame {
         // 5 seconds of extra wave time every 3 waves, max 20 sec
         wave_time = (int(current_wave/3) + 1)*5000;
         wave_time = constrain(wave_time, 5000, 20000);
-        num_orcs = 4 + current_wave;
         // Spawn orcs
+        int num_orcs = 4 + current_wave;
         for(int i = 0; i < num_orcs; i++){
           Orc new_orc = new Orc(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_orc);
           alive_enemies += 1;
         }
-        num_ogres = int(current_wave / 3);
+        // Spawn Shamans
+        int num_shamans = 1 + int(current_wave / 3);
+        for(int i = 0; i < num_shamans; i++){
+          OrcShaman new_orc = new OrcShaman(get_random_spawn_point(), wave_time);
+          actor_spawns.add(new_orc);
+          alive_enemies += 1;
+        }
+        // Spawn Imps
+        int num_imps = 1 + int(current_wave / 3);
+        for(int i = 0; i < num_imps; i++){
+          Imp new_enem = new Imp(get_random_spawn_point(), wave_time);
+          actor_spawns.add(new_enem);
+          alive_enemies += 1;
+        }
         break;
       default:
         println("Wave mode incorrect");
