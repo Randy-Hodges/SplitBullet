@@ -106,7 +106,9 @@ class Player extends Actor {
     }
 
     void checkInputs() {
-        aim_vector.add((mouseX - (width / 2)) / 100.0,(mouseY - (height / 2)) / 100.0).limit(1);
+        // aim_vector.add((mouseX - (width / 2)) / 100.0,(mouseY - (height / 2)) / 100.0).limit(1);
+        PVector mouse_pos = new PVector(mouseX, mouseY);
+        aim_vector = mouse_pos.copy().sub(pos).normalize();
 
         if (GAME.mouse_inputs.contains(LEFT)) {
             fire();
