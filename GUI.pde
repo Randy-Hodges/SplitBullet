@@ -134,6 +134,8 @@ class GUI {
 
   void draw_lose_screen() {
     image(lose_image, 0, 0, width, height);
+    text("It's all over...", width/4, height/2 - 80);
+    text("Back to Menu", width/2, height - height/4);
   }
 
   void draw_pause_screen() {
@@ -146,14 +148,17 @@ class GUI {
     text("Paused", width/2, height/4);
     textSize(24);
     text("Press 'P' to Resume", width/2, height/2);
+    text("Press 'M' to Mute", width/2, height/2 + 50);
     popMatrix();
   }
   
   void draw_victory_screen() {
      image(victory_image, 0, 0, width, height); 
+     text("You won...", width/2, height/5);
+     text("Back to Menu", width/2, height - height/4);
   }
   
-void draw_high_score_screen() {
+  void draw_high_score_screen() {
     background(26);
     
     // Load high score data from the CSV file
@@ -187,6 +192,17 @@ void draw_high_score_screen() {
     }
   }
 
+  int handle_lose_screen_click() {
+    // Check if click is within "Back to Menu" area
+    if (mouseX > width/2 && mouseX < 50 + textWidth("Back to Menu") && mouseY > (height - height/4) && mouseY < (height - height/4) + textDescent()) {
+      // Switch to main menu screen
+      screen_state = MENU_SCREEN;
+      return MENU_SCREEN;
+    }
+    
+    return screen_state;
+  }
+
   int handle_main_menu_click() {
     // Check if the click is within the "Play" button's area
     if (mouseX > width/2 - 50 && mouseX < width/2 + 50 && mouseY > height/2 + 250 && mouseY < height/2 + 290) {
@@ -215,4 +231,16 @@ void draw_high_score_screen() {
     
     return screen_state;
   }
+  
+  int handle_victory_screen_click() {
+    // Check if click is within "Back to Menu" area
+    if (mouseX > width/2 && mouseX < 50 + textWidth("Back to Menu") && mouseY > (height - height/4) && mouseY < (height - height/4) + textDescent()) {
+      // Switch to main menu screen
+      screen_state = MENU_SCREEN;
+      return MENU_SCREEN;
+    }
+    
+    return screen_state;
+  }
+
 }

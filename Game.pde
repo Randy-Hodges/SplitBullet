@@ -117,6 +117,14 @@ class MyGame {
         if (mouse_inputs.contains(LEFT)) { 
           change_screen_state(game_gui.handle_main_menu_click()); 
         }
+        
+        // Comment this out
+        if (key_inputs.contains((int) '1')) {
+          change_screen_state(LOSE_SCREEN);
+        } else if (key_inputs.contains((int) '2')) {
+          change_screen_state(VICTORY_SCREEN);
+        }
+       
         break;
         
       case GAME_SCREEN:
@@ -157,11 +165,9 @@ class MyGame {
         
         // Handle Pause 
         if (keys_pressed.contains( (int)'P' )) {
-          // Pause logic
+          paused = true;
           change_screen_state(PAUSE_SCREEN);    
         }
-          
-
 
         break;
         
@@ -177,8 +183,19 @@ class MyGame {
         
         // Handle Pause 
         if (keys_pressed.contains( (int)'P' )) {
-          // Pause logic, add timer
+          paused = false;
           change_screen_state(GAME_SCREEN);    
+        }
+
+        // Handle Mute
+        if (keys_pressed.contains( (int)'M')) {
+          if (!muted) {
+            muted = true;
+            print("muted\n");
+          } else {
+            muted = false;
+            print("not muted\n");
+          }
         }
 
         break;
@@ -189,13 +206,8 @@ class MyGame {
 
         game_gui.draw_lose_screen();
         
-        // Comment this out 
-        if (key_inputs.contains((int) '1')) {
-          change_screen_state(LOSE_SCREEN);
-        } else if (key_inputs.contains((int) '2')) {
-          change_screen_state(VICTORY_SCREEN);
-        } else if (key_inputs.contains((int) '3')) {
-          change_screen_state(PAUSE_SCREEN);    
+        if (mouse_inputs.contains(LEFT)) { 
+          change_screen_state(game_gui.handle_lose_screen_click()); 
         }
 
         break;
@@ -206,14 +218,11 @@ class MyGame {
 
         game_gui.draw_victory_screen();
         
-        // Comment this out 
-        if (key_inputs.contains((int) '1')) {
-          change_screen_state(LOSE_SCREEN);
-        } else if (key_inputs.contains((int) '2')) {
-          change_screen_state(VICTORY_SCREEN);
-        } else if (key_inputs.contains((int) '3')) {
-          change_screen_state(PAUSE_SCREEN);    
+        
+        if (mouse_inputs.contains(LEFT)) { 
+          change_screen_state(game_gui.handle_victory_screen_click()); 
         }
+
 
         break; 
      
