@@ -182,18 +182,24 @@ class GUI {
     
     // Loop through the CSV lines and display the names and scores
     for (int i = 0; i < lines.length; i++) {
+      
       String[] columns = split(lines[i], ',');
-      String name = columns[0].trim();
-      String roundsSurvived = columns[1].trim();
-    
-      // Cap the name at 5 letters
-      if (name.length() > 5) {
-        name = name.substring(0, 5);
+      
+      // Check if there are at least two columns in the current line
+      if (columns.length >= 2) {
+        String name = columns[0].trim();
+        String roundsSurvived = columns[1].trim();
+        
+        // Cap the name at 5 letters
+        if (name.length() > 5) {
+          name = name.substring(0, 5);
+        }
+        
+        float y = height/4 + 30 * (i + 1); // Calculate the y position for the current line
+        text(name, width/4, y);
+        text(roundsSurvived, width/2, y);
       }
-    
-      float y = height/4 + 30 * (i + 1); // Calculate the y position for the current line
-      text(name, width/4, y);
-      text(roundsSurvived, width/2, y);
+      
     }
     popMatrix();
   }
@@ -211,7 +217,7 @@ class GUI {
 
   int handle_lose_save_click() {
     // Check if click is within "Submit" : width / 2 - 100, height / 2 + 100
-    if (mouseX > (width / 2 - 100) && mouseX < (width / 2 - 100) + textWidth("Submit") && mouseY > (height / 2 + 100) && mouseY < (height / 2 + 100) + 2*textDescent()) {
+    if (mouseX > (width / 2 - 100) && mouseX < (width / 2 - 100) + textWidth("Submit") && mouseY > (height / 2 + 100) && mouseY < (height / 2 + 100) + 2*textDescent) {
       // Switch to main menu
       screen_state = MENU_SCREEN;
       return MENU_SCREEN;
