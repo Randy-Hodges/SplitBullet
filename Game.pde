@@ -48,6 +48,7 @@ class MyGame {
 
   // List of actors
   ArrayList<Actor> actors, actor_spawns, actor_despawns;
+  ArrayList<Enemy> cur_enemies;
 
   // Game assets
   AssetPool assets;
@@ -81,6 +82,10 @@ class MyGame {
     this.actors = new ArrayList<Actor>();
     this.actor_spawns = new ArrayList<Actor>();
     this.actor_despawns = new ArrayList<Actor>();
+
+    this.cur_enemies = new ArrayList<Enemy>();
+
+    this.cur_enemies = new ArrayList<Enemy>();
 
     // Initialize AssetPool
     this.assets = new AssetPool(true, "media/sprites", "media/sounds");
@@ -162,7 +167,6 @@ class MyGame {
         render();
 
         // Check if wave is over, then begin the next spawn_wave(current_wave)
-        
         // Handle Pause 
         if (keys_pressed.contains( (int)'P' )) {
           paused = true;
@@ -327,23 +331,25 @@ class MyGame {
   }
   
   PVector get_random_spawn_point() {
-    int edge = int(random(4));
-    PVector spawn_point;
+    float radius = (PLAYABLE_AREA_WIDTH/2);
+    PVector spawn_point = new PVector(width/2, height/2).add(PVector.random2D().mult(radius*sqrt(2)));
+    // int edge = int(random(4));
+    // PVector spawn_point;
     
-    switch (edge) {
-      case 0: // Top edge
-        spawn_point = new PVector(( PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH) / 2, PLAYABLE_AREA_Y );
-        break;
-      case 1: // Right edge
-        spawn_point = new PVector(PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH, (PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT) / 2 );
-        break;
-      case 2: // Bottom edge
-        spawn_point = new PVector(( PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH) / 2, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT);
-        break;
-      default: // Left edge
-        spawn_point = new PVector(PLAYABLE_AREA_X, (PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT) / 2);
-        break;
-    }
+    // switch (edge) {
+    //   case 0: // Top edge
+    //     spawn_point = new PVector(( PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH) / 2, PLAYABLE_AREA_Y );
+    //     break;
+    //   case 1: // Right edge
+    //     spawn_point = new PVector(PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH, (PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT) / 2 );
+    //     break;
+    //   case 2: // Bottom edge
+    //     spawn_point = new PVector(( PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH) / 2, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT);
+    //     break;
+    //   default: // Left edge
+    //     spawn_point = new PVector(PLAYABLE_AREA_X, (PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT) / 2);
+    //     break;
+    // }
   
     return spawn_point;  
   }

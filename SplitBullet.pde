@@ -17,12 +17,13 @@ void setup() {
     int FR = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].getDisplayMode().getRefreshRate();
 
     size(1000, 1000, P2D);
-    frameRate(FR);
+    frameRate(target_frame_rate);
 
     GAME = new MyGame(100);
 
     // Testing
     player_pos = new PVector(width/2, height/2);
+    GAME.actor_spawns.add(new Orc(new PVector(width/4, 3*height/4)));
 }
 
 void draw() {
