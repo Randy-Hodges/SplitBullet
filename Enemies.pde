@@ -30,7 +30,7 @@ class Orc extends Enemy{
         // puts all frames for a character in the (Enemy attr) frames obj
         frames = new PImage[orc_total_frames];
         for (int i = 0; i < orc_total_frames; i++) {
-            String image_name = "media/sprites/enemies/basic/orc_warrior_run_anim_f" + nf(i, 1) + ".png";
+            String image_name = "media/sprites/enemies/orc/orc_warrior_run_anim_f" + nf(i, 1) + ".png";
             frames[i] = loadImage(image_name);
         }
     }
