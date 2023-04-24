@@ -83,7 +83,7 @@ class MyGame {
     this.actor_despawns = new ArrayList<Actor>();
 
     // Initialize AssetPool
-    this.assets = new AssetPool(true, "media/sprites");
+    this.assets = new AssetPool(true, "media/sprites", "media/sounds");
     
     // Initialize timers
     this.game_time = new Timer();
@@ -131,7 +131,6 @@ class MyGame {
         // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
         if (player == null) {
           initialize_player();
-          actor_spawns.add(player);
           populate_wave(current_wave);
         }
         
@@ -159,7 +158,6 @@ class MyGame {
         // Handle Pause 
         if (keys_pressed.contains( (int)'P' )) {
           // Pause logic
-          
           change_screen_state(PAUSE_SCREEN);    
         }
           
@@ -252,8 +250,8 @@ class MyGame {
   }
 
   void update_actors() {
-    spawn_actors();
     despawn_actors();
+    spawn_actors();
   }
 
   void simulate() {
@@ -342,8 +340,9 @@ class MyGame {
   }
   
   void initialize_player() {
-    player_pos = new PVector(width/2, height/2);
-    this.player = new Player(30, player_pos, new PVector(), new PVector(), new PVector(2, 2), 0);
+    actor_despawns.add(player);
+    this.player = new Player(30, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
+    actor_spawns.add(player);
   }
 
 }
