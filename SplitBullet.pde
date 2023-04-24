@@ -8,24 +8,17 @@ import java.awt.GraphicsDevice;
 import java.awt.DisplayMode;
 
 MyGame GAME;
-// The variables below are for testing purposes and will be removed in final product
-Player p1;
-float target_frame_rate = 20;
 
 void setup() {
     int FR = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].getDisplayMode().getRefreshRate();
 
     size(1000, 1000, P2D);
-    frameRate(target_frame_rate);
+    frameRate(FR);
 
-    GAME = new MyGame(100);
-
-    // Testing
-    // GAME.actor_spawns.add(new OrcShaman(new PVector(width/4, 3*height/4), 5000));
+    GAME = new MyGame(60);
 }
 
 void draw() {
-    // background(#45c8fb);
     GAME.update();
 }
 
