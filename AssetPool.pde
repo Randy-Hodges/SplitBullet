@@ -7,13 +7,26 @@ import java.util.List;
 
 class AssetPool {
     // FIELDS
-    Minim audio_loader;
 
+    // Object necessary for loading audio files
+    // Used as audio_loader.loadFile(String path_to_file)
+    // which returns a AudioPlayer object.
+    private Minim audio_loader;
+
+    // Lists of allowed sprite and audio file types
+    // Limited by Processing's support
     private List<String> allowed_sprite_types, allowed_audio_types;
+
+    // Dictionarys that store Sprite and AudioPlayer (sound file) Objects
+    // If autofilled, access desired Sprite/Sound by their key, which defualts
+    // to the path to that file, beginning at the Sketch root.
+    // i.e. "media/sprites/player/player_running"
     HashMap<String,Sprite> sprites;
     HashMap<String,AudioPlayer> sounds;
 
     // CONSTRUCTORS
+    // Can take an endless number of source directories. Will load Sprites
+    // and Audio files from that directory and all subdirectories.
     AssetPool(boolean autofill, String... src_dirs) {
         audio_loader = new Minim(SplitBullet.this);
         allowed_sprite_types = Arrays.asList(".gif", ".jpg", ".jpeg", ".tga", ".png");
@@ -33,30 +46,48 @@ class AssetPool {
     }
 
     // METHODS
+
+    // Add assets with String key, Object
+
     void addSprite(String label, Sprite sprite) {
         sprites.put(label, sprite);
-    }
-
-    void removeSprite(String label) {
-        sprites.remove(label);
-    }
-
-    Sprite getSprite(String key) {
-        return sprites.get(key);
     }
 
     void addSound(String label, AudioPlayer sound) {
         sounds.put(label, sound);
     }
 
+    // Remove assets given String key 
+
+    void removeSprite(String label) {
+        sprites.remove(label);
+    }
+
     void removeSound(String label) {
         sounds.remove(label);
+    }
+
+    // Get assets given String key
+
+    Sprite getSprite(String key) {
+        return sprites.get(key);
     }
 
     AudioPlayer getSound(String key) {
         return sounds.get(key);
     }
 
+    // Finds all Sprites and audio files in a folder and its subfolders
+    // and automatically adds them to the appropriate HashMap.
+    void autoFill(String src_dir_name) {
+        String root_path = sketchPath("");
+        File src_dir = new File(root_path + src_dir_name);
+
+        search_files(src_dir, root_path);
+    }
+
+    // Helper method for autoFill() that recursively dives into subfolders
+    // searching for and adding Sprites and audio files
     private void search_files(File root, String src_dir_path) {
         for (File file : root.listFiles()) {
             if (!file.isHidden()) {
@@ -82,10 +113,4 @@ class AssetPool {
         }
     }
 
-    void autoFill(String src_dir_name) {
-        String root_path = sketchPath("");
-        File src_dir = new File(root_path + src_dir_name);
-
-        search_files(src_dir, root_path);
-    }
 }
