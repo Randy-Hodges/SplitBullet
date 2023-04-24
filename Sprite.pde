@@ -5,15 +5,46 @@ import java.util.Collections;
 
 class Sprite {
     // FIELDS
-    String src_dir, filename, filetype;
-    int filenum_pad, first_frame, num_frames, anim_length;
 
+    // path from Sketch root to the directory that contains sprite frames
+    // i.e. "media/sprites/other" or "media/sprites/player/body_idle"
+    String src_dir;
+
+    // The shared name between all frames
+    String filename;
+    
+    // The shared filetype between all frames
+    String filetype;
+
+    // Number of digits in all frame's frame number
+    // i.e. a file "spriteframe003" should be 3 or
+    // a file sprite_frame_6 should be 1.
+    int filenum_pad;
+    
+    // The frame value of the first frame in the sequence
+    // Usually will either be 0 or 1
+    int first_frame;
+    
+    // Number of frames in the sprite image sequence
+    int num_frames;
+    
+    // length in ms the sprite animation should take to complete
+    int anim_length;
+
+    // timer used to determine which frame should be displayed
     Timer timer;
 
+    // Array that stores the loaded PImages
     PImage[] image_buffer;
+
+    // boolean for whether the image sequence should loop
     boolean loop;
 
+
     // CONSTRUCTORS
+
+    // You will probably want to use the last constructor in most situations.
+    // These are for manually loading a Sprite
     Sprite(String src_dir, String filename, int filename_framenum_leadingzeroes, String filetype, int anim_length_in_ms, boolean loops, int first_frame_num) {
         src_dir.trim();
         filename.trim();
@@ -47,6 +78,10 @@ class Sprite {
     Sprite(String src_dir, String filename, int filename_framenum_leadingzeroes, String filetype, int anim_length_in_ms) {
         this(src_dir, filename, filename_framenum_leadingzeroes, filetype, anim_length_in_ms, true, 0);
     }
+
+    // You will probably want to use this constructor
+    // Although, I would recommend grabbing the Sprite you want from
+    // MyGame.assets instead, since it is already loaded.
     Sprite(String src_dir, int anim_length_in_ms, boolean loops) {
         src_dir.trim();
 
@@ -65,6 +100,20 @@ class Sprite {
     }
 
     // METHODS
+
+    // This is the only method you should really care about.
+    // Used to pull the appropriate frame in the image sequence.
+    // Common usage: image([your_sprite_var_name].getFrame(), 0, 0, 1, 1);
+    PImage getFrame() {
+        return image_buffer[constrain(timer.getActiveTime() / int(ceil(float(anim_length) / num_frames)), 0, num_frames-1)];
+    }
+
+    // The following methods are used for building the Sprite object.
+    // You probably will never need them.
+
+    // Given that this instance already has its src_dir, anim_length, and loop
+    // fields filled already, this method will automatically fill all other fields
+    // with appropriate values.
     void fillFields() {
         File[] files = new File(sketchPath("") + src_dir).listFiles();
 
@@ -105,6 +154,7 @@ class Sprite {
         this.filetype = file_types.get(0);
     }
 
+    // Calculates the number of frames (mostly deprecated by fillFields())
     int calcNumFrames() {
         num_frames = 0;
 
@@ -120,6 +170,8 @@ class Sprite {
         return num_frames;
     }
 
+    // Fills the image_buffer array with PImages of the frames in the specified
+    // src_dir folder.
     PImage[] createArray() {
         image_buffer = new PImage[num_frames];
 
@@ -128,9 +180,5 @@ class Sprite {
         }
 
         return image_buffer;
-    }
-
-    PImage getFrame() {
-        return image_buffer[constrain(timer.getActiveTime() / int(ceil(float(anim_length) / num_frames)), 0, num_frames-1)];
     }
 }
