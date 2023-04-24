@@ -2,9 +2,36 @@
 
 class Actor {
     // FIELDS
-    PVector pos, vel, accel, scale, next_pos, next_vel, next_accel, draw_pos;
-    float rot, hitbox_radius;
+
+    // Represents the Actor's current position and motion vectors
+    // on the current simulation
+    PVector pos, vel, accel;
+
+    // Represents the Actor's position and motion vectors beginning
+    // at the next simulation cycle. (will become pos, vel, accel)
+    // at the beginning of that next cycle.
+    // Designed to be filled out in simulate()
+    PVector next_pos, next_vel, next_accel
+    
+    // Size of Actor's hitbox in px. Also functions as the drawn
+    // image's base scale.
+    float hitbox_radius;
+
+    // Array that contains all collisions between this Actor and
+    // all Actors in GAME.actors. Filled by calcCollision() method.
     ArrayList<Actor> collisions;
+
+    // The position where the Actor is drawn.
+    // Represents a linearly interpolated position between
+    // pos and next_pos. Will not differ from pos unless
+    // frameRate is greater than GAME.tickrate.
+    PVector draw_pos;
+
+    // Multiplier that scales the drawn image
+    PVector scale;
+
+    // Rotation in radians of the drawn image
+    float rot
 
     // CONSTRUCTORS
     Actor(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot) {
@@ -76,11 +103,17 @@ class Actor {
 
     // The following methods should only be overwritten in special circumstances.
 
-    void updateVectors() {
-        next_vel.add(next_accel);
-        next_pos.add(next_vel.x / GAME.tickrate, next_vel.y / GAME.tickrate);
-    }
-
+    // Used to fill in the next_pos, next_vel, next_accel fields
+    // Overwrite if, for example, you want to add AI or any other
+    // simulated functionality to your Actor.
+    // You must retain the existing functionality of the method.
+    /* For example, your override would ideally look something like this:
+        void simulate() {
+            runAI();
+            calcGravity();
+            super.simulate(); <-- retains the functionality of the original method
+        }
+    */
     void simulate() {
         calcCollision();
 
@@ -89,6 +122,13 @@ class Actor {
         updateVectors();
     }
 
+    // Applies movement calculations for the next simulation cycle
+    void updateVectors() {
+        next_vel.add(next_accel);
+        next_pos.add(next_vel.x / GAME.tickrate, next_vel.y / GAME.tickrate);
+    }
+
+    // Sets the current movement vectors to their next_ counterparts
     void move() {
         accel.set(next_accel);
         vel.set(next_vel);
@@ -99,6 +139,8 @@ class Actor {
         next_pos.set(pos);
     }
 
+    // Draws the Actor to the screen using translation matrices.
+    // In most scenarios, you will simply want to override the display() method.
     void render() {
         draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))));
         
