@@ -70,14 +70,17 @@ class Timer {
     }
 
     void toggle() {
+        update();
         active = !active;
     }
 
     void resume() {
+        update();
         active = true;
     }
 
     void pause() {
+        update();
         active = false;
     }
 
