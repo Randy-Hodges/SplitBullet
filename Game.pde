@@ -11,6 +11,7 @@ class MyGame {
   final int LOSE_SCREEN = 3;
   final int VICTORY_SCREEN = 4;
   final int HIGH_SCORE_SCREEN = 5;
+  final int LOSE_SCREEN_SAVE = 6;
   int screen_state;
 
   // Play area variables
@@ -29,6 +30,9 @@ class MyGame {
 
   // GUI object
   GUI game_gui;
+  
+  // TextInput object
+  TextInputField player_name_input;
 
   // Window properties
   GLWindow window_properties;
@@ -68,6 +72,10 @@ class MyGame {
 
     // Initialize GUI object
     this.game_gui = new GUI();
+    
+    // Initialize TextInputField object
+    this.player_name_input = new TextInputField(new PVector(width / 2 - 150, height / 2 - 25), new PVector(300, 50), 5);
+
     
     // Initialize the user inputted key and mouse array lists
     this.keys_pressed = new ArrayList<Integer>();
@@ -114,7 +122,7 @@ class MyGame {
 
         game_gui.draw_main_menu();
         
-        if (mouse_inputs.contains(LEFT)) { 
+        if (mouse_pressed.contains(LEFT)) { 
           change_screen_state(game_gui.handle_main_menu_click()); 
         }
         
@@ -138,6 +146,11 @@ class MyGame {
         if (player == null) {
           initialize_player();
           populate_wave(current_wave);
+        }
+        
+        // Check if player health has reached 0. Saves high score and changes to Lose screen
+        if (lives_count == 0) {
+          change_screen_state(LOSE_SCREEN); 
         }
 
         // Go to new wave if needed
@@ -166,7 +179,7 @@ class MyGame {
 
           window_properties.confinePointer(false);
         }
-
+        
         break;
         
       case PAUSE_SCREEN:
@@ -204,7 +217,7 @@ class MyGame {
 
         game_gui.draw_lose_screen();
         
-        if (mouse_inputs.contains(LEFT)) { 
+        if (mouse_pressed.contains(LEFT)) { 
           change_screen_state(game_gui.handle_lose_screen_click()); 
         }
 
@@ -217,7 +230,7 @@ class MyGame {
         game_gui.draw_victory_screen();
         
         
-        if (mouse_inputs.contains(LEFT)) { 
+        if (mouse_pressed.contains(LEFT)) { 
           change_screen_state(game_gui.handle_victory_screen_click()); 
         }
 
@@ -229,9 +242,38 @@ class MyGame {
         game_gui.draw_high_score_screen();
         
         // Go back to menu screen        
-        if (mouse_inputs.contains(LEFT)) { 
+        if (mouse_pressed.contains(LEFT)) { 
           change_screen_state(game_gui.handle_high_score_click()); 
         }
+      
+        break;
+
+      case LOSE_SCREEN_SAVE:
+        game_gui.draw_lose_save_screen();
+        
+        // Draws text box
+        player_name_input.draw();
+        
+        if (keys_pressed.size() > 0) {
+          char[] keyChar = Character.toChars(keys_pressed.get(0));
+          player_name_input.add_char(keyChar[0]); 
+        }
+        
+        if (mouse_pressed.contains(LEFT)) {
+          
+          int clicked_button = game_gui.handle_lose_save_click();
+          
+          // If clicked to return to submit and return to menu, save highscore info, reset game
+          if (clicked_button == MENU_SCREEN) {
+             submit_high_score(player_name_input.text, current_wave);
+             player_name_input.text = "";
+             reset_game();
+          }
+          
+          change_screen_state(clicked_button);
+        }
+        
+        break;
 
     }
       // Clear input buffers
@@ -282,9 +324,9 @@ class MyGame {
   }
 
 
-  void spawn_wave() {
+  //void spawn_wave() {
     
-  }
+  //}
 
   void populate_wave(int current_wave) {
     // Handles the latest wave event after a wave is cleared.
@@ -335,6 +377,7 @@ class MyGame {
 
   void change_screen_state(int new_state) {
     // Change the screen state to the new state
+    game_gui.screen_state = new_state;
     this.screen_state = new_state;
   }
   
@@ -349,6 +392,26 @@ class MyGame {
     actor_despawns.add(player);
     this.player = new Player(30, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
     actor_spawns.add(player);
+  }
+
+  void reset_game() {
+    //print("resetting game...\n");
+    player = null;
+    lives_count = 3;
+    current_wave = 1;
+    //print(player + "\n");
+  }
+
+  void submit_high_score(String player_name, int current_wave) {
+    
+    if (player_name == "") {
+      player_name = "PLAYR";
+    }
+    
+    String[] lines = loadStrings("highscore.csv");
+    String new_entry = player_name + "," + current_wave;
+    String[] updated_lines = append(lines, new_entry);
+    saveStrings("highscore.csv", updated_lines);
   }
 
 }

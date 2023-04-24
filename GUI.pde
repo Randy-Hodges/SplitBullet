@@ -9,6 +9,7 @@ class GUI {
   final int LOSE_SCREEN = 3;
   final int VICTORY_SCREEN = 4;
   final int HIGH_SCORE_SCREEN = 5;
+  final int LOSE_SCREEN_SAVE = 6;
 
   // Initialize game variables
   int screen_state;
@@ -37,29 +38,7 @@ class GUI {
     this.customFont = createFont("media/fonts/goudy_bookletter/GoudyBookletter1911.otf", 32);
     textFont(customFont);
   }
-  
-  //void refresh_screen() {
-  ///* Draws the GUI to the screen */
     
-  //  switch (screen_state) {
-  //    case MENU_SCREEN:
-  //      // draw main menu
-  //      draw_main_menu();
-  //      break;
-        
-  //    case GAME_SCREEN:
-  //      // draw game
-  //      draw_game_screen();
-  //      break;
-       
-  //    case PAUSE_SCREEN:
-  //      // pause screen
-  //      draw_pause_screen();
-  //      break;
-        
-  //  }
-  //}
-  
   void drawBush(float x, float y, float size) {
     color bushColor = color(0, 128, 0); // Define a green color for the bush
     fill(bushColor);
@@ -73,6 +52,7 @@ class GUI {
     image(menu_image, 0, 0, width, height);
     textAlign(CENTER, CENTER);
     textSize(40);
+    fill(255);
     text("Play", width/2, height/2 + 270); // Draw "Play" button
     text("High Score", width/2, height/2 + 320); // Draw "High Score" button
     
@@ -133,9 +113,25 @@ class GUI {
   }
 
   void draw_lose_screen() {
+    pushMatrix();
     image(lose_image, 0, 0, width, height);
+    fill(255);
     text("It's all over...", width/4, height/2 - 80);
     text("Back to Menu", width/2, height - height/4);
+    popMatrix();
+    //pushMatrix();
+    //fill(0, 255, 0, 100); // Set fill color to green with some transparency
+    //rect(width/2 - (textWidth("Back to Menu") / 2), height - height/4 - 10, textWidth("Back to Menu"), 2*textDescent() + 10); // Draw a rectangle around the "Back to Menu" text
+    //popMatrix();
+
+  }
+  
+  void draw_lose_save_screen() {
+    pushMatrix();
+    background(26);
+    fill(255);
+    text("Submit", width / 2 - 100, height / 2 + 100);
+    popMatrix();
   }
 
   void draw_pause_screen() {
@@ -153,12 +149,16 @@ class GUI {
   }
   
   void draw_victory_screen() {
+     pushMatrix();
      image(victory_image, 0, 0, width, height); 
+     fill(255);
      text("You won...", width/2, height/5);
      text("Back to Menu", width/2, height - height/4);
+     popMatrix();
   }
   
   void draw_high_score_screen() {
+    pushMatrix();
     background(26);
     
     // Load high score data from the CSV file
@@ -166,7 +166,7 @@ class GUI {
     
     textAlign(LEFT, CENTER);
     textSize(24);
-    
+    fill(255);
     
     // Display Back button
     text("Go Back", 50, 50);
@@ -190,12 +190,24 @@ class GUI {
       text(name, width/4, y);
       text(roundsSurvived, width/2, y);
     }
+    popMatrix();
   }
 
   int handle_lose_screen_click() {
     // Check if click is within "Back to Menu" area
-    if (mouseX > width/2 && mouseX < 50 + textWidth("Back to Menu") && mouseY > (height - height/4) && mouseY < (height - height/4) + textDescent()) {
-      // Switch to main menu screen
+      if (mouseX > width/2 - (textWidth("Back to Menu") / 2) && mouseX < width/2 + (textWidth("Back to Menu") / 2) && mouseY > (height - height/4) - 10 && mouseY < (height - height/4) + 2*textDescent()) {
+      // Switch to lose save screen
+      screen_state = LOSE_SCREEN_SAVE;
+      return LOSE_SCREEN_SAVE;
+    }
+    
+    return screen_state;
+  }
+
+  int handle_lose_save_click() {
+    // Check if click is within "Submit" : width / 2 - 100, height / 2 + 100
+    if (mouseX > (width / 2 - 100) && mouseX < (width / 2 - 100) + textWidth("Submit") && mouseY > (height / 2 + 100) && mouseY < (height / 2 + 100) + 2*textDescent()) {
+      // Switch to main menu
       screen_state = MENU_SCREEN;
       return MENU_SCREEN;
     }
@@ -223,7 +235,7 @@ class GUI {
   
   int handle_high_score_click() {
     // Check if the click is within the "Go Back" button's area
-    if (mouseX > 50 && mouseX < 50 + textWidth("Go Back") && mouseY > 50 - textAscent() && mouseY < 50 + textDescent()) {
+    if (mouseX > 50 && mouseX < 50 + textWidth("Go Back") && mouseY > 50 - textAscent() && mouseY < 50 + 2*textDescent()) {
       // Switch to the main menu screen
       screen_state = MENU_SCREEN;
       return MENU_SCREEN;
@@ -234,7 +246,7 @@ class GUI {
   
   int handle_victory_screen_click() {
     // Check if click is within "Back to Menu" area
-    if (mouseX > width/2 && mouseX < 50 + textWidth("Back to Menu") && mouseY > (height - height/4) && mouseY < (height - height/4) + textDescent()) {
+    if (mouseX > width/2 && mouseX < 50 + textWidth("Back to Menu") && mouseY > (height - height/4) && mouseY < (height - height/4) + 2*textDescent()) {
       // Switch to main menu screen
       screen_state = MENU_SCREEN;
       return MENU_SCREEN;
