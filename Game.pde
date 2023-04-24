@@ -131,8 +131,6 @@ class MyGame {
         // Handle game logic
         // Render, simulate, and move Actors
         //print("got to GAME_SCREEN \n");
-        window_properties.confinePointer(true);
-        // window_properties.setPointerVisible(false);
 
         game_gui.draw_game_screen();
         
@@ -148,22 +146,25 @@ class MyGame {
           populate_wave(current_wave);
         }
         
+        // simulate & move on tick; always render
         if (game_time.getActiveTime() >= (1000.0 / tickrate)) {
-          // window_properties.warpPointer(width / 2, height / 2);
           for (int sim = 1; sim < (game_time.getActiveTime() / (1000.0 / tickrate)); sim++) {
             move();
             simulate();
           }
           game_time.reset();
         }
-
         render();
 
         // Check if wave is over, then begin the next spawn_wave(current_wave)
         // Handle Pause 
         if (keys_pressed.contains( (int)'P' )) {
+          game_time.pause();
+
           paused = true;
-          change_screen_state(PAUSE_SCREEN);    
+          change_screen_state(PAUSE_SCREEN);
+
+          window_properties.confinePointer(false);
         }
 
         break;
@@ -172,16 +173,16 @@ class MyGame {
         // Handle pause logic
         // print("got to PAUSE_SCREEN \n");
 
-        window_properties.confinePointer(false);
-        window_properties.setPointerVisible(true);
-
         game_gui.draw_pause_screen();
-        
         
         // Handle Pause 
         if (keys_pressed.contains( (int)'P' )) {
           paused = false;
-          change_screen_state(GAME_SCREEN);    
+          change_screen_state(GAME_SCREEN);
+
+          window_properties.confinePointer(true);
+          game_time.resume();
+          break;
         }
 
         // Handle Mute
