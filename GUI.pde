@@ -22,6 +22,9 @@ class GUI {
   
   // Initialize font
   PFont customFont;
+  float fontSize;
+  float textDescent;
+  
 
   GUI () {    
     // Init GUI variables
@@ -35,8 +38,10 @@ class GUI {
     this.screen_state = MENU_SCREEN;
 
     // Load the custom font from the "data" folder and set the size to 32
+    this.fontSize = 32;
     this.customFont = createFont("media/fonts/goudy_bookletter/GoudyBookletter1911.otf", 32);
     textFont(customFont);
+    this.textDescent = 13.0;  // Processing 3 gives different textDescent() values than Processing 4
   }
     
   void drawBush(float x, float y, float size) {
@@ -195,7 +200,7 @@ class GUI {
 
   int handle_lose_screen_click() {
     // Check if click is within "Back to Menu" area
-      if (mouseX > width/2 - (textWidth("Back to Menu") / 2) && mouseX < width/2 + (textWidth("Back to Menu") / 2) && mouseY > (height - height/4) - 10 && mouseY < (height - height/4) + 2*textDescent()) {
+      if (mouseX > width/2 - (textWidth("Back to Menu") / 2) && mouseX < width/2 + (textWidth("Back to Menu") / 2) && mouseY > (height - height/4) - 10 && mouseY < (height - height/4) + 2*textDescent) {
       // Switch to lose save screen
       screen_state = LOSE_SCREEN_SAVE;
       return LOSE_SCREEN_SAVE;
@@ -235,7 +240,7 @@ class GUI {
   
   int handle_high_score_click() {
     // Check if the click is within the "Go Back" button's area
-    if (mouseX > 50 && mouseX < 50 + textWidth("Go Back") && mouseY > 50 - textAscent() && mouseY < 50 + 2*textDescent()) {
+    if (mouseX > 50 && mouseX < 50 + textWidth("Go Back") && mouseY > 50 - textAscent() && mouseY < 50 + 2*textDescent) {
       // Switch to the main menu screen
       screen_state = MENU_SCREEN;
       return MENU_SCREEN;
@@ -246,7 +251,7 @@ class GUI {
   
   int handle_victory_screen_click() {
     // Check if click is within "Back to Menu" area
-    if (mouseX > width/2 && mouseX < 50 + textWidth("Back to Menu") && mouseY > (height - height/4) && mouseY < (height - height/4) + 2*textDescent()) {
+    if (mouseX > width/2 && mouseX < 50 + textWidth("Back to Menu") && mouseY > (height - height/4) && mouseY < (height - height/4) + 2*textDescent) {
       // Switch to main menu screen
       screen_state = MENU_SCREEN;
       return MENU_SCREEN;
