@@ -8,10 +8,10 @@ class Actor {
     PVector pos, vel, accel;
 
     // Represents the Actor's position and motion vectors beginning
-    // at the next simulation cycle. (will become pos, vel, accel)
-    // at the beginning of that next cycle.
+    // at the next simulation cycle. (will become pos, vel, accel
+    // at the beginning of that next cycle.)
     // Designed to be filled out in simulate()
-    PVector next_pos, next_vel, next_accel
+    PVector next_pos, next_vel, next_accel;
     
     // Size of Actor's hitbox in px. Also functions as the drawn
     // image's base scale.
@@ -31,7 +31,7 @@ class Actor {
     PVector scale;
 
     // Rotation in radians of the drawn image
-    float rot
+    float rot;
 
     // CONSTRUCTORS
     Actor(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot) {
