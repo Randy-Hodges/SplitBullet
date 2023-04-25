@@ -107,6 +107,16 @@ class Sprite {
     PImage getFrame() {
         return image_buffer[constrain(timer.value() / int(ceil(float(anim_length) / num_frames)), 0, num_frames-1)];
     }
+    
+    void setAnimLength(int length) {
+        anim_length = length;
+        timer.setEndTime(length);
+    }
+
+    void setLoop(boolean loops) {
+        loop = loops;
+        timer.setLoop(loops);
+    }
 
     // The following methods are used for building the Sprite object.
     // You probably will never need them.
