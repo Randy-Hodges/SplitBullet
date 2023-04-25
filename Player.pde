@@ -15,7 +15,7 @@ class Player extends Actor {
             t = new Timer(true, 0, 5000, false, true);
         }
         Hat(PVector pos, float rot, PVector scale) {
-            this(GAME.assets.getSprite("media/sprites/player/hat_frames"), pos, rot, scale);
+            this(GAME.assets.getSprite("media/sprites/player/hat"), pos, rot, scale);
         }
         Hat(PVector pos, float rot) {
             this(pos, rot, new PVector(1, 1));
@@ -32,7 +32,7 @@ class Player extends Actor {
         }
 
         void render() {
-            updateSprite();
+            // updateSprite();
 
             pushMatrix();
 
@@ -54,9 +54,11 @@ class Player extends Actor {
             this.idle = idle;
             this.run = run;
             this.draw_sprite = idle;
+            
+            this.run.setAnimLength(500);
         }
         Body() {
-            this(GAME.assets.getSprite("media/sprites/player/body_idle"), GAME.assets.getSprite("media/sprites/player/body_running"));
+            this(GAME.assets.getSprite("media/sprites/player/idle"), GAME.assets.getSprite("media/sprites/player/run"));
         }
 
         void updateSprite() {
@@ -64,6 +66,12 @@ class Player extends Actor {
                 draw_sprite = run;
             } else {
                 draw_sprite = idle;
+            }
+
+            if ((Player.this.aim_vector.x < 0 && Player.this.vel.x > 0) || (Player.this.aim_vector.x > 0 && Player.this.vel.x < 0)) {
+                run.timer.countDown();
+            } else {
+                run.timer.countUp();
             }
         }
 
@@ -77,11 +85,104 @@ class Player extends Actor {
             popMatrix();
         }
     }
+    class Arm {
+        Gun gun;
+
+        Sprite arm;
+        PVector pos, scale;
+        float rot;
+
+        Arm(Sprite arm, Gun gun, PVector pos, float rot, PVector scale) {
+            this.arm = arm;
+            this.gun = gun;
+
+            this.pos = pos;
+            this.rot = rot;
+            this.scale = scale;
+        }
+        Arm(PVector pos, float rot, PVector scale) {
+            this(GAME.assets.getSprite("media/sprites/player/arm"), new Gun(), pos, rot, scale);
+        }
+        Arm(PVector pos, float rot) {
+            this(pos, rot, new PVector(1, 1));
+        }
+        Arm(PVector pos, PVector scale) {
+            this(pos, 0, scale);
+        }
+        Arm(PVector pos) {
+            this(pos, 0, new PVector(0.5, 0.5));
+        }
+        Arm() {
+            this(new PVector(12, 14));
+        }
+
+        void updateSprite() {
+            rot = Player.this.aim_vector.y * HALF_PI;
+        }
+
+        void render() {
+            updateSprite();
+
+            pushMatrix();
+
+            translate(pos.x, pos.y);
+            scale(scale.x, scale.y);
+
+            rotate(rot);
+
+            gun.render();
+            image(arm.getFrame(), 0, 0, (2 * Player.this.hitbox_radius), (2 * Player.this.hitbox_radius));
+
+            popMatrix();
+        }
+    }
+    class Gun {
+        Sprite gun;
+        PVector pos, scale;
+        float rot;
+
+        Gun(Sprite gun, PVector pos, float rot, PVector scale) {
+            this.gun = gun;
+
+            this.pos = pos;
+            this.rot = rot;
+            this.scale = scale;
+        }
+        Gun(PVector pos, float rot, PVector scale) {
+            this(GAME.assets.getSprite("media/sprites/player/gun"), pos, rot, scale);
+        }
+        Gun(PVector pos, float rot) {
+            this(pos, rot, new PVector(1, 1));
+        }
+        Gun(PVector pos, PVector scale) {
+            this(pos, 0, scale);
+        }
+        Gun(PVector pos) {
+            this(pos, 0, new PVector(1, 1));
+        }
+        Gun() {
+            this(new PVector(20, 0));
+        }
+
+        void render() {
+            pushMatrix();
+
+            translate(pos.x, pos.y);
+            scale(scale.x, scale.y);
+
+            rotate(rot);
+
+            image(gun.getFrame(), 0, 0, (2 * Player.this.hitbox_radius), (2 * Player.this.hitbox_radius));
+
+            popMatrix();
+        }
+    }
 
     Hat h;
     Body b;
+    Arm a;
 
-    PVector aim_vector;
+    PVector aim_vector, flip;
     int health;
 
     Timer fireTimer;
@@ -90,8 +191,9 @@ class Player extends Actor {
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health) {
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
 
-        h = new Hat(new PVector(0, -0.8 * hitbox_radius), new PVector(0.5, 0.5));
+        h = new Hat(new PVector(0, -0.7 * hitbox_radius), new PVector(0.7, 0.7));
         b = new Body();
+        a = new Arm();
 
         this.health = health;
 
@@ -99,6 +201,8 @@ class Player extends Actor {
         invincibilityTimer = new Timer(false, false, true, 0, 0, true);
 
         aim_vector = new PVector(1, 0);
+
+        flip = scale.copy();
     }
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot) {
         this(hitbox_radius,  pos,  vel,  accel,  scale,  rot, 10);
@@ -106,7 +210,7 @@ class Player extends Actor {
 
     void checkInputs() {
         // aim_vector.add((mouseX - (width / 2)) / 100.0,(mouseY - (height / 2)) / 100.0).limit(1);
-        aim_vector.set(mouseX - pos.x, mouseY - pos.y).normalize();
+        aim_vector.set(mouseX - (pos.x + (a.pos.x * a.scale.x)), mouseY - (pos.y + a.pos.y)).normalize();
 
         if (GAME.mouse_inputs.contains(LEFT)) {
             fire();
@@ -133,7 +237,7 @@ class Player extends Actor {
         //add new projectile at player's location moving in the direction of aim_vector
         if (fireTimer.value() >= 300)
         {
-            GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(1000)));
+            GAME.actor_spawns.add(new Projectile(new PVector(pos.x + (flip.x * a.pos.x), pos.y + a.pos.y).add(new PVector(1, 0).rotate(flip.x * a.rot).mult(flip.x  * a.gun.pos.x)), aim_vector.copy().setMag(1000)));
             fireTimer.reset();
         }
     }
@@ -194,7 +298,16 @@ class Player extends Actor {
         popMatrix();
     }
 
+    void checkDirection() {
+         if (aim_vector.x < 0) {
+            flip.set(-scale.x, scale.y);
+        } else {
+            flip.set(scale.x, scale.y);
+        }
+    }
+
     void render() {
+        checkDirection();
         imageMode(CENTER);
 
         draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.value() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.value() / (1000.0 / GAME.tickrate))));
@@ -202,20 +315,13 @@ class Player extends Actor {
         pushMatrix();
 
         translate(draw_pos.x, draw_pos.y);
-        scale(scale.x, scale.y);
-        
-        drawAimVector();
-
-        if (aim_vector.x < 0) {
-            scale(-1, 1);
-        } else {
-            scale(1, 1);
-        }
+        scale(flip.x, flip.y);
 
         rotate(rot);
 
         b.render();
         h.render();
+        a.render();
 
         popMatrix();
     }
