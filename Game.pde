@@ -208,8 +208,7 @@ class MyGame {
         // Handle Quit
         if (keys_pressed.contains( (int)'Q' )) {
           game_time.resume();
-          reset_game(); // Reset game w/o saving
-          change_screen_state(MENU_SCREEN); 
+          change_screen_state(LOSE_SCREEN_SAVE);
         }
 
         break;

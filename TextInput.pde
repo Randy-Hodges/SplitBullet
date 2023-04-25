@@ -23,12 +23,13 @@ class TextInputField {
     popMatrix();
   }
 
-  void add_char(int k) {
-    if (k == 8) {
-      remove_char();
-    } else if (k >= 32 && k <= 126) {
+  void add_char(char character) {
+    // Convert to ASCII value and don't include special characters
+    int ascii_value = (int) character;
+    
+    if (ascii_value >= 32 && ascii_value <= 126) {
       if (text.length() < max_characters) {
-        text += Character.toUpperCase(key);
+        text += Character.toUpperCase(character);
       }
     }
   }
