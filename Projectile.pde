@@ -7,22 +7,31 @@ class Projectile extends Actor {
 
     // CONSTRUCTORS
     // Including base-class constructor is a good safety measure, but try not to use.
-    Projectile(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int caliber) {
+    Projectile(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int caliber, Sprite displayImage) {
         super(hitbox_radius, pos, vel, accel, scale, rot);
         this.caliber = caliber;
-        displayImage = GAME.assets.getSprite("media/sprites/projectile");
+        this.displayImage = displayImage;
     }
     // Use one of below constructors
     // For class Player: Use this call to fire projectiles:
     // GAME.actors.add(new Projectile(pos.copy(), aim_vector.copy().setMag( [your projectile velocity here] )));
+    Projectile(PVector origin, PVector direction, int caliber, float hitbox_radius, Sprite displayImage) {
+        this(hitbox_radius, origin, direction, new PVector(), new PVector(1, 1), 0, caliber, displayImage);
+    }
     Projectile(PVector origin, PVector direction, int caliber, float hitbox_radius) {
-        this(hitbox_radius, origin, direction, new PVector(), new PVector(1, 1), 0, caliber);
+        this(hitbox_radius, origin, direction, new PVector(), new PVector(1, 1), 0, caliber, GAME.assets.getSprite("media/sprites/projectile/bullet"));
+    }
+    Projectile(PVector origin, PVector direction, int caliber, Sprite displayImage) {
+        this(origin, direction, caliber, 10, displayImage);
     }
     Projectile(PVector origin, PVector direction, int caliber) {
-        this(origin, direction, caliber, 20);
+        this(origin, direction, caliber, 10, GAME.assets.getSprite("media/sprites/projectile/bullet"));
+    }
+    Projectile(PVector origin, PVector direction, Sprite displayImage) {
+        this(origin, direction, 1, 10, displayImage);
     }
     Projectile(PVector origin, PVector direction) {
-        this(origin, direction, 1, 20);
+        this(origin, direction, 1, 10, GAME.assets.getSprite("media/sprites/projectile/bullet"));
     }
 
     // METHODS
@@ -47,6 +56,11 @@ class Projectile extends Actor {
             (pos.y > GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT) ) {
                 GAME.actor_despawns.add(this);
         }
+    }
+
+    void simulate() {
+        rot = vel.heading();
+        super.simulate();
     }
 
     void display() {
