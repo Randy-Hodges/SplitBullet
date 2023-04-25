@@ -23,9 +23,13 @@ class TextInputField {
     popMatrix();
   }
 
-  void add_char(char character) {
-    if (text.length() < max_characters) {
-      text += character;
+  void add_char(int k) {
+    if (k == 8) {
+      remove_char();
+    } else if (k >= 32 && k <= 126) {
+      if (text.length() < max_characters) {
+        text += Character.toUpperCase(key);
+      }
     }
   }
 
