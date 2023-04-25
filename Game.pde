@@ -118,7 +118,6 @@ class MyGame {
         //print("got to MENU_SCREEN \n");
 
         window_properties.confinePointer(false);
-        window_properties.setPointerVisible(true);
 
         game_gui.draw_main_menu();
         
@@ -139,6 +138,8 @@ class MyGame {
         // Handle game logic
         // Render, simulate, and move Actors
         //print("got to GAME_SCREEN \n");
+
+        window_properties.confinePointer(true);
         
         // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
         if (player == null) {
@@ -186,6 +187,8 @@ class MyGame {
         // Handle pause logic
         // print("got to PAUSE_SCREEN \n");
 
+        window_properties.confinePointer(false);
+
         game_gui.draw_pause_screen();
         
         // Handle Pause 
@@ -193,27 +196,19 @@ class MyGame {
           paused = false;
           change_screen_state(GAME_SCREEN);
 
-          window_properties.confinePointer(true);
           game_time.resume();
           break;
         }
 
         // Handle Mute
         if (keys_pressed.contains( (int)'M')) {
-          if (!muted) {
-            muted = true;
-            print("muted\n");
-          } else {
-            muted = false;
-            print("not muted\n");
-          }
+          muted = !muted;
         }
 
         break;
         
       case LOSE_SCREEN:
         window_properties.confinePointer(false);
-        window_properties.setPointerVisible(true);
 
         game_gui.draw_lose_screen();
         
@@ -225,7 +220,6 @@ class MyGame {
         
       case VICTORY_SCREEN:
         window_properties.confinePointer(false);
-        window_properties.setPointerVisible(true);
 
         game_gui.draw_victory_screen();
         
@@ -239,6 +233,8 @@ class MyGame {
      
       case HIGH_SCORE_SCREEN:
         //print("got to HIGH_SCORE_SCREEN \n");
+        window_properties.confinePointer(false);
+
         game_gui.draw_high_score_screen();
         
         // Go back to menu screen        
@@ -249,14 +245,17 @@ class MyGame {
         break;
 
       case LOSE_SCREEN_SAVE:
+        window_properties.confinePointer(false);
+
         game_gui.draw_lose_save_screen();
         
         // Draws text box
         player_name_input.draw();
         
         if (keys_pressed.size() > 0) {
-          char[] keyChar = Character.toChars(keys_pressed.get(0));
-          player_name_input.add_char(keyChar[0]); 
+          for (int key : keys_pressed) {
+            player_name_input.add_char(key);
+          }
         }
         
         if (mouse_pressed.contains(LEFT)) {
