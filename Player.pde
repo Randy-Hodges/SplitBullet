@@ -184,6 +184,7 @@ class Player extends Actor {
 
     PVector aim_vector, flip;
     int health;
+    boolean hurt;
 
     Timer fireTimer;
     Timer invincibilityTimer;
@@ -237,7 +238,7 @@ class Player extends Actor {
         //add new projectile at player's location moving in the direction of aim_vector
         if (fireTimer.value() >= 300)
         {
-            GAME.actor_spawns.add(new Projectile(new PVector(pos.x + (flip.x * a.pos.x), pos.y + a.pos.y).add(new PVector(1, 0).rotate(flip.x * a.rot).mult(flip.x  * a.gun.pos.x)), aim_vector.copy().setMag(1000)));
+            GAME.actor_spawns.add(new Projectile(new PVector(pos.x + (flip.x * a.pos.x), pos.y + a.pos.y).add(PVector.fromAngle(flip.x * a.rot).mult(flip.x  * a.gun.pos.x)), aim_vector.copy().setMag(1000)));
             fireTimer.reset();
         }
     }
@@ -255,8 +256,9 @@ class Player extends Actor {
     void collisionReaction() {
         for (Actor collision : collisions) {
             if (collision instanceof Enemy) {
-                if (invincibilityTimer.value() <= 0) {
+                if (invincibilityTimer.value() <= 0 && !((Enemy)collision).hurt && ((Enemy)collision).health > 0) {
                     health--;
+                    hurt = true;
                     invincibilityTimer.setBaseTime(1000);
                     invincibilityTimer.reset();
                     invincibilityTimer.resume();
@@ -275,8 +277,15 @@ class Player extends Actor {
         }
     }
 
+    void damageCooldown() {
+        if (hurt && invincibilityTimer.value() <= 0) {
+            hurt = false;
+        }
+    }
+
     void simulate() {
         checkInputs();
+        damageCooldown();
         super.simulate();
     }
     
@@ -319,7 +328,11 @@ class Player extends Actor {
 
         rotate(rot);
 
+        if (hurt) 
+            tint(255, 150, 150);
         b.render();
+        tint(255);
+
         h.render();
         a.render();
 

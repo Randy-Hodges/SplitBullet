@@ -69,14 +69,14 @@ class Orc extends Enemy{
 
 class OrcShaman extends Enemy{
     // static variables that are applied with super()
-    final static float orc_hitbox_radius = 10;
-    final static float orc_scalex = 2;
-    final static float orc_scaley = 2;
+    final static float orc_hitbox_radius = 20;
+    final static float orc_scalex = 3;
+    final static float orc_scaley = 3;
     final static int health = 3;
     // Other variables specific to this class
-    float decision_rate = 750; // how long (in ms) it takes between changing directions
+    float decision_rate = 1250; // how long (in ms) it takes between changing directions
     Timer decision_timer = new Timer();
-    float speed = 70; // pixels/sec
+    float speed = 40; // pixels/sec
     // Idle state occurs at begining of wave, spaces out enemies 
     Timer idle_timer = new Timer();
     int time_idle;
@@ -210,7 +210,7 @@ class Imp extends Enemy{
     Imp(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
         super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/imp"));
-        sprite.setAnimLength(750); //ms
+        sprite.setAnimLength(500); //ms
         time_idle = int(random(wave_time));
     }
 
