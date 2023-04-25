@@ -62,7 +62,7 @@ class Enemy extends Actor{
         if (hurt) {
                 tint(80);
                 // might not be the right place for this, works fine though
-                if (hurt_timer.getActiveTime() > hurt_time){
+                if (hurt_timer.value() > hurt_time){
                     checkAlive();
                     this.hurt = false;
                 }

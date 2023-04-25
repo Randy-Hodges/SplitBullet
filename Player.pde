@@ -12,7 +12,7 @@ class Player extends Actor {
             this.scale = scale;
 
             this.anim_rot = 0;
-            t = new Timer(true, true, true, true, 5000);
+            t = new Timer(true, 0, 5000, false, true);
         }
         Hat(PVector pos, float rot, PVector scale) {
             this(GAME.assets.getSprite("media/sprites/player/hat_frames"), pos, rot, scale);
@@ -28,7 +28,7 @@ class Player extends Actor {
         }
 
         void updateSprite() {
-            anim_rot = cos(t.getActiveTime() / (t.loop_time / TWO_PI));
+            anim_rot = cos(t.value() / (t.endTime() / TWO_PI));
         }
 
         void render() {
@@ -132,7 +132,7 @@ class Player extends Actor {
     void fire()
     {
         //add new projectile at player's location moving in the direction of aim_vector
-        if (fireTimer.getActiveTime() >= 300)
+        if (fireTimer.value() >= 300)
         {
             GAME.actor_spawns.add(new Projectile(pos.copy(), aim_vector.copy().setMag(1000)));
             fireTimer.reset();
@@ -170,9 +170,8 @@ class Player extends Actor {
 
     void simulate() {
         checkInputs();
+        toggleInvincibility();
         super.simulate();
-        fireTimer.update();
-        invincibilityTimer.update();
     }
     
     void move() {
@@ -186,7 +185,7 @@ class Player extends Actor {
     
     void toggleInvincibility()
     {
-        if (invincible && invincibilityTimer.getActiveTime() >= 8000)
+        if (invincible && invincibilityTimer.value() >= 8000)
         {
             invincible = false;
             invincibilityTimer.pause();
@@ -206,7 +205,7 @@ class Player extends Actor {
     void render() {
         imageMode(CENTER);
 
-        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))));
+        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.value() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.value() / (1000.0 / GAME.tickrate))));
 
         pushMatrix();
 

@@ -142,7 +142,7 @@ class Actor {
     // Draws the Actor to the screen using translation matrices.
     // In most scenarios, you will simply want to override the display() method.
     void render() {
-        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.getActiveTime() / (1000.0 / GAME.tickrate))));
+        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.value() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.value() / (1000.0 / GAME.tickrate))));
         
         pushMatrix();
 

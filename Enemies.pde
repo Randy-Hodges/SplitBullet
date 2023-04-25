@@ -25,7 +25,7 @@ class Orc extends Enemy{
 
     void simulate(){
         if (idle){
-            if (idle_timer.getActiveTime() > time_idle){
+            if (idle_timer.value() > time_idle){
                 idle = false;
                 // println("changing from idle");
             }
@@ -36,7 +36,7 @@ class Orc extends Enemy{
         }
         // next_vel = GAME.player.pos.copy().sub(pos).normalize().mult(speed);
         // Change velocity towards player in NSWE direction
-        if (decision_timer.getActiveTime() > decision_rate){
+        if (decision_timer.value() > decision_rate){
             decision_timer.reset();
             // get direction of player
             PVector player_dir = GAME.player.pos.copy().sub(pos);
@@ -96,7 +96,7 @@ class OrcShaman extends Enemy{
 
     void simulate(){
         if (idle){
-            if (idle_timer.getActiveTime() > time_idle){
+            if (idle_timer.value() > time_idle){
                 idle = false;
                 // println("changing from idle");
             }
@@ -106,7 +106,7 @@ class OrcShaman extends Enemy{
             return;
         }
         // Change velocity towards player in NSWE direction
-        if (decision_timer.getActiveTime() > decision_rate){
+        if (decision_timer.value() > decision_rate){
             decision_timer.reset();
             // get direction of player
             PVector player_dir = GAME.player.pos.copy().sub(pos);
@@ -181,7 +181,7 @@ class EnergyProjectile extends Enemy{
 
     void simulate(){
         if (idle){
-            if (idle_timer.getActiveTime() > time_idle){
+            if (idle_timer.value() > time_idle){
                 idle = false;
             }
             return;
@@ -216,7 +216,7 @@ class Imp extends Enemy{
 
     void simulate(){
         if (idle){
-            if (idle_timer.getActiveTime() > time_idle){
+            if (idle_timer.value() > time_idle){
                 idle = false;
                 // println("changing from idle");
             }

@@ -67,7 +67,7 @@ class Sprite {
         this.anim_length = anim_length_in_ms;
         this.loop = loops;
 
-        this.timer = new Timer(true, true, true, loops, anim_length_in_ms);
+        this.timer = new Timer(true, 0, anim_length_in_ms, false, loops);
 
         calcNumFrames();
         createArray();
@@ -96,7 +96,7 @@ class Sprite {
         fillFields();
         createArray();
 
-        this.timer = new Timer(true, true, true, loops, anim_length_in_ms);
+        this.timer = new Timer(true, 0, anim_length_in_ms, false, loops);
     }
 
     // METHODS
@@ -105,7 +105,7 @@ class Sprite {
     // Used to pull the appropriate frame in the image sequence.
     // Common usage: image([your_sprite_var_name].getFrame(), 0, 0, 1, 1);
     PImage getFrame() {
-        return image_buffer[constrain(timer.getActiveTime() / int(ceil(float(anim_length) / num_frames)), 0, num_frames-1)];
+        return image_buffer[constrain(timer.value() / int(ceil(float(anim_length) / num_frames)), 0, num_frames-1)];
     }
 
     // The following methods are used for building the Sprite object.

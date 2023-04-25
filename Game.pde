@@ -160,8 +160,8 @@ class MyGame {
         }
         
         // simulate & move on tick; always render
-        if (game_time.getActiveTime() >= (1000.0 / tickrate)) {
-          for (int sim = 1; sim < (game_time.getActiveTime() / (1000.0 / tickrate)); sim++) {
+        if (game_time.value() >= (1000.0 / tickrate)) {
+          for (int sim = 1; sim < (game_time.value() / (1000.0 / tickrate)); sim++) {
             move();
             simulate();
           }
