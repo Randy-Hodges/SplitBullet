@@ -257,7 +257,7 @@ class Timer {
             } else {
                 value = base_time - (active_time + end_time);
                 
-                if (value <= end_time) {
+                if (value < end_time) {
                     if (loop) {
                         reset();
                         active_time = value - end_time;
@@ -271,7 +271,7 @@ class Timer {
             value = base_time + active_time;
 
             if (!(end_time == null)) {
-                if (value >= end_time) {
+                if (value > end_time) {
                     if (loop) {
                         reset();
                         active_time = value - end_time;
