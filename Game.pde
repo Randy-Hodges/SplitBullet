@@ -139,8 +139,6 @@ class MyGame {
         // Handle game logic
         // Render, simulate, and move Actors
         //print("got to GAME_SCREEN \n");
-
-        game_gui.draw_game_screen();
         
         // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
         if (player == null) {
@@ -149,7 +147,7 @@ class MyGame {
         }
         
         // Check if player health has reached 0. Saves high score and changes to Lose screen
-        if (lives_count == 0) {
+        if (player.health <= 0) {
           change_screen_state(LOSE_SCREEN); 
         }
 
@@ -167,6 +165,8 @@ class MyGame {
           }
           game_time.reset();
         }
+
+        game_gui.draw_game_screen();
         render();
 
         // Check if wave is over, then begin the next spawn_wave(current_wave)

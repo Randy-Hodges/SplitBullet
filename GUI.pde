@@ -78,7 +78,7 @@ class GUI {
     // Draw game UI (score, lives) here
     fill(255);
     textSize(24);
-    text("Lives: " + str(GAME.lives_count), 50, 25);
+    text("Lives: " + str(GAME.player.health), 50, 25);
     text("Current Wave: " + str(GAME.current_wave), 300, 25);
     
     // Draw playable area
