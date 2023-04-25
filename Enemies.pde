@@ -19,7 +19,7 @@ class Orc extends Enemy{
     Orc(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
         super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), health, GAME.assets.getSprite("media/sprites/enemies/orc"));
-        sprite.anim_length = 750; //ms
+        sprite.setAnimLength(750); //ms
         time_idle = int(random(wave_time));
     }
 
@@ -88,7 +88,7 @@ class OrcShaman extends Enemy{
     OrcShaman(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
         super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), health, GAME.assets.getSprite("media/sprites/enemies/orc_shaman"));
-        sprite.anim_length = 750; //ms
+        sprite.setAnimLength(750); //ms
         time_idle = int(random(wave_time));
         energy = new EnergyProjectile(pos, pos, time_idle);
         GAME.actor_spawns.add(energy);
@@ -210,7 +210,7 @@ class Imp extends Enemy{
     Imp(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
         super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/imp"));
-        sprite.anim_length = 750; //ms
+        sprite.setAnimLength(750); //ms
         time_idle = int(random(wave_time));
     }
 
