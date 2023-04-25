@@ -110,7 +110,11 @@ class Sprite {
     
     void setAnimLength(int length) {
         anim_length = length;
-        timer.setEndTime(length);
+        if (timer.countsDown()) {
+            timer.setBaseTime(length);
+        } else {
+            timer.setEndTime(length);
+        }
     }
 
     void setLoop(boolean loops) {
