@@ -10,7 +10,7 @@ class Orc extends Enemy{
     // Other variables specific to this class
     float decision_rate = 600; // how long (in ms) it takes between changing directions
     Timer decision_timer = new Timer();
-    float speed = 60; // pixels/sec
+    float speed = 70; // pixels/sec
     // Idle state occurs at begining of wave, spaces out enemies 
     Timer idle_timer = new Timer();
     int time_idle;
@@ -72,11 +72,11 @@ class OrcShaman extends Enemy{
     final static float orc_hitbox_radius = 10;
     final static float orc_scalex = 2;
     final static float orc_scaley = 2;
-    final static int health = 2;
+    final static int health = 3;
     // Other variables specific to this class
     float decision_rate = 750; // how long (in ms) it takes between changing directions
     Timer decision_timer = new Timer();
-    float speed = 40; // pixels/sec
+    float speed = 70; // pixels/sec
     // Idle state occurs at begining of wave, spaces out enemies 
     Timer idle_timer = new Timer();
     int time_idle;
@@ -154,7 +154,7 @@ class EnergyProjectile extends Enemy{
     int time_idle;
     boolean idle = true;
     // Other
-    float radius = 40;
+    float radius = 50;
     PVector host_pos;
     float host_rot = 0;
 
@@ -186,8 +186,8 @@ class EnergyProjectile extends Enemy{
             }
             return;
         }
-        rot += .05; // need to convert to a ticking thing
-        host_rot += .02; // need to convert to a ticking thing
+        rot += .06; // need to convert to a ticking thing
+        host_rot += .03; // need to convert to a ticking thing
         next_pos = host_pos.copy().add((new PVector(radius, 0)).rotate(host_rot));
     }
 
@@ -205,7 +205,7 @@ class Imp extends Enemy{
     int time_idle;
     boolean idle = true;
     // Other
-    float speed = 120; // pixels/sec
+    float speed = 150; // pixels/sec
 
     Imp(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
