@@ -29,45 +29,45 @@ class Timer {
     protected boolean reset_uses_default;
 
     protected boolean loop; // should the timer loop to base_time when value exceeds end_time
-    protected boolean count_down; // should the timer count down from base_time rather than up
+    protected boolean counts_down; // should the timer count down from base_time rather than up
 
     // CONSTRUCTORS
     // All other constructors pass to this one
-    Timer(boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops) {
+    Timer(boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops) {
         this.active = init_state;
 
-        set(default_state, reset_uses_default, base_time, end_time, count_down, loops);
+        set(default_state, reset_uses_default, base_time, end_time, counts_down, loops);
 
         this.init_time = millis();
         this.reset_time = init_time;
     }
-    Timer(boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down) {
-        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops
-        this(      init_state,         default_state,         reset_uses_default,     base_time,         end_time,         count_down,         false);
+    Timer(boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down) {
+        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops
+        this(      init_state,         default_state,         reset_uses_default,     base_time,         end_time,         counts_down,         false);
     }
-    Timer(boolean init_state, int base_time, Integer end_time, boolean count_down, boolean loops) {
-        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops
-        this(      init_state,         init_state,            false,                  base_time,         end_time,         count_down,         loops);
+    Timer(boolean init_state, int base_time, Integer end_time, boolean counts_down, boolean loops) {
+        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops
+        this(      init_state,         init_state,            false,                  base_time,         end_time,         counts_down,         loops);
     }
-    Timer(boolean init_state, int base_time, Integer end_time, boolean count_down) {
-        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops
-        this(      init_state,         init_state,            false,                  base_time,         end_time,         count_down,         false);
+    Timer(boolean init_state, int base_time, Integer end_time, boolean counts_down) {
+        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops
+        this(      init_state,         init_state,            false,                  base_time,         end_time,         counts_down,         false);
     }
     Timer(boolean init_state, int base_time, Integer end_time) {
-        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops
-        this(      init_state,         init_state,            false,                  base_time,         end_time,         false,              false);
+        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops
+        this(      init_state,         init_state,            false,                  base_time,         end_time,         false,               false);
     }
     Timer(boolean init_state, boolean default_state, boolean reset_uses_default) {
-        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops
-        this(      init_state,         default_state,         reset_uses_default,     0,                 null,             false,              false);
+        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops
+        this(      init_state,         default_state,         reset_uses_default,     0,                 null,             false,               false);
     }
     Timer(boolean default_state) {
-        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops
-        this(      default_state,      default_state,         false,                  0,                 null,             false,              false);
+        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops
+        this(      default_state,      default_state,         false,                  0,                 null,             false,               false);
     }
     Timer() {
-        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops
-        this(      true,               true,                  false,                  0,                 null,             false,              false);
+        // boolean init_state, boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops
+        this(      true,               true,                  false,                  0,                 null,             false,               false);
     }
 
     // METHODS
@@ -122,8 +122,8 @@ class Timer {
         return loop;
     }
 
-    boolean countDown() {
-        return count_down;
+    boolean countsDown() {
+        return counts_down;
     }
 
     boolean defaultState() {
@@ -150,6 +150,22 @@ class Timer {
         active = !active;
     }
 
+    void reverse() {
+        setCountDown(!counts_down, end_time, base_time);
+    }
+
+    void countDown() {
+        if (!counts_down) {
+            reverse();
+        }
+    }
+
+    void countUp() {
+        if (counts_down) {
+            reverse();
+        }
+    }
+
     void reset() {
         active_time = paused_time = 0;
         reset_time = millis();
@@ -169,26 +185,26 @@ class Timer {
     }
 
     // Use these methods to change the timer's behavior
-    void set(boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean count_down, boolean loops) {
+    void set(boolean default_state, boolean reset_uses_default, int base_time, Integer end_time, boolean counts_down, boolean loops) {
         setResetDefaults(default_state, reset_uses_default);
-        setLoop(loops, base_time, end_time, count_down);
+        setLoop(loops, base_time, end_time, counts_down);
     }
 
-    void setCountDown(boolean count_down, int base_time, Integer end_time) {
+    void setCountDown(boolean counts_down, int base_time, Integer end_time) {
         setStartEnd(base_time, end_time);
-        setCountDown(count_down);
+        setCountDown(counts_down);
     }
 
-    void setCountDown(boolean count_down, int base_time) {
+    void setCountDown(boolean counts_down, int base_time) {
         setBaseTime(base_time);
-        setCountDown(count_down);
+        setCountDown(counts_down);
     }
 
-    void setCountDown(boolean count_down) {
-        if ((count_down == true) && (end_time!= null) && (end_time > base_time)) {
-            throw new RuntimeException("end_time cannot be greater than base_time if count_down is true.");
+    void setCountDown(boolean counts_down) {
+        if ((counts_down == true) && (end_time!= null) && (end_time > base_time)) {
+            throw new RuntimeException("end_time cannot be greater than base_time if counts_down is true.");
         } else {
-            this.count_down = count_down;
+            this.counts_down = counts_down;
         }
     }
 
@@ -205,8 +221,8 @@ class Timer {
         this.end_time = end_time;
     }
 
-    void setLoop(boolean loops, int base_time, Integer end_time, boolean count_down) {
-        setCountDown(count_down, base_time, end_time);
+    void setLoop(boolean loops, int base_time, Integer end_time, boolean counts_down) {
+        setCountDown(counts_down, base_time, end_time);
         setLoop(loops);
     }
 
@@ -251,7 +267,7 @@ class Timer {
             paused_time = millis() - reset_time - active_time;
         }
 
-        if (count_down) {
+        if (counts_down) {
             if (end_time == null) {
                 value = base_time - active_time;
             } else {
