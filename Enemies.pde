@@ -186,8 +186,8 @@ class EnergyProjectile extends Enemy{
             }
             return;
         }
-        rot += .06; // need to convert to a ticking thing
-        host_rot += .03; // need to convert to a ticking thing
+        rot += 3.6 / GAME.tickrate; // need to convert to a ticking thing
+        host_rot += 1.8 / GAME.tickrate; // need to convert to a ticking thing
         next_pos = host_pos.copy().add((new PVector(radius, 0)).rotate(host_rot));
     }
 
