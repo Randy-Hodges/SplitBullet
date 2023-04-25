@@ -80,7 +80,6 @@ class Player extends Actor {
 
     Hat h;
     Body b;
-    boolean invincible;
 
     PVector aim_vector;
     int health;
@@ -97,7 +96,7 @@ class Player extends Actor {
         this.health = health;
 
         fireTimer = new Timer();
-        invincibilityTimer = new Timer(false);
+        invincibilityTimer = new Timer(false, false, true, 0, 0, true);
 
         aim_vector = new PVector(1, 0);
     }
@@ -152,16 +151,20 @@ class Player extends Actor {
     void collisionReaction() {
         for (Actor collision : collisions) {
             if (collision instanceof Enemy) {
-                if (!invincible)
+                if (invincibilityTimer.value() <= 0) {
                     health--;
+                    invincibilityTimer.setBaseTime(1000);
+                    invincibilityTimer.reset();
+                    invincibilityTimer.resume();
+                }
             } else if (collision instanceof Powerup) {
                 //apply powerup effects
                 if (collision instanceof HealthPowerup)
                     health++;
             
-                else if (collision instanceof Superstar)
-                {
-                    invincible = true;
+                else if (collision instanceof Superstar) {
+                    invincibilityTimer.setBaseTime(8000);
+                    invincibilityTimer.reset();
                     invincibilityTimer.resume();
                 }
             }
@@ -170,7 +173,6 @@ class Player extends Actor {
 
     void simulate() {
         checkInputs();
-        toggleInvincibility();
         super.simulate();
     }
     
@@ -181,16 +183,6 @@ class Player extends Actor {
         );
         super.move();
         vel.limit(1000);
-    }
-    
-    void toggleInvincibility()
-    {
-        if (invincible && invincibilityTimer.value() >= 8000)
-        {
-            invincible = false;
-            invincibilityTimer.pause();
-            invincibilityTimer.reset();
-        }
     }
 
     void drawAimVector() {
