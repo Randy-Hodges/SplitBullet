@@ -7,9 +7,9 @@ class GUI {
   final int GAME_SCREEN = 1;
   final int PAUSE_SCREEN = 2;
   final int LOSE_SCREEN = 3;
-  final int VICTORY_SCREEN = 4;
-  final int HIGH_SCORE_SCREEN = 5;
-  final int LOSE_SCREEN_SAVE = 6;
+  final int LOSE_SCREEN_SAVE = 4;
+  final int VICTORY_SCREEN = 5;
+  final int HIGH_SCORE_SCREEN = 6;
 
   // Initialize game variables
   int screen_state;
@@ -54,6 +54,7 @@ class GUI {
   void draw_main_menu() {
     // Draw the main menu
     pushMatrix();
+    imageMode(CORNER);
     image(menu_image, 0, 0, width, height);
     textAlign(CENTER, CENTER);
     textSize(40);
@@ -73,6 +74,7 @@ class GUI {
   void draw_game_screen() {
     // Draw the black background screen
     pushMatrix();
+    imageMode(CORNER);
     background(26);
         
     // Draw game UI (score, lives) here
@@ -119,8 +121,10 @@ class GUI {
 
   void draw_lose_screen() {
     pushMatrix();
+    imageMode(CORNER);
     image(lose_image, 0, 0, width, height);
     fill(255);
+    textSize(40);
     text("It's all over...", width/4, height/2 - 80);
     text("Back to Menu", width/2, height - height/4);
     popMatrix();
@@ -133,8 +137,10 @@ class GUI {
   
   void draw_lose_save_screen() {
     pushMatrix();
+    imageMode(CORNER);
     background(26);
     fill(255);
+    textSize(32);
     text("Submit", width / 2 - 100, height / 2 + 100);
     popMatrix();
   }
@@ -142,6 +148,7 @@ class GUI {
   void draw_pause_screen() {
     // Draw the pause screen
     pushMatrix();
+    imageMode(CORNER);
     fill(0, 0, 0, 150);
     rect(0, 0, width, height);
     fill(255);
@@ -150,13 +157,16 @@ class GUI {
     textSize(24);
     text("Press 'P' to Resume", width/2, height/2);
     text("Press 'M' to Mute", width/2, height/2 + 50);
+    text("Press 'Q' to Quit", width/2, height/2 + 100);
     popMatrix();
   }
   
   void draw_victory_screen() {
      pushMatrix();
+     imageMode(CORNER);
      image(victory_image, 0, 0, width, height); 
      fill(255);
+     textSize(40);
      text("You won...", width/2, height/5);
      text("Back to Menu", width/2, height - height/4);
      popMatrix();
@@ -164,43 +174,60 @@ class GUI {
   
   void draw_high_score_screen() {
     pushMatrix();
+    imageMode(CORNER);
     background(26);
-    
+  
+    // Check if the highscore.csv file exists, if not, create it
+    File highscore_file = new File(savePath("highscore.csv"));
+  
+    if (!highscore_file.exists()) {
+      // Create new file
+      try {
+        highscore_file.createNewFile();
+  
+        // Lest some unexpected error occurs, e.g., not enough disk space
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  
     // Load high score data from the CSV file
     String[] lines = loadStrings("highscore.csv");
-    
+  
+    // Parse CSV lines into an ArrayList of PlayerScore objects
+    ArrayList<PlayerScore> scores = new ArrayList<PlayerScore>();
+    for (String line : lines) {
+      String[] columns = split(line, ',');
+      if (columns.length >= 2) {
+        String name = columns[0].trim();
+        int score = int(columns[1].trim());
+        scores.add(new PlayerScore(name, score));
+      }
+    }
+  
+    // Sort the ArrayList by score in descending order
+    scores.sort((a, b) -> b.score - a.score);
+  
     textAlign(LEFT, CENTER);
     textSize(24);
     fill(255);
-    
+  
     // Display Back button
     text("Go Back", 50, 50);
-    
+  
     // Display column headers
-    text("Name", width/4, height/4);
-    text("Rounds Survived:", width/2, height/4);
-    
-    // Loop through the CSV lines and display the names and scores
-    for (int i = 0; i < lines.length; i++) {
-      
-      String[] columns = split(lines[i], ',');
-      
-      // Check if there are at least two columns in the current line
-      if (columns.length >= 2) {
-        String name = columns[0].trim();
-        String roundsSurvived = columns[1].trim();
-        
-        // Cap the name at 5 letters
-        if (name.length() > 5) {
-          name = name.substring(0, 5);
-        }
-        
-        float y = height/4 + 30 * (i + 1); // Calculate the y position for the current line
-        text(name, width/4, y);
-        text(roundsSurvived, width/2, y);
-      }
-      
+    text("Name", width / 4, height / 4);
+    text("Rounds Survived:", width / 2, height / 4);
+  
+    // Loop through the sorted ArrayList and display the top 10 names and scores
+    int num_scores_to_display = min(15, scores.size());
+    for (int i = 0; i < num_scores_to_display; i++) {
+      PlayerScore playerScore = scores.get(i);
+      float y = height / 4 + 30 * (i + 1); // Calculate the y position for the current line
+      text(playerScore.name, width / 4, y);
+      text(str(playerScore.score), width / 2, y);
     }
+  
     popMatrix();
   }
 
@@ -217,7 +244,7 @@ class GUI {
 
   int handle_lose_save_click() {
     // Check if click is within "Submit" : width / 2 - 100, height / 2 + 100
-    if (mouseX > (width / 2 - 100) && mouseX < (width / 2 - 100) + textWidth("Submit") && mouseY > (height / 2 + 100) && mouseY < (height / 2 + 100) + 2*textDescent) {
+    if (mouseX > (width / 2 - 100) && mouseX < (width / 2 - 100) + textWidth("Submit") && mouseY > (height / 2 + 100) - textDescent && mouseY < (height / 2 + 100) + 2*textDescent) {
       // Switch to main menu
       screen_state = MENU_SCREEN;
       return MENU_SCREEN;
@@ -266,4 +293,16 @@ class GUI {
     return screen_state;
   }
 
+}
+
+
+// Class to sort top 10 highscores by descending values in HIGH_SCORE_SCREEN
+class PlayerScore {
+  String name;
+  int score;
+
+  PlayerScore(String name, int score) {
+    this.name = name;
+    this.score = score;
+  }
 }

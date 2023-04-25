@@ -10,7 +10,6 @@ class TextInputField {
     this.size = size;
     this.max_characters = max_characters;
     this.text = "";
-    //this.active = false;
   }
 
   void draw() {
@@ -37,14 +36,8 @@ class TextInputField {
   void remove_char() {
     if (text.length() > 0) {
       text = text.substring(0, text.length() - 1);
+      //print(text);
+      //print("\n");
     }
   }
 }
-//  void set_active(boolean active) {
-//    this.active = active;
-//  }
-
-//  boolean is_active() {
-//    return active;
-//  }
-//}

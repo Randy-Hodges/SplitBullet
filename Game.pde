@@ -9,9 +9,9 @@ class MyGame {
   final int GAME_SCREEN = 1;
   final int PAUSE_SCREEN = 2;
   final int LOSE_SCREEN = 3;
-  final int VICTORY_SCREEN = 4;
-  final int HIGH_SCORE_SCREEN = 5;
-  final int LOSE_SCREEN_SAVE = 6;
+  final int LOSE_SCREEN_SAVE = 4;
+  final int VICTORY_SCREEN = 5;
+  final int HIGH_SCORE_SCREEN = 6;
   int screen_state;
 
   // Play area variables
@@ -128,10 +128,8 @@ class MyGame {
         // Comment this out
         if (key_inputs.contains((int) '1')) {
           change_screen_state(LOSE_SCREEN);
-        } else if (key_inputs.contains((int) '2')) {
-          change_screen_state(VICTORY_SCREEN);
         }
-       
+        
         break;
         
       case GAME_SCREEN:
@@ -143,12 +141,14 @@ class MyGame {
         
         // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
         if (player == null) {
+          //print("Initializing player and populating wave\n");
           initialize_player();
           populate_wave(current_wave);
         }
         
         // Check if player health has reached 0. Saves high score and changes to Lose screen
         if (player.health <= 0) {
+          // reset_game() is inside LOSE_SCREEN_SAVE. This is to preserve the current_wave value to submit to the highscore.csv before resetting.
           change_screen_state(LOSE_SCREEN); 
         }
 
@@ -204,6 +204,13 @@ class MyGame {
         if (keys_pressed.contains( (int)'M')) {
           muted = !muted;
         }
+        
+        // Handle Quit
+        if (keys_pressed.contains( (int)'Q' )) {
+          game_time.resume();
+          reset_game(); // Reset game w/o saving
+          change_screen_state(MENU_SCREEN); 
+        }
 
         break;
         
@@ -217,9 +224,47 @@ class MyGame {
         }
 
         break;
+
+      case LOSE_SCREEN_SAVE:
+        window_properties.confinePointer(false);
+
+        game_gui.draw_lose_save_screen();
+                
+        // Draws text box
+        player_name_input.draw();
         
+        if (keys_pressed.size() > 0 && !keys_pressed.contains( (int) BACKSPACE )) {
+          // Only registers the first key pressed.
+          char[] keyChar = Character.toChars(keys_pressed.get(0));
+          player_name_input.add_char(keyChar[0]); 
+        }
+        
+        if (keys_pressed.contains( (int) BACKSPACE )) {
+          player_name_input.remove_char();
+        }
+        
+        if (mouse_pressed.contains(LEFT)) {
+          
+          int clicked_button = game_gui.handle_lose_save_click();
+          
+          // If clicked to return to submit and return to menu, save highscore info, reset game
+          if (clicked_button == MENU_SCREEN) {
+             submit_high_score(player_name_input.text, current_wave);
+             player_name_input.text = "";
+             
+             // reset_game() is here instead of in GAME_SCREEN b/c we want to save the current_wave value to the high score before resetting.
+             reset_game();
+          }
+          
+          change_screen_state(clicked_button);
+        }
+        
+        break;
+
+
       case VICTORY_SCREEN:
         window_properties.confinePointer(false);
+        window_properties.setPointerVisible(true);
 
         game_gui.draw_victory_screen();
         
@@ -233,8 +278,6 @@ class MyGame {
      
       case HIGH_SCORE_SCREEN:
         //print("got to HIGH_SCORE_SCREEN \n");
-        window_properties.confinePointer(false);
-
         game_gui.draw_high_score_screen();
         
         // Go back to menu screen        
@@ -242,36 +285,6 @@ class MyGame {
           change_screen_state(game_gui.handle_high_score_click()); 
         }
       
-        break;
-
-      case LOSE_SCREEN_SAVE:
-        window_properties.confinePointer(false);
-
-        game_gui.draw_lose_save_screen();
-        
-        // Draws text box
-        player_name_input.draw();
-        
-        if (keys_pressed.size() > 0) {
-          for (int key : keys_pressed) {
-            player_name_input.add_char(key);
-          }
-        }
-        
-        if (mouse_pressed.contains(LEFT)) {
-          
-          int clicked_button = game_gui.handle_lose_save_click();
-          
-          // If clicked to return to submit and return to menu, save highscore info, reset game
-          if (clicked_button == MENU_SCREEN) {
-             submit_high_score(player_name_input.text, current_wave);
-             player_name_input.text = "";
-             reset_game();
-          }
-          
-          change_screen_state(clicked_button);
-        }
-        
         break;
 
     }
@@ -322,11 +335,6 @@ class MyGame {
     }
   }
 
-
-  //void spawn_wave() {
-    
-  //}
-
   void populate_wave(int current_wave) {
     // Handles the latest wave event after a wave is cleared.
     // Difficulty scaled based on the value of current_wave
@@ -376,6 +384,7 @@ class MyGame {
 
   void change_screen_state(int new_state) {
     // Change the screen state to the new state
+    //print("Changing screen state from " + screen_state + " to " + new_state + "\n");
     game_gui.screen_state = new_state;
     this.screen_state = new_state;
   }
@@ -393,8 +402,14 @@ class MyGame {
     actor_spawns.add(player);
   }
 
+  void clear_all_actors() {
+    actor_despawns.addAll(actors);
+    despawn_actors();
+  }
+
   void reset_game() {
     //print("resetting game...\n");
+    clear_all_actors();
     player = null;
     lives_count = 3;
     current_wave = 1;
