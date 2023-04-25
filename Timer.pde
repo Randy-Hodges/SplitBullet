@@ -29,7 +29,7 @@ class Timer {
     protected boolean reset_uses_default;
 
     protected boolean loop; // should the timer loop to base_time when value exceeds end_time
-    boolean count_down; // should the timer count down from base_time rather than up
+    protected boolean count_down; // should the timer count down from base_time rather than up
 
     // CONSTRUCTORS
     // All other constructors pass to this one
@@ -82,19 +82,56 @@ class Timer {
         return value;
     }
 
-    int getActiveTime() {
+    int endTime() {
+        return end_time;
+    }
+
+    int baseTime() {
+        return base_time;
+    }
+
+    int activeTime() {
         update();
         return active_time;
     }
 
-    int getPausedTime() {
+    int pausedTime() {
         update();
         return paused_time;
     }
 
-    int getElapsedTime() {
+    int elapsedTime() {
         update();
         return elapsed_time;
+    }
+
+    int initTime() {
+        return init_time;
+    }
+
+    int resetTime() {
+        update();
+        return resetTime();
+    }
+
+    boolean active() {
+        return active;
+    }
+
+    boolean loops() {
+        return loop;
+    }
+
+    boolean countDown() {
+        return count_down;
+    }
+
+    boolean defaultState() {
+        return default_state;
+    }
+
+    boolean resetUsesDefault() {
+        return reset_uses_default;
     }
 
     // Use the following methods to manipulate the timer
