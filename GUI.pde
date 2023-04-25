@@ -206,7 +206,7 @@ class GUI {
     }
   
     // Sort the ArrayList by score in descending order
-    scores.sort((a, b) -> b.score - a.score);
+    // scores.sort((a, b) -> b.score - a.score);
   
     textAlign(LEFT, CENTER);
     textSize(24);

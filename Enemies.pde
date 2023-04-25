@@ -18,7 +18,7 @@ class Orc extends Enemy{
 
     Orc(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
-        super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), health, GAME.assets.getSprite("media/sprites/enemies/orc"));
+        super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc"));
         sprite.setAnimLength(750); //ms
         time_idle = int(random(wave_time));
     }
@@ -70,13 +70,13 @@ class Orc extends Enemy{
 class OrcShaman extends Enemy{
     // static variables that are applied with super()
     final static float orc_hitbox_radius = 20;
-    final static float orc_scalex = 3;
-    final static float orc_scaley = 3;
+    final static float orc_scalex = 2;
+    final static float orc_scaley = 2;
     final static int health = 3;
     // Other variables specific to this class
-    float decision_rate = 1250; // how long (in ms) it takes between changing directions
+    float decision_rate = 1200; // how long (in ms) it takes between changing directions
     Timer decision_timer = new Timer();
-    float speed = 40; // pixels/sec
+    float speed = 60; // pixels/sec
     // Idle state occurs at begining of wave, spaces out enemies 
     Timer idle_timer = new Timer();
     int time_idle;
@@ -87,7 +87,7 @@ class OrcShaman extends Enemy{
 
     OrcShaman(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
-        super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), health, GAME.assets.getSprite("media/sprites/enemies/orc_shaman"));
+        super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman"));
         sprite.setAnimLength(750); //ms
         time_idle = int(random(wave_time));
         energy = new EnergyProjectile(pos, pos, time_idle);
@@ -159,9 +159,9 @@ class EnergyProjectile extends Enemy{
     float host_rot = 0;
 
     EnergyProjectile(PVector initial_pos, PVector host_pos, int time_idle){
-        super(hitbox_radius, initial_pos.copy(), new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orc_shaman_projectile/sword"));
-        energy = GAME.assets.getSprite("media/sprites/enemies/orc_shaman_projectile/energy");
-        projectile = GAME.assets.getSprite("media/sprites/enemies/orc_shaman_projectile/sword");
+        super(hitbox_radius, initial_pos.copy(), new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/sword"));
+        energy = GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/energy");
+        projectile = GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/sword");
         this.host_pos = host_pos;
         this.time_idle = time_idle;
     }
@@ -186,8 +186,9 @@ class EnergyProjectile extends Enemy{
             }
             return;
         }
-        rot += 3.6 / GAME.tickrate; // need to convert to a ticking thing
-        host_rot += 1.8 / GAME.tickrate; // need to convert to a ticking thing
+        rot += 8.0 / GAME.tickrate; 
+        host_rot += 2.5 / GAME.tickrate; 
+        // rotate around host
         next_pos = host_pos.copy().add((new PVector(radius, 0)).rotate(host_rot));
     }
 
@@ -209,7 +210,52 @@ class Imp extends Enemy{
 
     Imp(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
-        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/imp"));
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/imps/imp"));
+        sprite.setAnimLength(500); //ms
+        time_idle = int(random(wave_time));
+    }
+
+    void simulate(){
+        if (idle){
+            if (idle_timer.value() > time_idle){
+                idle = false;
+                // println("changing from idle");
+            }
+            return;
+        }
+        if (hurt){
+            return;
+        }
+        // Change velocity towards player
+        next_vel = GAME.player.pos.copy().sub(pos).normalize().mult(speed);
+        // Change sprite direction appropriately
+        if (next_vel.x < 0){
+            scale.x = -scalex;
+        }
+        else{
+            scale.x = scalex;
+        }
+        super.simulate();
+    }
+    /* */
+}
+
+class ImpBoss extends Enemy{
+    // static variables that are applied with super()
+    final static float hitbox_radius = 10;
+    final static float scalex = 2;
+    final static float scaley = 2;
+    final static int health = 1;
+    // Idle state occurs at begining of wave, spaces out enemies 
+    Timer idle_timer = new Timer();
+    int time_idle;
+    boolean idle = true;
+    // Other
+    float speed = 150; // pixels/sec
+
+    ImpBoss(PVector initial_pos, int wave_time){
+        // projectiles hit twice, I am doubling initial health to compensate
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/imps/imp"));
         sprite.setAnimLength(500); //ms
         time_idle = int(random(wave_time));
     }

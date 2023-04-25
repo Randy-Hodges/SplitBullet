@@ -30,8 +30,6 @@ class Enemy extends Actor{
                 collisions.add(other);
             }
         }
-        
-        // collisionReaction(); <-- this gets called by Actor.simulate()
     }
 
     void collisionReaction() {
@@ -72,6 +70,15 @@ class Enemy extends Actor{
     boolean checkInBounds(){
         return (pos.x > GAME.PLAYABLE_AREA_X && pos.x < GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH && 
             pos.y > GAME.PLAYABLE_AREA_Y && pos.y < GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT);
+    }
+
+    void displayHitboxes(){
+            noFill();
+            stroke(0);
+            strokeWeight(3);
+            rectMode(CENTER);
+            rect(0, 0, hitbox_radius, hitbox_radius);
+            rectMode(CORNER);
     }
 }
 
