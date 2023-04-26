@@ -3,7 +3,7 @@
 
 public class Orc extends Enemy{
     // static variables that are applied with super()
-    final static float hitbox_radius = 10;
+    final static float hitbox_radius = 13;
     final static float scalex = 2;
     final static float scaley = 2;
     final static int health = 2;
@@ -12,10 +12,6 @@ public class Orc extends Enemy{
     Timer decision_timer = new Timer();
     float speed = 70; // pixels/sec
 
-    Orc(){
-        super(hitbox_radius, new PVector(), new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc"));
-        println("achieved access to orc");
-    }
     Orc(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
         super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc"));
@@ -67,7 +63,7 @@ public class Orc extends Enemy{
 
 class OrcShaman extends Enemy{
     // static variables that are applied with super()
-    final static float hitbox_radius = 20;
+    final static float hitbox_radius = 13;
     final static float scalex = 2;
     final static float scaley = 2;
     final static int health = 3;
@@ -186,7 +182,7 @@ class EnergyProjectile extends Enemy{
 
 class Imp extends Enemy{
     // static variables that are applied with super()
-    final static float hitbox_radius = 10;
+    final static float hitbox_radius = 13;
     final static float scalex = 2;
     final static float scaley = 2;
     final static int health = 1;
