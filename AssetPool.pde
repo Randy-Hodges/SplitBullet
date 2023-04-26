@@ -39,7 +39,7 @@ class AssetPool {
         sounds = new HashMap();
 
         if (autofill) {
-            for (String dir : src_dirs) {
+            for (final String dir : src_dirs) {
                 Thread loader = new Thread() {
                     void run() {
                         autoFill(dir);
