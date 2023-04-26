@@ -10,6 +10,8 @@ class MyGame {
   final int PAUSE_SCREEN = 2;
   final int LOSE_SCREEN = 3;
   final int LOSE_SCREEN_SAVE = 4;
+  final int SAVE_SCORE = 41;
+  final int SKIP_SCORE = 42;
   final int VICTORY_SCREEN = 5;
   final int HIGH_SCORE_SCREEN = 6;
   int screen_state;
@@ -232,7 +234,7 @@ class MyGame {
                 
         // Draws text box
         player_name_input.draw();
-        
+                
         if (keys_pressed.size() > 0 && !keys_pressed.contains( (int) BACKSPACE )) {
           // Only registers the first key pressed.
           char[] keyChar = Character.toChars(keys_pressed.get(0));
@@ -244,19 +246,30 @@ class MyGame {
         }
         
         if (mouse_pressed.contains(LEFT)) {
-          
           int clicked_button = game_gui.handle_lose_save_click();
           
           // If clicked to return to submit and return to menu, save highscore info, reset game
-          if (clicked_button == MENU_SCREEN) {
+          if (clicked_button == 41) {
+             // Submits high score
              submit_high_score(player_name_input.text, current_wave);
              player_name_input.text = "";
              
              // reset_game() is here instead of in GAME_SCREEN b/c we want to save the current_wave value to the high score before resetting.
              reset_game();
-          }
+             
+             // Change screen back to MENU
+             change_screen_state(MENU_SCREEN);
           
-          change_screen_state(clicked_button);
+          // If clicked to skip submit
+          } else if (clicked_button == 42) {
+            player_name_input.text = "";
+            reset_game();
+            change_screen_state(MENU_SCREEN);
+            
+          // Else stay on the same screen
+          } else {
+            change_screen_state(clicked_button);
+          }
         }
         
         break;
