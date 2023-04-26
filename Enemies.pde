@@ -1,7 +1,7 @@
 // Note: I would normally like to do one class per file, but because we can't get a file structure going with .pde files
 //       I have put all enemies in one file to reduce overall clutter in the main directory
 
-class Orc extends Enemy{
+public class Orc extends Enemy{
     // static variables that are applied with super()
     final static float hitbox_radius = 10;
     final static float scalex = 2;
@@ -12,6 +12,10 @@ class Orc extends Enemy{
     Timer decision_timer = new Timer();
     float speed = 70; // pixels/sec
 
+    Orc(){
+        super(hitbox_radius, new PVector(), new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc"));
+        println("achieved access to orc");
+    }
     Orc(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
         super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc"));
@@ -77,7 +81,7 @@ class OrcShaman extends Enemy{
 
     OrcShaman(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
-        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/shaman"));
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman"));
         sprite.setAnimLength(750); //ms
         time_idle = int(random(wave_time));
         energy = new EnergyProjectile(pos, pos, time_idle);
@@ -144,9 +148,9 @@ class EnergyProjectile extends Enemy{
     float host_rot = 0;
 
     EnergyProjectile(PVector initial_pos, PVector host_pos, int time_idle){
-        super(hitbox_radius, initial_pos.copy(), new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/shaman_projectile/sword"));
-        energy = GAME.assets.getSprite("media/sprites/enemies/orcs/shaman_projectile/energy");
-        projectile = GAME.assets.getSprite("media/sprites/enemies/orcs/shaman_projectile/sword");
+        super(hitbox_radius, initial_pos.copy(), new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/sword"));
+        energy = GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/energy");
+        projectile = GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/sword");
         this.host_pos = host_pos;
         this.time_idle = time_idle;
     }

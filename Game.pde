@@ -1,6 +1,8 @@
 import ddf.minim.*;
 import com.jogamp.newt.opengl.GLWindow;
 import java.util.ArrayList;
+import java.lang.reflect.Constructor;
+
 
 class MyGame {
 
@@ -367,35 +369,73 @@ class MyGame {
     spawned_enemies = 0;
     final int STANDARD = 0;
     final int FAST = 1;
-    final int HEAVY = 2;
+    final int BOSS = 2;
     // int standard_rate = 60;
-    int wave_mode = 0; // int(random(3))
+    // 5 seconds of extra wave time every 3 waves, max 30 sec
+    wave_time = (int(current_wave/3) + 1)*5000;
+    wave_time = constrain(wave_time, 5000, 30000);
+    int wave_mode = 0;
+    if (current_wave % 4 == 0){
+      wave_mode = FAST;
+    }
+    if (current_wave % 5 == 0){
+      wave_mode = BOSS;
+      wave_time = (int(current_wave/10) + 1)*5000;
+      wave_time = constrain(wave_time, 5000, 30000);
+    }
     switch (wave_mode){
       case STANDARD:
-        // 5 seconds of extra wave time every 3 waves, max 30 sec
-        wave_time = (int(current_wave/3) + 1)*5000;
-        wave_time = constrain(wave_time, 5000, 30000);
+        // Cool idea but not exactly simple
+        // int peak = 10;
+        // float[] enemy_rates = { 
+        //   gaussian(peak, 2, 6, current_wave), // orc
+        //   gaussian(peak, 8, 4, current_wave), // orc_shaman
+        //   sigmoid(.8, 5, peak, current_wave), // orc_Boss
+        //   gaussian(peak, 8, 4, current_wave), // imp
+        //   sigmoid(.8, 8, peak, current_wave) // Imp_Boss
+        // };
         // Spawn orcs
-        int num_orcs = 4 + current_wave;
+        int num_orcs = 3 + int(current_wave*1.3);
         for(int i = 0; i < num_orcs; i++){
           Orc new_orc = new Orc(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_orc);
           alive_enemies += 1;
         }
         // Spawn Shamans
-        int num_shamans = 1 + int(current_wave / 3);
+        int num_shamans = int(current_wave/2.0);
         for(int i = 0; i < num_shamans; i++){
-          OrcBoss new_orc = new OrcBoss(get_random_spawn_point(), wave_time);
+          OrcShaman new_orc = new OrcShaman(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_orc);
           alive_enemies += 1;
         }
         // Spawn Imps
-        int num_imps = 1 + int(current_wave / 3);
+        int num_imps = int(linear_clamped(1, 1, 20, current_wave)); // float xintercept, float slope, float upper_bound, float x
         for(int i = 0; i < num_imps; i++){
-          ImpBoss new_enem = new ImpBoss(get_random_spawn_point(), wave_time);
+          Imp new_enem = new Imp(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_enem);
           alive_enemies += 1;
         }
+        // Spawn Bosses
+        if (current_wave > 5){
+          float boss_chance = sigmoid(.8, 10, 1, current_wave) ;
+          if (random(1) < boss_chance){
+            // bosses ranges from 1 to current_wave/5
+            int num_bosses = int(random(1, int(current_wave/5.0)));
+            spawnBosses(num_bosses);
+          }
+        }
+        break;
+      case(FAST):
+        int num_imps_fast = int(linear_clamped(0, 3.5, 20, current_wave)); // float xintercept, float slope, float upper_bound, float x
+        for(int i = 0; i < num_imps_fast; i++){
+          Imp new_enem = new Imp(get_random_spawn_point(), wave_time);
+          actor_spawns.add(new_enem);
+          alive_enemies += 1;
+        }
+        break;
+      case(BOSS):
+        int num_bosses = 2*int(current_wave/5); // current_wave/5 should always be whole number
+        spawnBosses(num_bosses);
         break;
       default:
         println("Wave mode incorrect");
@@ -417,6 +457,84 @@ class MyGame {
     // float radius = 200;
     PVector spawn_point = new PVector(width/2, height/2).add(PVector.random2D().mult(radius*sqrt(2)));
     return spawn_point;  
+  }
+
+  void spawnBosses(int num_bosses){
+    float[] boss_probabilities = {
+      1.0, // Orc
+      1.0 // Imp
+    };
+    boss_probabilities = convertToProbability(boss_probabilities);
+    for(int i = 0; i < num_bosses; i++){
+      int boss_idx = chooseBossRandom(boss_probabilities);
+      if (boss_idx == 0){
+        OrcBoss new_enem = new OrcBoss(get_random_spawn_point(), wave_time);
+        actor_spawns.add(new_enem);
+        alive_enemies += 1;
+      }
+      else if (boss_idx == 1){
+        ImpBoss new_enem = new ImpBoss(get_random_spawn_point(), wave_time);
+        actor_spawns.add(new_enem);
+        alive_enemies += 1;
+      }
+      else{
+        println("boss idx is wrong");
+      }
+    }
+  }
+
+  float[] convertToProbability(float[] numbers){
+    // convert all probabilities to be 0-1
+    float sum = 0;
+    for(float prob : numbers){
+      sum += prob;
+    }
+    for(int i = 0; i < numbers.length; i++){
+      numbers[i] /= sum;
+    }
+    return numbers;
+  }
+
+  int chooseBossRandom(float[] probs){
+    int chosen_num = 0;
+    float rand_val = random(1); // Generate random value between 0 and 1
+    float cumulative_prob = 0;
+    for (int i = 0; i < probs.length; i++) {
+      cumulative_prob += probs[i];
+      if (rand_val < cumulative_prob) {
+        chosen_num = i;
+        break;
+      }
+    }
+    return chosen_num;
+  }
+
+  float gaussian(float height, float center, float stdev, float x){
+    // Gaussian is in the form height->max value of gaussian
+    // center -> peak of distribution (peak round) 
+    // stdev -> the wideness of the curve (persistence of enemy type)
+    // x -> value to evaluate function at.
+    return height*exp(-sq((x - center))/(2*sq(stdev)));
+  }
+
+  float sigmoid(float k, float xnot, float max, float x){
+    // k -> wideness of slope (lower k, wider slope) 
+    // xnot -> center of slope
+    // max -> max value function approaches 
+    return max*(1 / (1 + exp(-k*(x-xnot))));
+  }
+
+  float linear_clamped(float xintercept, float slope, float upper_bound, float x){
+    /*
+    y = m*x + b, but no negative y values
+    xintercept -> point at which function begins to slope upward
+    slope -> rate of change
+    upper_bound -> highest value function can obtain
+    */
+    float b = -xintercept * slope;
+    float y = slope * x + b;
+    y = constrain(y, 0, upper_bound);
+    return y;
   }
   
   void initialize_player() {
@@ -449,6 +567,6 @@ class MyGame {
     String new_entry = player_name + "," + current_wave;
     String[] updated_lines = append(lines, new_entry);
     saveStrings("highscore.csv", updated_lines);
-  }
+  }  
 
 }
