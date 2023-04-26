@@ -7,6 +7,7 @@ import java.util.List;
 
 class AssetPool {
     // FIELDS
+    ArrayList<Thread> threads;
 
     // Object necessary for loading audio files
     // Used as audio_loader.loadFile(String path_to_file)
@@ -28,6 +29,8 @@ class AssetPool {
     // Can take an endless number of source directories. Will load Sprites
     // and Audio files from that directory and all subdirectories.
     AssetPool(boolean autofill, String... src_dirs) {
+        threads = new ArrayList<Thread>();
+
         audio_loader = new Minim(SplitBullet.this);
         allowed_sprite_types = Arrays.asList(".gif", ".jpg", ".jpeg", ".tga", ".png");
         allowed_audio_types = Arrays.asList(".wav", ".aiff", ".aif", ".au", ".snd", ".mp3");
@@ -37,7 +40,13 @@ class AssetPool {
 
         if (autofill) {
             for (String dir : src_dirs) {
-                autoFill(dir);
+                Thread loader = new Thread() {
+                    void run() {
+                        autoFill(dir);
+                    }
+                };
+                loader.start();
+                threads.add(loader);
             }
         }
     }
@@ -101,12 +110,14 @@ class AssetPool {
                     if (allowed_sprite_types.contains(file_ext)) {
                         addSprite(label, new Sprite(label, 1000, true));
                     } else if (allowed_audio_types.contains(file_ext)) {
-                        new Thread() {
+                        Thread thread = new Thread() {
                             @Override
                             public void run() {
-                                addSound(label, audio_loader.loadFile(label + "/" + file_name));
+                                addSound(label + "/" + file_name.substring(0, file_name.lastIndexOf('.')), audio_loader.loadFile(label + "/" + file_name));
                             }
-                        }.start();
+                        };
+                        thread.start();
+                        threads.add(thread);
                     }
                 }
             }

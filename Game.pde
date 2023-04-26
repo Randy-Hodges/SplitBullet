@@ -138,6 +138,16 @@ class MyGame {
         //print("got to GAME_SCREEN \n");
 
         window_properties.confinePointer(true);
+
+        // Wait for assets to finish loading before starting game
+        // Avoids nasty null pointers
+        for (Thread thread : assets.threads) {
+          try {
+            thread.join();
+          } catch (Exception e) {
+            println("I hade no idea what I am doing with threads.");
+          }
+        }
         
         // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
         if (player == null) {
