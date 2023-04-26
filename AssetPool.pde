@@ -7,7 +7,8 @@ import java.util.List;
 
 class AssetPool {
     // FIELDS
-    ArrayList<Thread> threads;
+    Thread loading_thread;
+    ArrayList<Thread> subthreads, loading_files;
 
     // Object necessary for loading audio files
     // Used as audio_loader.loadFile(String path_to_file)
@@ -29,7 +30,8 @@ class AssetPool {
     // Can take an endless number of source directories. Will load Sprites
     // and Audio files from that directory and all subdirectories.
     AssetPool(boolean autofill, String... src_dirs) {
-        threads = new ArrayList<Thread>();
+        subthreads = new ArrayList<Thread>();
+        loading_files = new ArrayList<Thread>();
 
         audio_loader = new Minim(SplitBullet.this);
         allowed_sprite_types = Arrays.asList(".gif", ".jpg", ".jpeg", ".tga", ".png");
@@ -39,15 +41,36 @@ class AssetPool {
         sounds = new HashMap();
 
         if (autofill) {
-            for (final String dir : src_dirs) {
-                Thread loader = new Thread() {
-                    void run() {
-                        autoFill(dir);
+            loading_thread = new Thread() {
+                void run() {
+                    for (final String dir : src_dirs) {
+                        Thread loader = new Thread() {
+                            void run() {
+                                autoFill(dir);
+
+                                for (Thread loader : loading_files) {
+                                    try {
+                                        loader.join();
+                                    } catch (Exception e) {
+
+                                    }
+                                }
+                            }
+                        };
+                        loader.start();
+                        subthreads.add(loader);
                     }
-                };
-                loader.start();
-                threads.add(loader);
-            }
+
+                    for (Thread subthread : subthreads) {
+                        try {
+                            subthread.join();
+                        } catch (Exception e) {
+                            
+                        }
+                    }
+                }
+            };
+            loading_thread.start();
         }
     }
     AssetPool() {
@@ -117,7 +140,7 @@ class AssetPool {
                             }
                         };
                         thread.start();
-                        threads.add(thread);
+                        loading_files.add(thread);
                     }
                 }
             }

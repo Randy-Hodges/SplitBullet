@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 class MyGame {
 
   // Screen state variables
+  final int LOADING = -1;
   final int MENU_SCREEN = 0;
   final int GAME_SCREEN = 1;
   final int PAUSE_SCREEN = 2;
@@ -62,25 +63,27 @@ class MyGame {
   AssetPool assets;
 
   // Muted and paused flags
-  boolean muted, paused;
+  boolean muted, paused, loaded;
   
   // Player object
   Player player;
+
+  // Menu music
+  AudioPlayer menu, in_game, next_wave, game_over;
 
   MyGame(int tickrate) {
     // Set gameplay variables
     this.lives_count = 3;
     this.current_wave = 1;
 
-    // Set screen state to MENU_SCREEN
-    this.screen_state = MENU_SCREEN;
+    // Set screen state to LOADING
+    this.screen_state = LOADING;
 
     // Initialize GUI object
     this.game_gui = new GUI();
     
     // Initialize TextInputField object
     this.player_name_input = new TextInputField(new PVector(width / 2 - 150, height / 2 - 25), new PVector(300, 50), 5);
-
     
     // Initialize the user inputted key and mouse array lists
     this.keys_pressed = new ArrayList<Integer>();
@@ -118,9 +121,30 @@ class MyGame {
   void update() {
     // Update game state
     switch (screen_state) {
+      case LOADING:
+        // Wait for assets to finish loading before starting game
+        // Avoids nasty null pointers
+        if (assets.loading_thread.isAlive()) {
+          background(0);
+          textAlign(CENTER, CENTER);
+          text("Loading...", width/2, height/2);
+          break;
+        }
+
+        menu = assets.getSound("media/sounds/music/menu_loop");
+        in_game = assets.getSound("media/sounds/music/ingame_loop");
+        next_wave = assets.getSound("media/sounds/music/wave_complete");
+        game_over = assets.getSound("media/sounds/music/game_over");
+
+        change_screen_state(MENU_SCREEN);
+        break;
+      
       case MENU_SCREEN:
         // Handle menu logic
         //print("got to MENU_SCREEN \n");
+        if (!menu.isPlaying()) {
+          menu.loop();
+        }
 
         window_properties.confinePointer(false);
 
@@ -144,13 +168,16 @@ class MyGame {
 
         window_properties.confinePointer(true);
 
-        // Wait for assets to finish loading before starting game
-        // Avoids nasty null pointers
-        for (Thread thread : assets.threads) {
-          try {
-            thread.join();
-          } catch (Exception e) {
-            println("I hade no idea what I am doing with threads.");
+        menu.pause();
+        menu.rewind();
+        // game_over.pause();
+        // game_over.rewind();
+
+        if (in_game == null) {
+          in_game = assets.getSound("media/sounds/music/in_game_loop");
+        } else {
+          if (!in_game.isPlaying()) {
+            in_game.loop();
           }
         }
         
