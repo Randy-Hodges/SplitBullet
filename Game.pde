@@ -398,7 +398,7 @@ class MyGame {
   
   void initialize_player() {
     actor_despawns.add(player);
-    this.player = new Player(30, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1, 1), 0, 3);
+    this.player = new Player(15, new PVector(width / 2, height / 2), new PVector(), new PVector(), new PVector(1.6, 1.6), 0, 3);
     actor_spawns.add(player);
   }
 
