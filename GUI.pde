@@ -13,6 +13,7 @@ class GUI {
   final int SKIP_SCORE = 42;
   final int VICTORY_SCREEN = 5;
   final int HIGH_SCORE_SCREEN = 6;
+  final int INFO_SCREEN = 7;
 
   // Initialize game variables
   int screen_state;
@@ -21,6 +22,7 @@ class GUI {
   PImage menu_image;
   PImage victory_image;
   PImage lose_image;
+  PImage info_image;
   
   
   // Initialize font
@@ -38,6 +40,7 @@ class GUI {
     this.menu_image = loadImage("media/gui/Menu_Screen.png");
     this.victory_image = loadImage("media/gui/Victory_Screen.png");
     this.lose_image = loadImage("media/gui/Game_Over.png");
+    this.info_image = loadImage("media/gui/Information.png");
     this.screen_state = MENU_SCREEN;
 
     // Load the custom font from the "data" folder and set the size to 32
@@ -64,13 +67,7 @@ class GUI {
     fill(255);
     text("Play", width/2, height/2 + 270); // Draw "Play" button
     text("High Score", width/2, height/2 + 320); // Draw "High Score" button
-    
-    // Draw clickable area rectangles
-    //stroke(255, 0, 0); // Set the stroke color to red for visibility
-    //noFill(); // Make the rectangle transparent
-    //rect(width/2 - 50, height/2 + 250, 100, 40); // "Play" button clickable area
-    //rect(width/2 - 100, height/2 + 300, 200, 40); // "High Score" button clickable area
-
+    text("Help", width/2, height/2 + 370); // Draw "Help" button
     popMatrix();
   }
   
@@ -234,6 +231,17 @@ class GUI {
   
     popMatrix();
   }
+  
+  void draw_info_screen() {
+    pushMatrix();
+    imageMode(CORNER);
+    // Load image
+    image(info_image, 0, 0, width, height);
+    // Display Back button
+    textSize(24);
+    text("Go Back", 90, 50);
+    popMatrix();
+  }
 
   int handle_lose_screen_click() {
     // Check if click is within "Back to Menu" area
@@ -275,15 +283,29 @@ class GUI {
     // Check if the click is within the "High Score" button's area
     else if (mouseX > width/2 - 100 && mouseX < width/2 + 100 && mouseY > height/2 + 300 && mouseY < height/2 + 340) {
        // Display the high score screen
-       // I'll need to create a new method to handle the high score screen
        screen_state = HIGH_SCORE_SCREEN;
        return HIGH_SCORE_SCREEN;
+       
+    } else if (mouseX > width/2 - 50 && mouseX < width/2 + 50 && mouseY > height/2 + 350 && mouseY < height/2 + 390) {
+       screen_state = INFO_SCREEN;
+       return INFO_SCREEN;
     }
     
     return screen_state;
   }
   
   int handle_high_score_click() {
+    // Check if the click is within the "Go Back" button's area
+    if (mouseX > 50 && mouseX < 50 + textWidth("Go Back") && mouseY > 50 - textAscent() && mouseY < 50 + 2*textDescent) {
+      // Switch to the main menu screen
+      screen_state = MENU_SCREEN;
+      return MENU_SCREEN;
+    }
+    
+    return screen_state;
+  }
+  
+  int handle_info_click() {
     // Check if the click is within the "Go Back" button's area
     if (mouseX > 50 && mouseX < 50 + textWidth("Go Back") && mouseY > 50 - textAscent() && mouseY < 50 + 2*textDescent) {
       // Switch to the main menu screen
