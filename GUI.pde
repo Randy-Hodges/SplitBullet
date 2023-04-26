@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Comparator;
 
 class GUI {
 
@@ -8,6 +9,8 @@ class GUI {
   final int PAUSE_SCREEN = 2;
   final int LOSE_SCREEN = 3;
   final int LOSE_SCREEN_SAVE = 4;
+  final int SAVE_SCORE = 41;
+  final int SKIP_SCORE = 42;
   final int VICTORY_SCREEN = 5;
   final int HIGH_SCORE_SCREEN = 6;
 
@@ -142,6 +145,7 @@ class GUI {
     fill(255);
     textSize(32);
     text("Submit", width / 2 - 100, height / 2 + 100);
+    text("Skip", 50, 50);
     popMatrix();
   }
 
@@ -205,8 +209,8 @@ class GUI {
       }
     }
   
-    // Sort the ArrayList by score in descending order
-    // scores.sort((a, b) -> b.score - a.score);
+    // Sort the ArrayList by score in descending order. Different implementation for sort using a custom comparator class.
+    scores.sort(new ScoreComparator());
   
     textAlign(LEFT, CENTER);
     textSize(24);
@@ -242,13 +246,21 @@ class GUI {
     return screen_state;
   }
 
-  int handle_lose_save_click() {
+  int handle_lose_save_click() {    
     // Check if click is within "Submit" : width / 2 - 100, height / 2 + 100
-    if (mouseX > (width / 2 - 100) && mouseX < (width / 2 - 100) + textWidth("Submit") && mouseY > (height / 2 + 100) - textDescent && mouseY < (height / 2 + 100) + 2*textDescent) {
+    if (mouseX > (width / 2 - 100) && mouseX < (width / 2 - 100) + textWidth("Submit") && mouseY > (height / 2 + 100) - textAscent() && mouseY < (height / 2 + 100) + 2*textDescent) {
       // Switch to main menu
       screen_state = MENU_SCREEN;
-      return MENU_SCREEN;
+      return SAVE_SCORE;  // not the best way to handle this but ig it'll work
     }
+    
+    // Check if click is within "Skip"
+    if (mouseX > 50 && mouseX < 50 + textWidth("Skip") && mouseY > 50 - textAscent() && mouseY < 50 + 2*textDescent) {
+      // Switch to the main menu screen
+      screen_state = MENU_SCREEN;
+      return SKIP_SCORE;
+    }
+
     
     return screen_state;
   }
@@ -295,8 +307,15 @@ class GUI {
 
 }
 
+// Comparator class to sort PlayerScore objects in descending order
+class ScoreComparator implements Comparator<PlayerScore> {
+  public int compare(PlayerScore a, PlayerScore b) {
+    return b.score - a.score;
+  }
+}
 
-// Class to sort top 10 highscores by descending values in HIGH_SCORE_SCREEN
+
+// Class to sort top 15 highscores by descending values in HIGH_SCORE_SCREEN
 class PlayerScore {
   String name;
   int score;
