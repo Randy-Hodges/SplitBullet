@@ -440,14 +440,14 @@ class MyGame {
           alive_enemies += 1;
         }
         // Spawn Shamans
-        int num_shamans = int(current_wave/2.0);
+        int num_shamans = int(linear_clamped(0, .5, 10, current_wave)); // float xintercept, float slope, float upper_bound, float x
         for(int i = 0; i < num_shamans; i++){
           OrcShaman new_orc = new OrcShaman(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_orc);
           alive_enemies += 1;
         }
         // Spawn Imps
-        int num_imps = int(linear_clamped(1, 1, 20, current_wave)); // float xintercept, float slope, float upper_bound, float x
+        int num_imps = int(linear_clamped(1, 1.3, 30, current_wave)); 
         for(int i = 0; i < num_imps; i++){
           Imp new_enem = new Imp(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_enem);
@@ -464,7 +464,7 @@ class MyGame {
         }
         break;
       case(FAST):
-        int num_imps_fast = int(linear_clamped(0, 3.5, 20, current_wave)); // float xintercept, float slope, float upper_bound, float x
+        int num_imps_fast = int(linear_clamped(0, 4, 60, current_wave)); // float xintercept, float slope, float upper_bound, float x
         for(int i = 0; i < num_imps_fast; i++){
           Imp new_enem = new Imp(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_enem);

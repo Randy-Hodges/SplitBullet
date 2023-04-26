@@ -92,7 +92,7 @@ class Enemy extends Actor{
     void displayHitboxes(){
             noFill();
             stroke(0);
-            strokeWeight(3);
+            strokeWeight(2);
             rectMode(CENTER);
             rect(0, 0, hitbox_radius, hitbox_radius);
             rectMode(CORNER);
