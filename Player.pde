@@ -142,6 +142,7 @@ class Player extends Actor {
         }
     }
     class Gun extends Actor {
+        AudioPlayer gunshot;
         Sprite gun;
         int caliber;
         int bullet_durability;
@@ -155,6 +156,8 @@ class Player extends Actor {
 
             this.caliber = 1;
             this.bullet_durability = 1;
+
+            gunshot = GAME.assets.getSound("media/sounds/gun/gunshot");
         }
         Gun(PVector pos, float rot, PVector scale) {
             this(GAME.assets.getSprite("media/sprites/player/gun"), pos, rot, scale);
@@ -174,6 +177,11 @@ class Player extends Actor {
 
         void fire(PVector origin, PVector direction) {
             GAME.actor_spawns.add(new Projectile(origin, direction, caliber, bullet_durability, 6.51442 * log(2.15443 * caliber), (Actor)this));
+
+            if (!GAME.muted) {
+                gunshot.rewind();
+                gunshot.play();
+            }
         }
 
         void render() {
