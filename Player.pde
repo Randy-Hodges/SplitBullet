@@ -89,7 +89,7 @@ class Player extends Actor {
         Gun gun;
 
         Sprite arm;
-        PVector pos, scale;
+        PVector pos, scale, aim_vector, rot_vector;
         float rot;
 
         Arm(Sprite arm, Gun gun, PVector pos, float rot, PVector scale) {
@@ -99,12 +99,15 @@ class Player extends Actor {
             this.pos = pos;
             this.rot = rot;
             this.scale = scale;
+
+            aim_vector = new PVector();
+            rot_vector = new PVector();
         }
         Arm(PVector pos, float rot, PVector scale) {
             this(GAME.assets.getSprite("media/sprites/player/arm"), new Gun(), pos, rot, scale);
         }
         Arm(PVector pos, float rot) {
-            this(pos, rot, new PVector(1, 1));
+            this(pos, rot, new PVector(0.5, 0.5));
         }
         Arm(PVector pos, PVector scale) {
             this(pos, 0, scale);
@@ -113,11 +116,13 @@ class Player extends Actor {
             this(pos, 0, new PVector(0.5, 0.5));
         }
         Arm() {
-            this(new PVector(12, 14));
+            this(new PVector(Player.this.hitbox_radius * (12.0/30), Player.this.hitbox_radius * (14.0/30)));
         }
 
         void updateSprite() {
-            rot = Player.this.aim_vector.y * HALF_PI;
+            // rot = Player.this.aim_vector.y * HALF_PI;
+            rot = constrain(aim_vector.set(Player.this.aim_vector.x * Math.signum(Player.this.flip.x), Player.this.aim_vector.y).heading(), -1.5, 2.5);
+            PVector.fromAngle(rot, rot_vector).set(rot_vector.x * Math.signum(Player.this.flip.x), rot_vector.y);
         }
 
         void render() {
@@ -136,10 +141,10 @@ class Player extends Actor {
             popMatrix();
         }
     }
-    class Gun {
+    class Gun extends Actor {
         Sprite gun;
-        PVector pos, scale;
-        float rot;
+        int caliber;
+        int bullet_durability;
 
         Gun(Sprite gun, PVector pos, float rot, PVector scale) {
             this.gun = gun;
@@ -147,6 +152,9 @@ class Player extends Actor {
             this.pos = pos;
             this.rot = rot;
             this.scale = scale;
+
+            this.caliber = 1;
+            this.bullet_durability = 1;
         }
         Gun(PVector pos, float rot, PVector scale) {
             this(GAME.assets.getSprite("media/sprites/player/gun"), pos, rot, scale);
@@ -161,7 +169,11 @@ class Player extends Actor {
             this(pos, 0, new PVector(1, 1));
         }
         Gun() {
-            this(new PVector(20, 0));
+            this(new PVector(Player.this.hitbox_radius * (20.0/30), 0));
+        }
+
+        void fire(PVector origin, PVector direction) {
+            GAME.actor_spawns.add(new Projectile(origin, direction, caliber, bullet_durability, 6.51442 * log(2.15443 * caliber), (Actor)this));
         }
 
         void render() {
@@ -182,12 +194,16 @@ class Player extends Actor {
     Body b;
     Arm a;
 
-    PVector aim_vector, flip;
+    PVector aim_vector, look_vector, flip;
     int health;
     boolean hurt;
+    boolean invulnerable;
+    color tint_color;
+
+    ArrayList<Powerup> powerups;
 
     Timer fireTimer;
-    Timer invincibilityTimer;
+    Timer damage_cooldown;
 
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health) {
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
@@ -197,11 +213,13 @@ class Player extends Actor {
         a = new Arm();
 
         this.health = health;
+        powerups = new ArrayList<Powerup>();
 
         fireTimer = new Timer();
-        invincibilityTimer = new Timer(false, false, true, 0, 0, true);
+        damage_cooldown = new Timer(false, true, true, 0, 0, true);
 
         aim_vector = new PVector(1, 0);
+        look_vector = new PVector(1, 0);
 
         flip = scale.copy();
     }
@@ -211,7 +229,8 @@ class Player extends Actor {
 
     void checkInputs() {
         // aim_vector.add((mouseX - (width / 2)) / 100.0,(mouseY - (height / 2)) / 100.0).limit(1);
-        aim_vector.set(mouseX - (pos.x + (a.pos.x * a.scale.x)), mouseY - (pos.y + a.pos.y)).normalize();
+        look_vector.set(mouseX - pos.x, mouseY - pos.y).normalize();
+        aim_vector.set(mouseX - (pos.x + (a.pos.x * flip.x)), mouseY - (pos.y + a.pos.y * flip.y)).normalize();
 
         if (GAME.mouse_inputs.contains(LEFT)) {
             fire();
@@ -238,7 +257,8 @@ class Player extends Actor {
         //add new projectile at player's location moving in the direction of aim_vector
         if (fireTimer.value() >= 300)
         {
-            GAME.actor_spawns.add(new Projectile(new PVector(pos.x + (flip.x * a.pos.x), pos.y + a.pos.y).add(PVector.fromAngle(flip.x * a.rot).mult(flip.x  * a.gun.pos.x)), aim_vector.copy().setMag(1000)));
+            a.gun.fire(new PVector(pos.x + (flip.x * a.pos.x), pos.y + (flip.y * a.pos.y)).add(a.rot_vector.copy().mult(scale.x * a.scale.x * a.gun.pos.x)), aim_vector.copy().setMag(1000));
+            // GAME.actor_spawns.add(new Projectile(new PVector(pos.x + (flip.x * a.pos.x), pos.y + a.pos.y).add(PVector.fromAngle(flip.x * a.rot).mult(flip.x  * a.gun.pos.x)), aim_vector.copy().setMag(1000)));
             fireTimer.reset();
         }
     }
@@ -256,37 +276,53 @@ class Player extends Actor {
     void collisionReaction() {
         for (Actor collision : collisions) {
             if (collision instanceof Enemy) {
-                if (invincibilityTimer.value() <= 0 && !((Enemy)collision).hurt && ((Enemy)collision).health > 0) {
+                if ((damage_cooldown.value() <= 0) && (!((Enemy)collision).hurt) && (((Enemy)collision).health > 0)) {
                     health--;
                     hurt = true;
-                    invincibilityTimer.setBaseTime(1000);
-                    invincibilityTimer.reset();
-                    invincibilityTimer.resume();
+                    damage_cooldown.setBaseTime(2000);
+                    damage_cooldown.reset();
                 }
             } else if (collision instanceof Powerup) {
                 //apply powerup effects
-                if (collision instanceof HealthPowerup)
+                if (collision instanceof HealthPowerup) {
                     health++;
-            
-                else if (collision instanceof Superstar) {
-                    invincibilityTimer.setBaseTime(8000);
-                    invincibilityTimer.reset();
-                    invincibilityTimer.resume();
+                } else {
+                    powerups.add((Powerup)collision);
                 }
             }
         }
     }
 
     void damageCooldown() {
-        if (hurt && invincibilityTimer.value() <= 0) {
+        if (hurt && damage_cooldown.value() <= 0) {
             hurt = false;
         }
+    }
+
+    void simulatePowerups() {
+        a.gun.caliber = 1;
+        invulnerable = false;
+        tint_color = color(255);
+        simulatePowerups(0);
+    }
+
+    protected int simulatePowerups(int idx) {
+        for (int i = idx; i < powerups.size(); i++) {
+            Powerup powerup = powerups.get(i);
+            if (powerup.simulateEffects()) {
+                powerup.applyEffect();
+            } else {
+                return simulatePowerups(i);
+            }
+        }
+        return 0;
     }
 
     void simulate() {
         checkInputs();
         damageCooldown();
         super.simulate();
+        simulatePowerups();
     }
     
     void move() {
@@ -308,7 +344,7 @@ class Player extends Actor {
     }
 
     void checkDirection() {
-         if (aim_vector.x < 0) {
+         if (look_vector.x < 0) {
             flip.set(-scale.x, scale.y);
         } else {
             flip.set(scale.x, scale.y);
@@ -324,13 +360,17 @@ class Player extends Actor {
         pushMatrix();
 
         translate(draw_pos.x, draw_pos.y);
+        drawAimVector();
         scale(flip.x, flip.y);
-
         rotate(rot);
 
+
+        tint(tint_color);
         if (hurt) 
             tint(255, 150, 150);
+
         b.render();
+
         tint(255);
 
         h.render();
