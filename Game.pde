@@ -16,6 +16,7 @@ class MyGame {
   final int SKIP_SCORE = 42;
   final int VICTORY_SCREEN = 5;
   final int HIGH_SCORE_SCREEN = 6;
+  final int INFO_SCREEN = 7;
   int screen_state;
 
   // Play area variables
@@ -312,6 +313,16 @@ class MyGame {
       
         break;
 
+      case INFO_SCREEN:
+        game_gui.draw_info_screen();
+        
+        // Go back to menu screen
+        if (mouse_pressed.contains(LEFT)) {
+          change_screen_state(game_gui.handle_info_click()); 
+        }
+      
+        break;
+  
     }
       // Clear input buffers
       clearInputBuffers();
