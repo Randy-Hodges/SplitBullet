@@ -142,6 +142,7 @@ class MyGame {
         // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
         if (player == null) {
           //print("Initializing player and populating wave\n");
+          alive_enemies = 0;
           initialize_player();
           populate_wave(current_wave);
         }
@@ -361,7 +362,7 @@ class MyGame {
         // Spawn Shamans
         int num_shamans = 1 + int(current_wave / 3);
         for(int i = 0; i < num_shamans; i++){
-          OrcShaman new_orc = new OrcShaman(get_random_spawn_point(), wave_time);
+          OrcBoss new_orc = new OrcBoss(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_orc);
           alive_enemies += 1;
         }

@@ -3,9 +3,9 @@
 
 class Orc extends Enemy{
     // static variables that are applied with super()
-    final static float orc_hitbox_radius = 10;
-    final static float orc_scalex = 2;
-    final static float orc_scaley = 2;
+    final static float hitbox_radius = 10;
+    final static float scalex = 2;
+    final static float scaley = 2;
     final static int health = 2;
     // Other variables specific to this class
     float decision_rate = 600; // how long (in ms) it takes between changing directions
@@ -14,7 +14,7 @@ class Orc extends Enemy{
 
     Orc(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
-        super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc"));
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc"));
         sprite.setAnimLength(750); //ms
         time_idle = int(random(wave_time));
     }
@@ -24,7 +24,12 @@ class Orc extends Enemy{
         if (checkIdle()){return;}
         if (hurt){return;}
         // Movement / other happenings
-        // next_vel = GAME.player.pos.copy().sub(pos).normalize().mult(speed);
+        // Change velocity towards player in NSWE direction
+        orcMove();
+        super.simulate();
+    }
+
+    void orcMove(){
         // Change velocity towards player in NSWE direction
         if (decision_timer.value() > decision_rate){
             decision_timer.reset();
@@ -35,11 +40,11 @@ class Orc extends Enemy{
                 // x direction
                 if (player_dir.x < 0){
                     next_vel.set(-1, 0).mult(speed);
-                    scale.x = -orc_scalex;
+                    scale.x = -scalex;
                 }
                 else{
                     next_vel.set(1, 0).mult(speed);
-                    scale.x = orc_scalex;
+                    scale.x = scalex;
                 }
             }
             else { 
@@ -52,16 +57,15 @@ class Orc extends Enemy{
                 }
             }
         }
-        super.simulate();
     }
-    /* */
+    
 }
 
 class OrcShaman extends Enemy{
     // static variables that are applied with super()
-    final static float orc_hitbox_radius = 20;
-    final static float orc_scalex = 2;
-    final static float orc_scaley = 2;
+    final static float hitbox_radius = 20;
+    final static float scalex = 2;
+    final static float scaley = 2;
     final static int health = 3;
     // Other variables specific to this class
     float decision_rate = 1200; // how long (in ms) it takes between changing directions
@@ -73,7 +77,7 @@ class OrcShaman extends Enemy{
 
     OrcShaman(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
-        super(orc_hitbox_radius, initial_pos, new PVector(orc_scalex, orc_scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman"));
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/shaman"));
         sprite.setAnimLength(750); //ms
         time_idle = int(random(wave_time));
         energy = new EnergyProjectile(pos, pos, time_idle);
@@ -85,6 +89,16 @@ class OrcShaman extends Enemy{
         if (checkIdle()){return;}
         if (hurt){return;}
         // Movement / other happenings
+        orcMove();
+        super.simulate();
+    }
+    
+    void die(){
+        super.die();
+        energy.die();
+    }
+
+    void orcMove(){
         // Change velocity towards player in NSWE direction
         if (decision_timer.value() > decision_rate){
             decision_timer.reset();
@@ -95,11 +109,11 @@ class OrcShaman extends Enemy{
                 // x direction
                 if (player_dir.x < 0){
                     next_vel.set(-1, 0).mult(speed);
-                    scale.x = -orc_scalex;
+                    scale.x = -scalex;
                 }
                 else{
                     next_vel.set(1, 0).mult(speed);
-                    scale.x = orc_scalex;
+                    scale.x = scalex;
                 }
             }
             else { 
@@ -112,13 +126,8 @@ class OrcShaman extends Enemy{
                 }
             }
         }
-        super.simulate();
     }
-    
-    void die(){
-        super.die();
-        energy.die();
-    }
+
 }
 
 class EnergyProjectile extends Enemy{
@@ -135,9 +144,9 @@ class EnergyProjectile extends Enemy{
     float host_rot = 0;
 
     EnergyProjectile(PVector initial_pos, PVector host_pos, int time_idle){
-        super(hitbox_radius, initial_pos.copy(), new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/sword"));
-        energy = GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/energy");
-        projectile = GAME.assets.getSprite("media/sprites/enemies/orcs/orc_shaman_projectile/sword");
+        super(hitbox_radius, initial_pos.copy(), new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/shaman_projectile/sword"));
+        energy = GAME.assets.getSprite("media/sprites/enemies/orcs/shaman_projectile/energy");
+        projectile = GAME.assets.getSprite("media/sprites/enemies/orcs/shaman_projectile/sword");
         this.host_pos = host_pos;
         this.time_idle = time_idle;
     }
@@ -293,5 +302,142 @@ class ImpSpawn extends Enemy{
         super.simulate();
     }
     /* */
+}
+
+class OrcBoss extends Enemy{
+    // static variables that are applied with super()
+    final static float hitbox_radius = 20;
+    final static float scalex = 2;
+    final static float scaley = 2;
+    final static int health = 8;
+    // Movement
+    float speed = 50; // pixels/sec
+    float decision_rate = 2000; // how long (in ms) it takes between changing directions
+    Timer decision_timer = new Timer();
+    // Other
+    Timer spawn_timer = new Timer();
+    int spawn_rate = 3500; // time (ms) to spawn a new small enemy
+    int spawn_radius = 50; // pixels
+
+
+    OrcBoss(PVector initial_pos, int wave_time){
+        // projectiles hit twice, I am doubling initial health to compensate
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orcBoss"));
+        sprite.setAnimLength(500); // ms
+        time_idle = int(random(wave_time));
+        this.hurt_time = 100;
+    }
+
+    void simulate(){
+        // Don't move under these conditions
+        if (checkIdle()){return;}
+        if (hurt){return;}
+        // Spawning
+        if (spawn_timer.value() > spawn_rate){
+            spawn_timer.reset();
+            spawn_small_enemy();
+        }
+        // Movement
+        orcMove();
+        super.simulate();
+    }
+    
+    void spawn_small_enemy(){
+        PVector randomRadius = PVector.random2D().mult(spawn_radius);
+        OrcSpawn new_enem = new OrcSpawn(pos.copy().add(randomRadius));
+        GAME.actor_spawns.add(new_enem);
+        GAME.alive_enemies += 1;
+    }
+    
+    void orcMove(){
+        // Change velocity towards player in NSWE direction
+        if (decision_timer.value() > decision_rate){
+            decision_timer.reset();
+            // get direction of player
+            PVector player_dir = GAME.player.pos.copy().sub(pos);
+            // Move in cardinal direction towards player
+            if (abs(player_dir.x) > abs(player_dir.y)){ 
+                // x direction
+                if (player_dir.x < 0){
+                    next_vel.set(-1, 0).mult(speed);
+                    scale.x = -scalex;
+                }
+                else{
+                    next_vel.set(1, 0).mult(speed);
+                    scale.x = scalex;
+                }
+            }
+            else { 
+                // y direction
+                if (player_dir.y < 0){
+                    next_vel.set(0, -1).mult(speed);
+                }
+                else{
+                    next_vel.set(0, 1).mult(speed);
+                }
+            }
+        }
+    }
+}
+
+class OrcSpawn extends Enemy{
+    // static variables that are applied with super()
+    final static float hitbox_radius = 6;
+    final static float scalex = 2;
+    final static float scaley = 2;
+    final static int health = 2;
+    // Other
+    int time_invulnerable = 2000; //ms
+    // Movement
+    float speed = 80; // pixels/sec
+    float decision_rate = 400; // how long (in ms) it takes between changing directions
+    Timer decision_timer = new Timer();
+    
+
+    OrcSpawn(PVector initial_pos){
+        // projectiles hit twice, I am doubling initial health to compensate
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/orcs/orcSpawn"));
+        sprite.setAnimLength(500); //ms
+        time_idle = int(time_invulnerable);
+    }
+
+    void simulate(){
+        // Don't move under these conditions
+        if (checkIdle()){return;}
+        if (hurt){return;}
+        // Movement / other happenings
+        orcMove();
+        super.simulate();
+    }
+    
+    void orcMove(){
+        // Change velocity towards player in NSWE direction
+        if (decision_timer.value() > decision_rate){
+            decision_timer.reset();
+            // get direction of player
+            PVector player_dir = GAME.player.pos.copy().sub(pos);
+            // Move in cardinal direction towards player
+            if (abs(player_dir.x) > abs(player_dir.y)){ 
+                // x direction
+                if (player_dir.x < 0){
+                    next_vel.set(-1, 0).mult(speed);
+                    scale.x = -scalex;
+                }
+                else{
+                    next_vel.set(1, 0).mult(speed);
+                    scale.x = scalex;
+                }
+            }
+            else { 
+                // y direction
+                if (player_dir.y < 0){
+                    next_vel.set(0, -1).mult(speed);
+                }
+                else{
+                    next_vel.set(0, 1).mult(speed);
+                }
+            }
+        }
+    }
 }
 
