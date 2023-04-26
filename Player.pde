@@ -360,7 +360,6 @@ class Player extends Actor {
         pushMatrix();
 
         translate(draw_pos.x, draw_pos.y);
-        drawAimVector();
         scale(flip.x, flip.y);
         rotate(rot);
 
