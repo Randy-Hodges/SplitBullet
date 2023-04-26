@@ -213,6 +213,8 @@ class Player extends Actor {
     Timer fireTimer;
     Timer damage_cooldown;
 
+    AudioPlayer hurt_sound;
+
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot, int health) {
         super(hitbox_radius,  pos,  vel,  accel,  scale,  rot);
 
@@ -230,6 +232,8 @@ class Player extends Actor {
         look_vector = new PVector(1, 0);
 
         flip = scale.copy();
+
+        hurt_sound = GAME.assets.getSound("media/sounds/player/hurt");
     }
     Player(float hitbox_radius, PVector pos, PVector vel, PVector accel, PVector scale, float rot) {
         this(hitbox_radius,  pos,  vel,  accel,  scale,  rot, 10);
@@ -287,8 +291,14 @@ class Player extends Actor {
                 if ((damage_cooldown.value() <= 0) && (!((Enemy)collision).hurt) && (((Enemy)collision).health > 0)) {
                     health--;
                     hurt = true;
+                    
                     damage_cooldown.setBaseTime(2000);
                     damage_cooldown.reset();
+
+                    if (!GAME.muted) {
+                        hurt_sound.rewind();
+                        hurt_sound.play();
+                    }
                 }
             } else if (collision instanceof Powerup) {
                 //apply powerup effects
