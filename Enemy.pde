@@ -6,6 +6,10 @@ class Enemy extends Actor{
     float hit_speed = 5;
     Timer hurt_timer = new Timer();
     int hurt_time = 300; // ms
+    // Idle state occurs at begining of wave, spaces out enemies 
+    Timer idle_timer = new Timer();
+    int time_idle;
+    boolean idle = true;
     
     Enemy(float hitbox_radius, PVector pos, PVector scale, int health, Sprite sprite) {
         super(hitbox_radius, pos, scale, 0);
@@ -17,8 +21,10 @@ class Enemy extends Actor{
         if (checkInBounds()){
             imageMode(CENTER);
             hurtEffect();
+            idleEffect();
             image(sprite.getFrame(), 0, 0);
             tint(255);
+            // displayHitboxes();
         }
     }
 
@@ -67,6 +73,12 @@ class Enemy extends Actor{
             }
     }
 
+    void idleEffect(){
+        if (idle){
+            tint(255*(time_idle - idle_timer.value())/float(time_idle));
+        }
+    }
+
     boolean checkInBounds(){
         return (pos.x > GAME.PLAYABLE_AREA_X && pos.x < GAME.PLAYABLE_AREA_X + GAME.PLAYABLE_AREA_WIDTH && 
             pos.y > GAME.PLAYABLE_AREA_Y && pos.y < GAME.PLAYABLE_AREA_Y + GAME.PLAYABLE_AREA_HEIGHT);
@@ -80,5 +92,15 @@ class Enemy extends Actor{
             rect(0, 0, hitbox_radius, hitbox_radius);
             rectMode(CORNER);
     }
+
+    boolean checkIdle(){
+        if (idle){
+            if (idle_timer.value() > time_idle){
+                idle = false;
+            }
+        }
+        return idle;
+    }
+
 }
 

@@ -11,10 +11,6 @@ class Orc extends Enemy{
     float decision_rate = 600; // how long (in ms) it takes between changing directions
     Timer decision_timer = new Timer();
     float speed = 70; // pixels/sec
-    // Idle state occurs at begining of wave, spaces out enemies 
-    Timer idle_timer = new Timer();
-    int time_idle;
-    boolean idle = true;
 
     Orc(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
@@ -24,16 +20,10 @@ class Orc extends Enemy{
     }
 
     void simulate(){
-        if (idle){
-            if (idle_timer.value() > time_idle){
-                idle = false;
-                // println("changing from idle");
-            }
-            return;
-        }
-        if (hurt){
-            return;
-        }
+        // Don't move under these conditions
+        if (checkIdle()){return;}
+        if (hurt){return;}
+        // Movement / other happenings
         // next_vel = GAME.player.pos.copy().sub(pos).normalize().mult(speed);
         // Change velocity towards player in NSWE direction
         if (decision_timer.value() > decision_rate){
@@ -77,10 +67,6 @@ class OrcShaman extends Enemy{
     float decision_rate = 1200; // how long (in ms) it takes between changing directions
     Timer decision_timer = new Timer();
     float speed = 60; // pixels/sec
-    // Idle state occurs at begining of wave, spaces out enemies 
-    Timer idle_timer = new Timer();
-    int time_idle;
-    boolean idle = true;
     // Other
     EnergyProjectile energy;
 
@@ -95,16 +81,10 @@ class OrcShaman extends Enemy{
     }
 
     void simulate(){
-        if (idle){
-            if (idle_timer.value() > time_idle){
-                idle = false;
-                // println("changing from idle");
-            }
-            return;
-        }
-        if (hurt){
-            return;
-        }
+        // Don't move under these conditions
+        if (checkIdle()){return;}
+        if (hurt){return;}
+        // Movement / other happenings
         // Change velocity towards player in NSWE direction
         if (decision_timer.value() > decision_rate){
             decision_timer.reset();
@@ -149,10 +129,6 @@ class EnergyProjectile extends Enemy{
     final static float scalex = 1.5;
     final static float scaley = 1.5;
     final static int health = 1;
-    // Idle state occurs at begining of wave, spaces out enemies 
-    Timer idle_timer = new Timer();
-    int time_idle;
-    boolean idle = true;
     // Other
     float radius = 50;
     PVector host_pos;
@@ -201,10 +177,6 @@ class Imp extends Enemy{
     final static float scalex = 2;
     final static float scaley = 2;
     final static int health = 1;
-    // Idle state occurs at begining of wave, spaces out enemies 
-    Timer idle_timer = new Timer();
-    int time_idle;
-    boolean idle = true;
     // Other
     float speed = 150; // pixels/sec
 
@@ -216,16 +188,10 @@ class Imp extends Enemy{
     }
 
     void simulate(){
-        if (idle){
-            if (idle_timer.value() > time_idle){
-                idle = false;
-                // println("changing from idle");
-            }
-            return;
-        }
-        if (hurt){
-            return;
-        }
+        // Don't move under these conditions
+        if (checkIdle()){return;}
+        if (hurt){return;}
+        // Movement / other happenings
         // Change velocity towards player
         next_vel = GAME.player.pos.copy().sub(pos).normalize().mult(speed);
         // Change sprite direction appropriately
@@ -242,35 +208,79 @@ class Imp extends Enemy{
 
 class ImpBoss extends Enemy{
     // static variables that are applied with super()
-    final static float hitbox_radius = 10;
+    final static float hitbox_radius = 20;
     final static float scalex = 2;
     final static float scaley = 2;
-    final static int health = 1;
-    // Idle state occurs at begining of wave, spaces out enemies 
-    Timer idle_timer = new Timer();
-    int time_idle;
-    boolean idle = true;
+    final static int health = 8;
+    
     // Other
-    float speed = 150; // pixels/sec
+    float speed = 50; // pixels/sec
+    Timer spawn_timer = new Timer();
+    int spawn_rate = 3000; // time (ms) to spawn a new small enemy
+    int spawn_radius = 50; // pixels
+
 
     ImpBoss(PVector initial_pos, int wave_time){
         // projectiles hit twice, I am doubling initial health to compensate
-        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/imps/imp"));
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/imps/impBoss"));
         sprite.setAnimLength(500); //ms
         time_idle = int(random(wave_time));
+        this.hurt_time = 100;
     }
 
     void simulate(){
-        if (idle){
-            if (idle_timer.value() > time_idle){
-                idle = false;
-                // println("changing from idle");
-            }
-            return;
+        // Don't move under these conditions
+        if (checkIdle()){return;}
+        if (hurt){return;}
+        // Spawning
+        if (spawn_timer.value() > spawn_rate){
+            spawn_timer.reset();
+            spawn_small_enemy();
         }
-        if (hurt){
-            return;
+        // Movement
+        // Change velocity towards player
+        next_vel = GAME.player.pos.copy().sub(pos).normalize().mult(speed);
+        // Change sprite direction appropriately
+        if (next_vel.x < 0){
+            scale.x = -scalex;
         }
+        else{
+            scale.x = scalex;
+        }
+        super.simulate();
+    }
+    
+    void spawn_small_enemy(){
+        PVector randomRadius = PVector.random2D().mult(spawn_radius);
+        ImpSpawn new_enem = new ImpSpawn(pos.copy().add(randomRadius));
+        GAME.actor_spawns.add(new_enem);
+        GAME.alive_enemies += 1;
+    }
+}
+
+class ImpSpawn extends Enemy{
+    // static variables that are applied with super()
+    final static float hitbox_radius = 6;
+    final static float scalex = 2;
+    final static float scaley = 2;
+    final static int health = 1;
+    // Other
+    float speed = 100; // pixels/sec
+    int time_invulnerable = 2000; //ms
+    
+
+    ImpSpawn(PVector initial_pos){
+        // projectiles hit twice, I am doubling initial health to compensate
+        super(hitbox_radius, initial_pos, new PVector(scalex, scaley), health, GAME.assets.getSprite("media/sprites/enemies/imps/impSpawn"));
+        sprite.setAnimLength(500); //ms
+        time_idle = int(time_invulnerable);
+    }
+
+    void simulate(){
+        // Don't move under these conditions
+        if (checkIdle()){return;}
+        if (hurt){return;}
+        // Movement / other happenings
         // Change velocity towards player
         next_vel = GAME.player.pos.copy().sub(pos).normalize().mult(speed);
         // Change sprite direction appropriately

@@ -348,9 +348,9 @@ class MyGame {
     int wave_mode = 0; // int(random(3))
     switch (wave_mode){
       case STANDARD:
-        // 5 seconds of extra wave time every 3 waves, max 20 sec
+        // 5 seconds of extra wave time every 3 waves, max 30 sec
         wave_time = (int(current_wave/3) + 1)*5000;
-        wave_time = constrain(wave_time, 5000, 20000);
+        wave_time = constrain(wave_time, 5000, 30000);
         // Spawn orcs
         int num_orcs = 4 + current_wave;
         for(int i = 0; i < num_orcs; i++){
@@ -368,7 +368,7 @@ class MyGame {
         // Spawn Imps
         int num_imps = 1 + int(current_wave / 3);
         for(int i = 0; i < num_imps; i++){
-          Imp new_enem = new Imp(get_random_spawn_point(), wave_time);
+          ImpBoss new_enem = new ImpBoss(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_enem);
           alive_enemies += 1;
         }
