@@ -23,6 +23,7 @@ class GUI {
   PImage victory_image;
   PImage lose_image;
   PImage info_image;
+  PImage mute_icon;
   
   
   // Initialize font
@@ -41,6 +42,7 @@ class GUI {
     this.victory_image = loadImage("media/gui/Victory_Screen.png");
     this.lose_image = loadImage("media/gui/Game_Over.png");
     this.info_image = loadImage("media/gui/Information.png");
+    this.mute_icon = loadImage("media/gui/mute_icon.png");
     this.screen_state = MENU_SCREEN;
 
     // Load the custom font from the "data" folder and set the size to 32
@@ -159,6 +161,11 @@ class GUI {
     text("Press 'P' to Resume", width/2, height/2);
     text("Press 'M' to Mute", width/2, height/2 + 50);
     text("Press 'Q' to Quit", width/2, height/2 + 100);
+    
+    // If game is muted, show muted icon
+    if (GAME.muted) {
+      image(mute_icon, 50, 50, 100, 100);
+    }
     popMatrix();
   }
   
