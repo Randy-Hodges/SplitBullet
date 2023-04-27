@@ -449,14 +449,16 @@ class MyGame {
             new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT))
           )
         );
-      } else if (!superstarpowerup && random(1) < (3 - player.health) * 0.0001) {
-        actor_spawns.add(
-          new Superstar(
-            new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT)),
-            (int)random(2000, 10000)
-          )
-        );
       }
+    }
+    
+    if (!superstarpowerup && random(1) < (3 - player.health) * 0.0001) {
+      actor_spawns.add(
+        new Superstar(
+          new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT)),
+          (int)random(2000, 10000)
+        )
+      );
     }
   }
 
