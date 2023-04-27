@@ -21,11 +21,12 @@ class HealthPowerup extends Powerup{
 class Superstar extends Powerup
 {
     Timer color_timer;
-    color tint_color;
+    int tint_color;
 
     Superstar(float hitbox_radius, PVector pos, int effect_time, Sprite displayImage, AudioPlayer collect_sound) {
         super(hitbox_radius, pos, effect_time, displayImage, collect_sound);
         color_timer = new Timer(true, 0, 250);
+        tint_color = 0;
     }
     Superstar(float hitbox_radius, PVector pos, int effect_time) {
         this(hitbox_radius, pos, effect_time, GAME.assets.getSprite("media/sprites/powerups/superstar"), GAME.assets.getSound("media/sounds/powerup/superstar"));
@@ -40,15 +41,18 @@ class Superstar extends Powerup
     void applyEffect() {
         collector.invulnerable = true;
 
-        if (color_timer.value() >= color_timer.endTime()) {
-            color_timer.reset();
-
-            colorMode(HSB, 360, 100, 100);
-            tint_color = color(360 - random(360), 100, 100);
-            colorMode(RGB, 255, 255, 255);
+        if (effect_time.value <= 2000) {
+            color_timer.setEndTime(50);
         }
 
-        collector.tint_color = tint_color;
+        if (color_timer.value() >= color_timer.endTime()) {
+            color_timer.reset();
+            tint_color = (tint_color + 60) % 360;
+        }
+
+        colorMode(HSB, 360, 100, 100);
+        collector.tint_color = color(tint_color, 100, 100);
+        colorMode(RGB, 255, 255, 255);
     }
 }
 
@@ -58,7 +62,7 @@ class Rapidfire extends Powerup{
         super(hitbox_radius, pos, effect_time, displayImage, collect_sound);
     }
     Rapidfire(float hitbox_radius, PVector pos, int effect_time) {
-        this(hitbox_radius, pos, effect_time, GAME.assets.getSprite("media/sprites/powerups/rapidfire"), GAME.assets.getSound("media/sounds/powerup/superstar"));
+        this(hitbox_radius, pos, effect_time, GAME.assets.getSprite("media/sprites/powerups/rapidfire"), GAME.assets.getSound("media/sounds/gun/reload"));
     }
     Rapidfire(PVector pos, int effect_time) {
         this(30, pos, effect_time);
@@ -78,7 +82,7 @@ class Penetrator extends Powerup {
         super(hitbox_radius, pos, effect_time, displayImage, collect_sound);
     }
     Penetrator(float hitbox_radius, PVector pos, int effect_time) {
-        this(hitbox_radius, pos, effect_time, GAME.assets.getSprite("media/sprites/powerups/penetrator"), GAME.assets.getSound("media/sounds/powerup/superstar"));
+        this(hitbox_radius, pos, effect_time, GAME.assets.getSprite("media/sprites/powerups/penetrator"), GAME.assets.getSound("media/sounds/gun/reload"));
     }
     Penetrator(PVector pos, int effect_time) {
         this(30, pos, effect_time);

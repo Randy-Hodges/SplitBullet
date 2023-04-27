@@ -177,7 +177,7 @@ class Player extends Actor {
         }
 
         void fire(PVector origin, PVector direction) {
-            GAME.actor_spawns.add(new Projectile(origin, direction, caliber, bullet_durability, 6.51442 * log(2.15443 * caliber), (Actor)this));
+            GAME.actor_spawns.add(new Projectile(origin, direction.setMag(800 * sqrt(bullet_durability)), caliber, bullet_durability, (1.47353 * log(2102.68 * caliber - 1791.63) - 1.45847), (Actor)this));
 
             if (!GAME.muted) {
                 if (caliber > 2) {
@@ -278,7 +278,7 @@ class Player extends Actor {
         //add new projectile at player's location moving in the direction of aim_vectors
         if (fireTimer.value() <= fireTimer.endTime())
         {
-            a.gun.fire(new PVector(pos.x + (flip.x * a.pos.x), pos.y + (flip.y * a.pos.y)).add(a.rot_vector.copy().mult(scale.x * a.scale.x * a.gun.pos.x)), aim_vector.copy().setMag(1000));
+            a.gun.fire(new PVector(pos.x + (flip.x * a.pos.x), pos.y + (flip.y * a.pos.y)).add(a.rot_vector.copy().mult(scale.x * a.scale.x * a.gun.pos.x)), aim_vector.copy());
             // GAME.actor_spawns.add(new Projectile(new PVector(pos.x + (flip.x * a.pos.x), pos.y + a.pos.y).add(PVector.fromAngle(flip.x * a.rot).mult(flip.x  * a.gun.pos.x)), aim_vector.copy().setMag(1000)));
             fireTimer.reset();
         }

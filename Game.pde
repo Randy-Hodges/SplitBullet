@@ -468,12 +468,20 @@ class MyGame {
       actor_spawns.add(
         new Rapidfire(
           new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT)),
-          (int)random(5000, 20000)
+          (int)random(5000, 5000 * sqrt(current_wave))
         )
       );
     }
 
-    
+    // penetrator
+    if (random(50000) < current_wave) {
+      actor_spawns.add(
+        new Penetrator(
+          new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT)),
+          (int)random(5000, 5000 * sqrt(current_wave))
+        )
+      );
+    }
   }
 
   void populate_wave(int current_wave) {
