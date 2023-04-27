@@ -43,10 +43,11 @@ class AssetPool {
         if (autofill) {
             loading_thread = new Thread() {
                 void run() {
-                    for (final String dir : src_dirs) {
+                    for (String dir : src_dirs) {
+                        final String fill_dir = dir;
                         Thread loader = new Thread() {
                             void run() {
-                                autoFill(dir);
+                                autoFill(fill_dir);
 
                                 for (Thread loader : loading_files) {
                                     try {
