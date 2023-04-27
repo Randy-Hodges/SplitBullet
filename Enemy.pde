@@ -6,6 +6,7 @@ class Enemy extends Actor{
     float hit_speed = 5;
     Timer hurt_timer = new Timer();
     int hurt_time = 300; // ms
+    AudioPlayer hit_sound;
     // Idle state occurs at begining of wave, spaces out enemies 
     Timer idle_timer = new Timer();
     int time_idle;
@@ -15,6 +16,7 @@ class Enemy extends Actor{
         super(hitbox_radius, pos, scale, 0);
         this.health = health;
         this.sprite = sprite;
+        this.hit_sound = GAME.assets.getSound("media/sounds/common/hit/hit_5");
     }
     
     void display() {
@@ -44,10 +46,13 @@ class Enemy extends Actor{
         for (Actor projectile : collisions) {
             hurt = true;
             this.health -= ((Projectile)projectile).caliber; // <-- We can cast the Actor as a Projectile to access its caliber field
-            // move in opposite direction of projectile hit
-            // next_vel = (projectile.pos.copy().sub(pos).normalize().mult(-1).mult(hit_speed));
             hurt_timer.reset();
-            // GAME.actor_despawns.add(projectile); <-- The projectile despawns itself
+            // Sound
+            if (!GAME.muted) {
+                hit_sound.setGain(.01);
+                hit_sound.rewind();
+                hit_sound.play();
+            }
         }
     }
     
@@ -87,7 +92,7 @@ class Enemy extends Actor{
     void displayHitboxes(){
             noFill();
             stroke(0);
-            strokeWeight(3);
+            strokeWeight(2);
             rectMode(CENTER);
             rect(0, 0, hitbox_radius, hitbox_radius);
             rectMode(CORNER);

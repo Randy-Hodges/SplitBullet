@@ -142,7 +142,7 @@ class Player extends Actor {
         }
     }
     class Gun extends Actor {
-        AudioPlayer gunshot;
+        AudioPlayer shot_low_cal, shoot_high_cal;
         Sprite gun;
         int caliber;
         int bullet_durability;
@@ -157,7 +157,8 @@ class Player extends Actor {
             this.caliber = 1;
             this.bullet_durability = 1;
 
-            gunshot = GAME.assets.getSound("media/sounds/gun/gunshot");
+            shot_low_cal = GAME.assets.getSound("media/sounds/gun/shoot_small");
+            shoot_high_cal = GAME.assets.getSound("media/sounds/gun/shoot_large");
         }
         Gun(PVector pos, float rot, PVector scale) {
             this(GAME.assets.getSprite("media/sprites/player/gun"), pos, rot, scale);
@@ -179,8 +180,13 @@ class Player extends Actor {
             GAME.actor_spawns.add(new Projectile(origin, direction, caliber, bullet_durability, 6.51442 * log(2.15443 * caliber), (Actor)this));
 
             if (!GAME.muted) {
-                gunshot.rewind();
-                gunshot.play();
+                if (caliber > 2) {
+                    shoot_high_cal.rewind();
+                    shoot_high_cal.play();
+                } else {
+                    shot_low_cal.rewind();
+                    shot_low_cal.play();
+                }
             }
         }
 
@@ -299,7 +305,7 @@ class Player extends Actor {
                 if ((damage_cooldown.value() <= 0) && (!((Enemy)collision).hurt) && (((Enemy)collision).health > 0)) {
                     health--;
                     hurt = true;
-                    
+
                     damage_cooldown.setBaseTime(2000);
                     damage_cooldown.reset();
 

@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 class MyGame {
 
   // Screen state variables
+  final int LOADING = -1;
   final int MENU_SCREEN = 0;
   final int GAME_SCREEN = 1;
   final int PAUSE_SCREEN = 2;
@@ -16,6 +17,7 @@ class MyGame {
   final int SKIP_SCORE = 42;
   final int VICTORY_SCREEN = 5;
   final int HIGH_SCORE_SCREEN = 6;
+  final int INFO_SCREEN = 7;
   int screen_state;
 
   // Play area variables
@@ -61,25 +63,27 @@ class MyGame {
   AssetPool assets;
 
   // Muted and paused flags
-  boolean muted, paused;
+  boolean muted, paused, loaded;
   
   // Player object
   Player player;
+
+  // Menu music
+  AudioPlayer menu, in_game, next_wave, game_over;
 
   MyGame(int tickrate) {
     // Set gameplay variables
     this.lives_count = 3;
     this.current_wave = 1;
 
-    // Set screen state to MENU_SCREEN
-    this.screen_state = MENU_SCREEN;
+    // Set screen state to LOADING
+    this.screen_state = LOADING;
 
     // Initialize GUI object
     this.game_gui = new GUI();
     
     // Initialize TextInputField object
     this.player_name_input = new TextInputField(new PVector(width / 2 - 150, height / 2 - 25), new PVector(300, 50), 5);
-
     
     // Initialize the user inputted key and mouse array lists
     this.keys_pressed = new ArrayList<Integer>();
@@ -117,9 +121,30 @@ class MyGame {
   void update() {
     // Update game state
     switch (screen_state) {
+      case LOADING:
+        // Wait for assets to finish loading before starting game
+        // Avoids nasty null pointers
+        if (assets.loading_thread.isAlive()) {
+          background(0);
+          textAlign(CENTER, CENTER);
+          text("Loading...", width/2, height/2);
+          break;
+        }
+
+        menu = assets.getSound("media/sounds/music/menu_loop");
+        in_game = assets.getSound("media/sounds/music/ingame_loop");
+        next_wave = assets.getSound("media/sounds/music/wave_complete");
+        game_over = assets.getSound("media/sounds/music/game_over");
+
+        change_screen_state(MENU_SCREEN);
+        break;
+      
       case MENU_SCREEN:
         // Handle menu logic
         //print("got to MENU_SCREEN \n");
+        if (!menu.isPlaying()) {
+          menu.loop();
+        }
 
         window_properties.confinePointer(false);
 
@@ -143,13 +168,16 @@ class MyGame {
 
         window_properties.confinePointer(true);
 
-        // Wait for assets to finish loading before starting game
-        // Avoids nasty null pointers
-        for (Thread thread : assets.threads) {
-          try {
-            thread.join();
-          } catch (Exception e) {
-            println("I hade no idea what I am doing with threads.");
+        menu.pause();
+        menu.rewind();
+        // game_over.pause();
+        // game_over.rewind();
+
+        if (in_game == null) {
+          in_game = assets.getSound("media/sounds/music/in_game_loop");
+        } else {
+          if (!in_game.isPlaying()) {
+            in_game.loop();
           }
         }
         
@@ -312,6 +340,16 @@ class MyGame {
       
         break;
 
+      case INFO_SCREEN:
+        game_gui.draw_info_screen();
+        
+        // Go back to menu screen
+        if (mouse_pressed.contains(LEFT)) {
+          change_screen_state(game_gui.handle_info_click()); 
+        }
+      
+        break;
+  
     }
       // Clear input buffers
       clearInputBuffers();
@@ -402,14 +440,14 @@ class MyGame {
           alive_enemies += 1;
         }
         // Spawn Shamans
-        int num_shamans = int(current_wave/2.0);
+        int num_shamans = int(linear_clamped(0, .5, 10, current_wave)); // float xintercept, float slope, float upper_bound, float x
         for(int i = 0; i < num_shamans; i++){
           OrcShaman new_orc = new OrcShaman(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_orc);
           alive_enemies += 1;
         }
         // Spawn Imps
-        int num_imps = int(linear_clamped(1, 1, 20, current_wave)); // float xintercept, float slope, float upper_bound, float x
+        int num_imps = int(linear_clamped(1, 1.3, 30, current_wave)); 
         for(int i = 0; i < num_imps; i++){
           Imp new_enem = new Imp(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_enem);
@@ -426,7 +464,7 @@ class MyGame {
         }
         break;
       case(FAST):
-        int num_imps_fast = int(linear_clamped(0, 3.5, 20, current_wave)); // float xintercept, float slope, float upper_bound, float x
+        int num_imps_fast = int(linear_clamped(0, 4, 60, current_wave)); // float xintercept, float slope, float upper_bound, float x
         for(int i = 0; i < num_imps_fast; i++){
           Imp new_enem = new Imp(get_random_spawn_point(), wave_time);
           actor_spawns.add(new_enem);
