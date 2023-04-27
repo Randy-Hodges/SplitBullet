@@ -86,4 +86,8 @@ class Penetrator extends Powerup {
     Penetrator(PVector pos) {
         this(30, pos, 8000);
     }
+
+    void applyEffect() {
+        collector.a.gun.bullet_durability *= 2;
+    }
 }

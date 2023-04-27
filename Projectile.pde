@@ -81,7 +81,7 @@ class Projectile extends Actor {
 
                 hits.add(collision);
             }
-            if (durability <= 0 || caliber <= 0) {
+            if (durability <= 0) {
                 GAME.actor_despawns.add(this);
                 return;
             }
