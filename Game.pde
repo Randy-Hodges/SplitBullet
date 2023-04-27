@@ -442,8 +442,9 @@ class MyGame {
       }
     }
 
+    // health
     if (player.health < 3) {
-      if (!healthpowerup && random(1) < (3 - player.health) * 0.001) {
+      if (!healthpowerup && random(1000) < (3 - player.health)) {
         actor_spawns.add(
           new HealthPowerup(
             new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT))
@@ -451,8 +452,9 @@ class MyGame {
         );
       }
     }
-    
-    if (!superstarpowerup && random(1) < (3 - player.health) * 0.0001) {
+
+    // superstar
+    if (!superstarpowerup && random(10000) < (3 - player.health)) {
       actor_spawns.add(
         new Superstar(
           new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT)),
@@ -460,6 +462,18 @@ class MyGame {
         )
       );
     }
+
+    // rapidfire
+    if (random(10000) < current_wave) {
+      actor_spawns.add(
+        new Rapidfire(
+          new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT)),
+          (int)random(5000, 20000)
+        )
+      );
+    }
+
+    
   }
 
   void populate_wave(int current_wave) {
