@@ -112,7 +112,7 @@ class MyGame {
 
     // Window properties
     window_properties = (GLWindow) surface.getNative();
-    print("Finished Game initialization... \n");
+    //print("Finished Game initialization... \n");
   }
   MyGame() {
     this(60);
@@ -163,12 +163,7 @@ class MyGame {
         if (mouse_pressed.contains(LEFT)) { 
           change_screen_state(game_gui.handle_main_menu_click()); 
         }
-        
-        // Comment this out
-        if (key_inputs.contains((int) '1')) {
-          change_screen_state(LOSE_SCREEN);
-        }
-        
+                
         break;
         
       case GAME_SCREEN:
