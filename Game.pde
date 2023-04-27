@@ -190,6 +190,7 @@ class MyGame {
           in_game.pause();
         }
         
+        resumeEnemyIdleTimers();
         // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
         if (player == null) {
           //print("Initializing player and populating wave\n");
@@ -231,6 +232,7 @@ class MyGame {
         // Handle Pause 
         if (keys_pressed.contains( (int)'P' )) {
           game_time.pause();
+          pauseEnemyIdleTimers();
 
           paused = true;
           change_screen_state(PAUSE_SCREEN);
@@ -566,6 +568,22 @@ class MyGame {
     //print("Changing screen state from " + screen_state + " to " + new_state + "\n");
     game_gui.screen_state = new_state;
     this.screen_state = new_state;
+  }
+
+  void pauseEnemyIdleTimers(){
+    for (Actor other : actors){
+      if (other instanceof Enemy) {
+        ((Enemy) other).idle_timer.pause(); 
+      }
+    }
+  }
+
+  void resumeEnemyIdleTimers(){
+    for (Actor other : actors){
+      if (other instanceof Enemy) {
+        ((Enemy) other).idle_timer.resume(); 
+      }
+    }
   }
   
   PVector get_random_spawn_point() {
