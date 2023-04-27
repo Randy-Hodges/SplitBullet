@@ -476,7 +476,7 @@ class MyGame {
     }
 
     // penetrator
-    if (random(50000) < current_wave) {
+    if (random(40000) < current_wave) {
       actor_spawns.add(
         new Penetrator(
           new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT)),
