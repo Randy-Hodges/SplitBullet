@@ -142,8 +142,18 @@ class MyGame {
       case MENU_SCREEN:
         // Handle menu logic
         //print("got to MENU_SCREEN \n");
-        if (!menu.isPlaying()) {
-          menu.loop();
+        in_game.rewind();
+        in_game.pause();
+        next_wave.pause();
+        game_over.pause();
+
+        if (!muted) {
+          if (menu.position() >= menu.length()) {
+            menu.rewind();
+          }
+          menu.play();
+        } else {
+          menu.pause();
         }
 
         window_properties.confinePointer(false);
@@ -169,16 +179,15 @@ class MyGame {
         window_properties.confinePointer(true);
 
         menu.pause();
-        menu.rewind();
-        // game_over.pause();
-        // game_over.rewind();
-
-        if (in_game == null) {
-          in_game = assets.getSound("media/sounds/music/in_game_loop");
-        } else {
-          if (!in_game.isPlaying()) {
-            in_game.loop();
+        game_over.pause();
+        
+        if (!muted) {
+          if (in_game.position() >= in_game.length()) {
+            in_game.rewind();
           }
+          in_game.play();
+        } else {
+          in_game.pause();
         }
         
         // Call initialize_player() and spawn_wave() only if the player object is null. This is Wave 1.
@@ -199,6 +208,11 @@ class MyGame {
         if (alive_enemies == 0){
           current_wave += 1; 
           populate_wave(current_wave);
+
+          if (!muted && !next_wave.isPlaying()) {
+            next_wave.rewind();
+            next_wave.play();
+          }
         }
         
         // simulate & move on tick; always render
@@ -229,6 +243,10 @@ class MyGame {
       case PAUSE_SCREEN:
         // Handle pause logic
         // print("got to PAUSE_SCREEN \n");
+        menu.pause();
+        in_game.pause();
+        next_wave.pause();
+        game_over.pause();
 
         window_properties.confinePointer(false);
 
@@ -257,6 +275,15 @@ class MyGame {
         break;
         
       case LOSE_SCREEN:
+        menu.pause();
+        in_game.pause();
+        next_wave.pause();
+        
+        if (!muted && !game_over.isPlaying()) {
+          game_over.rewind();
+          game_over.play();
+        }
+
         window_properties.confinePointer(false);
 
         game_gui.draw_lose_screen();
@@ -268,6 +295,8 @@ class MyGame {
         break;
 
       case LOSE_SCREEN_SAVE:
+        menu.rewind();
+        
         window_properties.confinePointer(false);
 
         game_gui.draw_lose_save_screen();
