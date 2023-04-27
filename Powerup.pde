@@ -50,8 +50,10 @@ class Powerup extends Actor
             GAME.actor_despawns.add(this);
             effect_time.reset(); 
 
-            collect_sound.rewind();
-            collect_sound.play();
+            if (!GAME.muted) {
+                collect_sound.rewind();
+                collect_sound.play();
+            }
         }
         
     }
