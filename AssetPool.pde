@@ -8,7 +8,7 @@ import java.util.List;
 class AssetPool {
     // FIELDS
     Thread loading_thread;
-    ArrayList<Thread> subthreads, loading_files;
+    final ArrayList<Thread> subthreads, loading_files;
 
     // Object necessary for loading audio files
     // Used as audio_loader.loadFile(String path_to_file)
@@ -29,7 +29,7 @@ class AssetPool {
     // CONSTRUCTORS
     // Can take an endless number of source directories. Will load Sprites
     // and Audio files from that directory and all subdirectories.
-    AssetPool(boolean autofill, String... src_dirs) {
+    AssetPool(boolean autofill, final String... src_dirs) {
         subthreads = new ArrayList<Thread>();
         loading_files = new ArrayList<Thread>();
 
@@ -43,13 +43,12 @@ class AssetPool {
         if (autofill) {
             loading_thread = new Thread() {
                 void run() {
-                    for (String dir : src_dirs) {
-                        final String fill_dir = new String(dir);
+                    for (final String dir : src_dirs) {
                         Thread loader = new Thread() {
                             void run() {
-                                autoFill(fill_dir);
+                                autoFill(dir);
 
-                                for (Thread loader : loading_files) {
+                                for (final Thread loader : loading_files) {
                                     try {
                                         loader.join();
                                     } catch (Exception e) {
@@ -62,7 +61,7 @@ class AssetPool {
                         subthreads.add(loader);
                     }
 
-                    for (Thread subthread : subthreads) {
+                    for (final Thread subthread : subthreads) {
                         try {
                             subthread.join();
                         } catch (Exception e) {
