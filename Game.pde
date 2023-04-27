@@ -296,7 +296,7 @@ class MyGame {
 
       case LOSE_SCREEN_SAVE:
         menu.rewind();
-        
+
         window_properties.confinePointer(false);
 
         game_gui.draw_lose_save_screen();
@@ -413,6 +413,7 @@ class MyGame {
     }
     
     update_actors();
+    random_powerups();
   }
 
   void move() {
@@ -424,6 +425,38 @@ class MyGame {
   void render() {
     for (Actor actor : actors) {
       actor.render();
+    }
+  }
+
+  void random_powerups() {
+    boolean healthpowerup = false;
+    boolean superstarpowerup = false;
+    for (Actor actor : actors) {
+      if (actor instanceof HealthPowerup) {
+        healthpowerup = true;
+      } else if (actor instanceof Superstar) {
+        superstarpowerup = true;
+      }
+      if (healthpowerup && superstarpowerup) {
+        break;
+      }
+    }
+
+    if (player.health < 3) {
+      if (!healthpowerup && random(1) < (3 - player.health) * 0.001) {
+        actor_spawns.add(
+          new HealthPowerup(
+            new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT))
+          )
+        );
+      } else if (!superstarpowerup && random(1) < (3 - player.health) * 0.0001) {
+        actor_spawns.add(
+          new Superstar(
+            new PVector(random(PLAYABLE_AREA_X, PLAYABLE_AREA_X + PLAYABLE_AREA_WIDTH), random(PLAYABLE_AREA_Y, PLAYABLE_AREA_Y + PLAYABLE_AREA_HEIGHT)),
+            (int)random(2000, 10000)
+          )
+        );
+      }
     }
   }
 
