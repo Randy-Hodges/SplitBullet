@@ -44,7 +44,7 @@ class AssetPool {
             loading_thread = new Thread() {
                 void run() {
                     for (String dir : src_dirs) {
-                        final String fill_dir = dir;
+                        final String fill_dir = new String(dir);
                         Thread loader = new Thread() {
                             void run() {
                                 autoFill(fill_dir);
