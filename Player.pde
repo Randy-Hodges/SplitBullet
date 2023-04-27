@@ -204,8 +204,10 @@ class Player extends Actor {
 
     PVector aim_vector, look_vector, flip;
     int health;
+    int fireDelay;
     boolean hurt;
     boolean invulnerable;
+    boolean rapidfire;
     color tint_color;
 
     ArrayList<Powerup> powerups;
@@ -223,6 +225,7 @@ class Player extends Actor {
         a = new Arm();
 
         this.health = health;
+        fireDelay = 300;
         powerups = new ArrayList<Powerup>();
 
         fireTimer = new Timer();
@@ -267,7 +270,12 @@ class Player extends Actor {
     void fire()
     {
         //add new projectile at player's location moving in the direction of aim_vector
-        if (fireTimer.value() >= 300)
+
+        if(!rapidfire)
+            fireDelay = 300;
+        else    
+            fireDelay = 100;
+        if (fireTimer.value() >= fireDelay)
         {
             a.gun.fire(new PVector(pos.x + (flip.x * a.pos.x), pos.y + (flip.y * a.pos.y)).add(a.rot_vector.copy().mult(scale.x * a.scale.x * a.gun.pos.x)), aim_vector.copy().setMag(1000));
             // GAME.actor_spawns.add(new Projectile(new PVector(pos.x + (flip.x * a.pos.x), pos.y + a.pos.y).add(PVector.fromAngle(flip.x * a.rot).mult(flip.x  * a.gun.pos.x)), aim_vector.copy().setMag(1000)));
