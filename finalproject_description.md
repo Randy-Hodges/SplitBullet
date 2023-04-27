@@ -1,7 +1,22 @@
 A project description text file, finalproject_description.txt, that summarizes the project functionalities and implementations, what the included classes do, and any unexpected challenges. This is mostly a rehash of the progress report but from the position of what you accomplished rather than what you were planning. Also you must document which group member worked on which part of the assignment. While group coding is allowed, each member is responsible for their individual parts -- this ensures all group members are participating and have mastery of the assignment. If you do not specify that a group member contributed, this will impact their grade.
 
 -------------------------------------------
-Daniel:
+Daniel: (Actor, AssetPool, Sprite, Timer, Penetrator, Rapidfire, Player.Arm, Player.Gun)
+
+I was responsible for what can essentially be called the "engine" of the game. One cool part about this program is that it can run at any framerate without the behavior of the game changing. The Game is simulated at a fixed 'tickrate', and the position they are drawn is a linear interpolation between its current simulation position, and its next simulation position. That way, its motion is smooth and matching the framerate.
+
+Most of my work went into making all my other group members lives easier.
+The biggest contributer to that is the Actor class, which offers all of the basic functionality of a Game object, like simulation, movement, and rendering.
+My partners can then extend this class and build upon these existing methods to add mechanics to their objects.
+
+The Sprite and AssetPool classes were not planned, but were born out of necessity. Originally, all our class objects loaded their assets (sprite images, sounds) at initialization, but we soon discovered how computationally intensive it is for a bullet to load a new duplicate image every time it is added to the game. In order to fix this frame dropping issue, I created the AssetPool and Sprite class. The Sprite class was created for the purpose of, again, making everyone's lives easier. The AssetPool was created to fix performance problems. It contained all Sprites and Minim AudioPlayer objects needed, loaded only once, and made available for all classes to pull from. 
+
+This class introduced a new issue though. Since it loads everything upfront on the initialization of a MyGame, the program is halted for a decent amount of time. This raised a new error (which I find extremely stupid and annoying) from Processing in that the draw() function couldn't be reached within 5 seconds of starting the program.
+Why is that a thing?
+
+To fix this, I "learned" how to put the assetloading process on a new Thread. This was by far the most difficult thing I had done since it is so far beyond my experience in programming as a whole, but after many hours, I believe I got things working as efficiently as possible. Multithreading is crazy. Code running asynchronously? I choose death.
+
+At the end of it all, the final product exceeded expectations.
 
 -------------------------------------------
 Long (Game, GUI, ScoreComparator, PlayerScore, TextInputField):
