@@ -302,7 +302,7 @@ class Player extends Actor {
     void collisionReaction() {
         for (Actor collision : collisions) {
             if (collision instanceof Enemy) {
-                if ((damage_cooldown.value() <= 0) && (!((Enemy)collision).hurt) && (((Enemy)collision).health > 0)) {
+                if (!invulnerable && (damage_cooldown.value() <= 0) && (!((Enemy)collision).hurt) && (((Enemy)collision).health > 0)) {
                     health--;
                     hurt = true;
 
@@ -353,8 +353,8 @@ class Player extends Actor {
     void simulate() {
         checkInputs();
         damageCooldown();
-        super.simulate();
         simulatePowerups();
+        super.simulate();
     }
     
     void move() {
