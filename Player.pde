@@ -384,7 +384,7 @@ class Player extends Actor {
         checkDirection();
         imageMode(CENTER);
 
-        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.value() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.value() / (1000.0 / GAME.tickrate))));
+        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.tick_time.value() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.tick_time.value() / (1000.0 / GAME.tickrate))));
 
         pushMatrix();
 

@@ -128,6 +128,11 @@ class Actor {
         next_pos.add(next_vel.x / GAME.tickrate, next_vel.y / GAME.tickrate);
     }
 
+    // Set all current fields to next_ fields
+    void applySimulation() {
+        move();
+    }
+
     // Sets the current movement vectors to their next_ counterparts
     void move() {
         accel.set(next_accel);
@@ -142,7 +147,7 @@ class Actor {
     // Draws the Actor to the screen using translation matrices.
     // In most scenarios, you will simply want to override the display() method.
     void render() {
-        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.game_time.value() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.game_time.value() / (1000.0 / GAME.tickrate))));
+        draw_pos.set(lerp(pos.x, next_pos.x, (GAME.tick_time.value() / (1000.0 / GAME.tickrate))), lerp(pos.y, next_pos.y, (GAME.tick_time.value() / (1000.0 / GAME.tickrate))));
         
         pushMatrix();
 

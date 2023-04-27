@@ -44,7 +44,7 @@ class MyGame {
   GLWindow window_properties;
 
   // Game simulation variables
-  Timer game_time;
+  Timer tick_time;
   int tickrate;
   
   // Arrays of buttons pressed on current frame only
@@ -102,7 +102,7 @@ class MyGame {
     this.assets = new AssetPool(true, "media/sprites", "media/sounds");
     
     // Initialize timers
-    this.game_time = new Timer();
+    this.tick_time = new Timer();
     this.spawn_delay_timer = new Timer();
     this.tickrate = tickrate;
     
@@ -212,12 +212,12 @@ class MyGame {
         }
         
         // simulate & move on tick; always render
-        if (game_time.value() >= (1000.0 / tickrate)) {
-          for (int sim = 1; sim < (game_time.value() / (1000.0 / tickrate)); sim++) {
-            move();
+        if (tick_time.value() >= (1000.0 / tickrate)) {
+          for (int sim = 1; sim < (tick_time.value() / (1000.0 / tickrate)); sim++) {
+            applySimulation();
             simulate();
           }
-          game_time.reset();
+          tick_time.reset();
         }
 
         game_gui.draw_game_screen();
@@ -226,7 +226,7 @@ class MyGame {
         // Check if wave is over, then begin the next spawn_wave(current_wave)
         // Handle Pause 
         if (keys_pressed.contains( (int)'P' )) {
-          game_time.pause();
+          tick_time.pause();
           pauseEnemyIdleTimers();
 
           paused = true;
@@ -254,7 +254,7 @@ class MyGame {
           paused = false;
           change_screen_state(GAME_SCREEN);
 
-          game_time.resume();
+          tick_time.resume();
           break;
         }
 
@@ -265,7 +265,7 @@ class MyGame {
         
         // Handle Quit
         if (keys_pressed.contains( (int)'Q' )) {
-          game_time.resume();
+          tick_time.resume();
           change_screen_state(LOSE_SCREEN_SAVE);
         }
 
@@ -413,9 +413,9 @@ class MyGame {
     random_powerups();
   }
 
-  void move() {
+  void applySimulation() {
     for (Actor actor : actors) {
-      actor.move();
+      actor.applySimulation();
     }
   }
 
