@@ -74,7 +74,10 @@ class Projectile extends Actor {
         for (Actor collision : collisions) {
             if (!hits.contains(collision)) {
                 durability -= 1;
-                caliber -= 1;
+                
+                if (caliber > 1) {
+                    caliber -= 1;
+                }
 
                 next_accel.add(-slow_down.x * 0.2, -slow_down.y * 0.2);
                 slow_down.add(next_accel);
