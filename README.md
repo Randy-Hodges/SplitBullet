@@ -3,7 +3,7 @@ A small videogame created for the final of the UT Elements of Graphics class.
 
 Title Screen             |  Gameplay
 :-------------------------:|:-------------------------:
-![Title Screen](/media/screenshots/full/title_screen.png)  |  ![Gameplay](/media/screenshots/full/gameplay_r7.png)
+![Title Screen](data/media/screenshots/full/title_screen.png)  |  ![Gameplay](data/media/screenshots/full/gameplay_r7.png)
 
 SplitBullet is a small game that is loosely based off of Stardew Valley's [Journey of the Prairie King](https://stardewvalleywiki.com/Journey_of_the_Prairie_King). In this game (created entirely in the Processing language), the player controls a pistol-weilding character whose main objective is to survive as many waves of enemies as possible. During their survival quest, they will encounter fast enemies, slow enemies, powerups, and a variety of bosses. 
 
