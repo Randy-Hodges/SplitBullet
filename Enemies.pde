@@ -440,4 +440,3 @@ class OrcSpawn extends Enemy{
         }
     }
 }
-
