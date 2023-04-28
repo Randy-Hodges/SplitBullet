@@ -128,7 +128,7 @@ class AssetPool {
                 } else if (file.isFile()) {
                     final String file_name = file.getName();
                     final String file_ext = file_name.substring(file_name.lastIndexOf('.'), file_name.length()).trim().toLowerCase();
-                    final String label = file.getParent().replace(src_dir_path, "").replaceAll("\\\\", "/").trim();
+                    final String label = file.getParent().trim().replaceAll("\\\\", "/").replace(src_dir_path, "");
 
                     if (allowed_sprite_types.contains(file_ext)) {
                         addSprite(label, new Sprite(label, 1000, true));
