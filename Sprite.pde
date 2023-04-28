@@ -129,7 +129,7 @@ class Sprite {
     // fields filled already, this method will automatically fill all other fields
     // with appropriate values.
     void fillFields() {
-        File[] files = new File(sketchPath("") + "data\\" + src_dir).listFiles();
+        File[] files = new File(sketchPath("").replaceAll("\\\\", "/") + "data/" + src_dir).listFiles();
 
         ArrayList<String> file_names = new ArrayList<String>();
         for (File file : files) {

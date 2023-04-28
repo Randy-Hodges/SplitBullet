@@ -112,7 +112,7 @@ class AssetPool {
     // Finds all Sprites and audio files in a folder and its subfolders
     // and automatically adds them to the appropriate HashMap.
     void autoFill(String src_dir_name) {
-        String root_path = sketchPath("") + "data\\";
+        String root_path = sketchPath("").replaceAll("\\\\", "/") + "data/";
         File src_dir = new File(root_path + src_dir_name);
 
         search_files(src_dir, root_path);
